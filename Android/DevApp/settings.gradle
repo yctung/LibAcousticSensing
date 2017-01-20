@@ -1,0 +1,3 @@
+include ':app'
+include ':libacousticsensing'
+project(':libacousticsensing').projectDir = new File('../LibAcousitcSensing/libacousticsensing/')
