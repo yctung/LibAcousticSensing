@@ -1,0 +1,18 @@
+package umich.cse.yctung.libacousticsensing.Network;
+
+import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
+
+/**
+ * Created by Yu-Chih Tung on 10/15/15.
+ * yctung: a callback function interface for classes using NetworkingController
+ */
+public interface NetworkControllerListener {
+    void isConnected(boolean success, String resp);
+    void serverAskStartSensing();
+    void audioReceivedFromServer(AudioSource audioSource);
+    void resultReceviedFromServer(int result);
+    void userStudyEnd();
+    int consumeReceivedData(double dataReceived);
+    void updateDebugStatus(String stringToShow);
+    void error(String message);
+}

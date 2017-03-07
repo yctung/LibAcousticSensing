@@ -12,6 +12,26 @@
 		13099BB01E3008D5006D8A06 /* LibAcousticSensingFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BAF1E3008D5006D8A06 /* LibAcousticSensingFrameworkTests.m */; };
 		13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 13099BF91E300947006D8A06 /* FrameworkCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BFA1E300947006D8A06 /* FrameworkCheck.m */; };
+		13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18D91E48F400008CB0AE /* NetworkController.h */; };
+		13BF18DC1E48F400008CB0AE /* NetworkControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18DA1E48F400008CB0AE /* NetworkControllerCallerDelegate.h */; };
+		13BF18E01E48F460008CB0AE /* AcousticSensingController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18DE1E48F460008CB0AE /* AcousticSensingController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		13BF18E11E48F460008CB0AE /* AcousticSensingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18DF1E48F460008CB0AE /* AcousticSensingController.m */; };
+		13BF18E61E48F48D008CB0AE /* AcousticController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E21E48F48D008CB0AE /* AcousticController.h */; };
+		13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E31E48F48D008CB0AE /* AcousticControllerCallerDelegate.h */; };
+		13BF18E81E48F48D008CB0AE /* AudioRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E41E48F48D008CB0AE /* AudioRecorder.h */; };
+		13BF18E91E48F48D008CB0AE /* AudioRecorderCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E51E48F48D008CB0AE /* AudioRecorderCallerDelegate.h */; };
+		13BF18EB1E48F49F008CB0AE /* AcousticController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EA1E48F49F008CB0AE /* AcousticController.m */; };
+		13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EC1E48F4A4008CB0AE /* AudioRecorder.m */; };
+		13BF18EF1E48F4B3008CB0AE /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EE1E48F4B3008CB0AE /* NetworkController.m */; };
+		13BF18F21E48F54B008CB0AE /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18F01E48F54B008CB0AE /* Constant.m */; };
+		13BF18F31E48F54B008CB0AE /* Constant.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18F11E48F54B008CB0AE /* Constant.h */; };
+		13BF18F91E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F51E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav */; };
+		13BF18FA1E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F61E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav */; };
+		13BF18FB1E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F71E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
+		13BF18FC1E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F81E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
+		13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19021E48FAAE008CB0AE /* TraceSaver.h */; };
+		13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF19031E48FAAF008CB0AE /* TraceSaver.m */; };
+		13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +53,27 @@
 		13099BB11E3008D5006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13099BF91E300947006D8A06 /* FrameworkCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameworkCheck.h; sourceTree = "<group>"; };
 		13099BFA1E300947006D8A06 /* FrameworkCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrameworkCheck.m; sourceTree = "<group>"; };
+		13BF18D91E48F400008CB0AE /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
+		13BF18DA1E48F400008CB0AE /* NetworkControllerCallerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkControllerCallerDelegate.h; sourceTree = "<group>"; };
+		13BF18DE1E48F460008CB0AE /* AcousticSensingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcousticSensingController.h; sourceTree = "<group>"; };
+		13BF18DF1E48F460008CB0AE /* AcousticSensingController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcousticSensingController.m; sourceTree = "<group>"; };
+		13BF18E21E48F48D008CB0AE /* AcousticController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcousticController.h; sourceTree = "<group>"; };
+		13BF18E31E48F48D008CB0AE /* AcousticControllerCallerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcousticControllerCallerDelegate.h; sourceTree = "<group>"; };
+		13BF18E41E48F48D008CB0AE /* AudioRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRecorder.h; sourceTree = "<group>"; };
+		13BF18E51E48F48D008CB0AE /* AudioRecorderCallerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRecorderCallerDelegate.h; sourceTree = "<group>"; };
+		13BF18EA1E48F49F008CB0AE /* AcousticController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcousticController.m; sourceTree = "<group>"; };
+		13BF18EC1E48F4A4008CB0AE /* AudioRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRecorder.m; sourceTree = "<group>"; };
+		13BF18EE1E48F4B3008CB0AE /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
+		13BF18F01E48F54B008CB0AE /* Constant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constant.m; sourceTree = "<group>"; };
+		13BF18F11E48F54B008CB0AE /* Constant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constant.h; sourceTree = "<group>"; };
+		13BF18F51E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav"; sourceTree = "<group>"; };
+		13BF18F61E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav"; sourceTree = "<group>"; };
+		13BF18F71E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
+		13BF18F81E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
+		13BF19021E48FAAE008CB0AE /* TraceSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TraceSaver.h; sourceTree = "<group>"; };
+		13BF19031E48FAAF008CB0AE /* TraceSaver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TraceSaver.m; sourceTree = "<group>"; };
+		13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TraceSaverCallerDelegate.h; sourceTree = "<group>"; };
+		13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AcousticSensingControllerCallerDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,10 +116,19 @@
 		13099BA21E3008D5006D8A06 /* LibAcousticSensingFramework */ = {
 			isa = PBXGroup;
 			children = (
+				13BF18FD1E48FA96008CB0AE /* Other */,
+				13BF18F41E48F914008CB0AE /* AudioSource */,
+				13BF18DD1E48F413008CB0AE /* Audio */,
+				13BF18D81E48F3ED008CB0AE /* Network */,
 				13099BA31E3008D5006D8A06 /* LibAcousticSensingFramework.h */,
 				13099BA51E3008D5006D8A06 /* Info.plist */,
 				13099BF91E300947006D8A06 /* FrameworkCheck.h */,
 				13099BFA1E300947006D8A06 /* FrameworkCheck.m */,
+				13BF18DE1E48F460008CB0AE /* AcousticSensingController.h */,
+				13BF18DF1E48F460008CB0AE /* AcousticSensingController.m */,
+				13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */,
+				13BF18F01E48F54B008CB0AE /* Constant.m */,
+				13BF18F11E48F54B008CB0AE /* Constant.h */,
 			);
 			path = LibAcousticSensingFramework;
 			sourceTree = "<group>";
@@ -92,6 +142,50 @@
 			path = LibAcousticSensingFrameworkTests;
 			sourceTree = "<group>";
 		};
+		13BF18D81E48F3ED008CB0AE /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				13BF18D91E48F400008CB0AE /* NetworkController.h */,
+				13BF18EE1E48F4B3008CB0AE /* NetworkController.m */,
+				13BF18DA1E48F400008CB0AE /* NetworkControllerCallerDelegate.h */,
+			);
+			name = Network;
+			sourceTree = "<group>";
+		};
+		13BF18DD1E48F413008CB0AE /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				13BF18E21E48F48D008CB0AE /* AcousticController.h */,
+				13BF18EA1E48F49F008CB0AE /* AcousticController.m */,
+				13BF18E31E48F48D008CB0AE /* AcousticControllerCallerDelegate.h */,
+				13BF18E41E48F48D008CB0AE /* AudioRecorder.h */,
+				13BF18EC1E48F4A4008CB0AE /* AudioRecorder.m */,
+				13BF18E51E48F48D008CB0AE /* AudioRecorderCallerDelegate.h */,
+			);
+			name = Audio;
+			sourceTree = "<group>";
+		};
+		13BF18F41E48F914008CB0AE /* AudioSource */ = {
+			isa = PBXGroup;
+			children = (
+				13BF18F51E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav */,
+				13BF18F61E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav */,
+				13BF18F71E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */,
+				13BF18F81E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */,
+			);
+			name = AudioSource;
+			sourceTree = "<group>";
+		};
+		13BF18FD1E48FA96008CB0AE /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				13BF19021E48FAAE008CB0AE /* TraceSaver.h */,
+				13BF19031E48FAAF008CB0AE /* TraceSaver.m */,
+				13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */,
+			);
+			name = Other;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -99,7 +193,17 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */,
 				13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */,
+				13BF18E61E48F48D008CB0AE /* AcousticController.h in Headers */,
+				13BF18DC1E48F400008CB0AE /* NetworkControllerCallerDelegate.h in Headers */,
+				13BF18E91E48F48D008CB0AE /* AudioRecorderCallerDelegate.h in Headers */,
+				13BF18E01E48F460008CB0AE /* AcousticSensingController.h in Headers */,
+				13BF18E81E48F48D008CB0AE /* AudioRecorder.h in Headers */,
+				13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */,
+				13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */,
+				13BF18F31E48F54B008CB0AE /* Constant.h in Headers */,
+				13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */,
 				13099BA41E3008D5006D8A06 /* LibAcousticSensingFramework.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -183,6 +287,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13BF18FC1E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */,
+				13BF18FB1E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */,
+				13BF18FA1E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav in Resources */,
+				13BF18F91E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +308,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13BF18E11E48F460008CB0AE /* AcousticSensingController.m in Sources */,
+				13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */,
+				13BF18F21E48F54B008CB0AE /* Constant.m in Sources */,
 				13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */,
+				13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */,
+				13BF18EB1E48F49F008CB0AE /* AcousticController.m in Sources */,
+				13BF18EF1E48F4B3008CB0AE /* NetworkController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,7 +345,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -279,7 +393,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -385,6 +499,7 @@
 				13099BB61E3008D5006D8A06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		13099BB71E3008D5006D8A06 /* Build configuration list for PBXNativeTarget "LibAcousticSensingFrameworkTests" */ = {
 			isa = XCConfigurationList;
@@ -393,6 +508,7 @@
 				13099BB91E3008D5006D8A06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
