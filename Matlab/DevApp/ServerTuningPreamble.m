@@ -20,12 +20,20 @@ ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 ss.startServer(as,ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD);
 %ss.startSensing();
 
+
+% busy-wait the server is connected and initialized
+while ss.latestReceivedAction ~= ss.ACTION_INIT,
+    fprintf
+end
+
 REPEAT_CNT = 10;
 for repeatIdx = 1:REPEAT_CNT,
-    waitfor(0,'UserData','ACTION_INIT');
+    fprintf(2,'<<<<<< sensing repeatIdx = %d wiats >>>>>>\n',repeatIdx);
+    %waitfor(0,'UserData','ACTION_INIT');
     fprintf(2,'<<<<<< sensing repeatIdx = %d starts >>>>>>\n',repeatIdx);
     %ss.startSensing();
-    waitfor(0,'UserData','ACTION_SENSING_END');
+    %pause(1);
+    %waitfor(0,'UserData','ACTION_SENSING_END');
     
     % TODO: check senisng result
     fprintf(2,'<<<<<< sensing repeatIdx = %d ends >>>>>>\n',repeatIdx);

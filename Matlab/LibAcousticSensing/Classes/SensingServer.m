@@ -36,6 +36,8 @@ classdef SensingServer < handle
         callback;
         socket;
         
+        latestReceivedAction;
+        
         % audio variables
         audioSource;
         deviceAudioMode;
@@ -67,12 +69,13 @@ classdef SensingServer < handle
             obj.audioSource=audioSource;
             obj.deviceAudioMode=deviceAudioMode;
             
+            obj.latestReceivedAction = -1;
             
             obj.socket=tcpip('0.0.0.0', obj.port, 'NetworkRole', 'server', 'Timeout', obj.SOCKET_TIME_OUT);
             obj.socket.ReadAsyncMode='continuous';
-            obj.socket.BytesAvailableFcnMode='byte';
-            obj.socket.BytesAvailableFcnCount=1; % trigger the event every byte available
-            obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback; % correct format of passing callback, ref: https://www.mathworks.com/matlabcentral/answers/176729-matlab-arduino-communication-using-bytesavailablefcn-too-many-input-arguments
+            %obj.socket.BytesAvailableFcnMode='byte';
+            %obj.socket.BytesAvailableFcnCount=1; % trigger the event every byte available
+            %obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback; % correct format of passing callback, ref: https://www.mathworks.com/matlabcentral/answers/176729-matlab-arduino-communication-using-bytesavailablefcn-too-many-input-arguments
             obj.socket.InputBufferSize = 4800;
             
             obj.keepReading = 1;
@@ -85,6 +88,13 @@ classdef SensingServer < handle
             % intentionally wait one second to avoid first few packets lost
             % (matlab bug, ref: http://stackoverflow.com/questions/31435942/matlab-tcp-ip-socket-only-sometimes-works)
             pause(1);
+            
+            % run the main socket receiving loop on another thread by timer
+            % ref: http://undocumentedmatlab.com/blog/explicit-multi-threading-in-matlab-part4
+            % ref: https://www.mathworks.com/help/matlab/matlab_prog/timer-callback-functions.html
+            t = timer('StartDelay',0.1, 'TimerFcn',@utilityFcn);
+            t.TimerFcn=@(~,~)obj.socketReadCallback;
+            start(t);
         end
         
         % start ask device to record or play audio
@@ -112,7 +122,13 @@ classdef SensingServer < handle
             %while obj.socket.BytesAvailable>0,
             %obj.keepReading = 1;
             while obj.keepReading,
+                while obj.socket.BytesAvailable == 0,
+                    fprintf('.');
+                    pause(0.1); % debug mode
+                end
+                
                 action=fread(obj.socket, 1, 'int8');
+                obj.latestReceivedAction = action;
                 %**********************************************************
                 % ACTION_CONNECT: just connect the socket -> doing nothing
                 %**********************************************************
@@ -134,9 +150,6 @@ classdef SensingServer < handle
                     set(0,'UserData','ACTION_INIT');
                     fprintf(obj.dfid, '  - UserData = %s\n', get(0,'UserData'));
                     
-                    % *** just for debug ***
-                    obj.keepReading = 0;
-                    break;
                 %**********************************************************
                 % ACTION_DATA: received audio data 
                 %**********************************************************
@@ -205,7 +218,7 @@ classdef SensingServer < handle
             
             
             % remember to set callback function back is we remove it before
-            obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback;
+            %obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback;
         end
         
 %==========================================================================
