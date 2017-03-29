@@ -1,9 +1,9 @@
-function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pilotSource, serchChIdxs, DEBUG_SHOW)
+function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, preambleSource, serchChIdxs, DEBUG_SHOW)
 % 2015/10/17: check if pilot is found successfully
 %             pilotEndOffset is the end sample offset of last pilot signal
 % 2016/11/29: update this function to auto search pilot for both channel
 %           : algorithm: adjust the thres if need (ex: get 11 rather than 10 peaks)
-    pilot = pilotSource.pilot;
+    pilot = preambleSource.syncToDetect;
 
     if ~exist('DEBUG_SHOW','var'),
         DEBUG_SHOW = 0;
@@ -18,8 +18,7 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pil
     
     assert(size(signalAll,2) == length(PILOT_SEARCH_CH_IDXS), '[ERROR]: inconsistent channel size for signal and PILOT_SEARCH_CH_IDXS\n');
     
-
-    % TODO: update pilot setting based on the inputted pilotSource
+    % TODO: update pilot setting based on the inputted preambleSource
     PILOT_SEARCH_CH_CNT = length(PILOT_SEARCH_CH_IDXS);
     PILOT_SEARCH_PEAK_WINDOW = 30;
     PILOT_REPEAT_CNT = 10;

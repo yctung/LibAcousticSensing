@@ -17,7 +17,6 @@ function [] = ServerWriteAudioData(t, audioSource)
     
     SHORT_MAX_RANGE = 2^15-1;
     
-    
     REACTION_SET_MEDIA = 1;
     
     % a. write reaction identifier
@@ -28,16 +27,16 @@ function [] = ServerWriteAudioData(t, audioSource)
     fwrite(t, int32(audioSource.chCnt), 'int32');
     fwrite(t, int32(audioSource.repeatCnt), 'int32');
     
-    % c. write pilot
-    pilotShortRange = floor(audioSource.pilotSource.pilotToAdd*audioSource.pilotGain*SHORT_MAX_RANGE);
-    fwrite(t, int32(length(pilotShortRange)), 'int32');
-    pilotShort = int16(pilotShortRange);
-    pilotBytes = typecast(pilotShort, 'int8');
+    % c. write preamble
+    preambleShortRange = floor(audioSource.preambleSource.preambleToAdd*audioSource.preambleGain*SHORT_MAX_RANGE);
+    fwrite(t, int32(length(preambleShortRange)), 'int32');
+    preambleShort = int16(preambleShortRange);
+    preabmleBytes = typecast(preambleShort, 'int8');
     
     byteToWriteEachTime = 200;
     currentWriteStart = 1;
-    while currentWriteStart < length(pilotBytes),
-        fwrite(t, pilotBytes(currentWriteStart: min(currentWriteStart+byteToWriteEachTime-1, length(pilotBytes))), 'int8');
+    while currentWriteStart < length(preabmleBytes),
+        fwrite(t, preabmleBytes(currentWriteStart: min(currentWriteStart+byteToWriteEachTime-1, length(preabmleBytes))), 'int8');
         currentWriteStart = currentWriteStart+byteToWriteEachTime;
     end
     

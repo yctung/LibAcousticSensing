@@ -3,7 +3,7 @@ classdef TraceParser < handle
     %            from devices
     % 
     properties (Constant = true)
-        AUDIO_SAMPLE_TO_FIND_PILOT = 35000; % TODO: this value should be set large enough to handle pilot search
+        AUDIO_SAMPLE_TO_FIND_PREAMBLE = 35000; % TODO: this value should be set large enough to handle pilot search
         AUDIO_BUFF_MAX_SIZE=500000; % maximize size of audio buffering (will be flush when data is processed)
     end
     
@@ -12,8 +12,8 @@ classdef TraceParser < handle
         traceChannelCnt;
         
         % parsing states
-        needToSearchPilot;
-        needToRemovePilot;
+        needToSearchPreamble;
+        needToRemovePreamble;
         pilotEndOffsets;
         pilotToRemoveLens;
         
@@ -33,8 +33,8 @@ classdef TraceParser < handle
             % init audio buffers
             obj.audioBuf=zeros(obj.AUDIO_BUFF_MAX_SIZE, obj.traceChannelCnt);
             obj.audioBufEnd=0;
-            obj.needToSearchPilot = 1;
-            obj.needToRemovePilot = 1;
+            obj.needToSearchPreamble = 1;
+            obj.needToRemovePreamble = 1;
         end
         
         % parse the inputted audio
@@ -45,28 +45,28 @@ classdef TraceParser < handle
             
             audioToProcess = [];
             
-            % b. search pilot in the first packet
+            % b. search preamble in the first packet
             % NOTE: currently I always use the first traces as
             % reference to cut signals, it might be better if both
             % are used seprately
-            if obj.needToSearchPilot && obj.audioBufEnd > obj.AUDIO_SAMPLE_TO_FIND_PILOT,
-                [obj.pilotEndOffsets] = FindPilotAutoSearch(obj.audioBuf(1:obj.AUDIO_SAMPLE_TO_FIND_PILOT,:), obj.audioSource.pilotSource);
-                assert(obj.pilotEndOffsets(1) > 0, '[ERROR]: unable to find pilot, (AUDIO_SAMPLE_TO_FIND_PILOT is too short?)\n');
-                obj.pilotToRemoveLens = obj.pilotEndOffsets(1) + obj.audioSource.pilotSource.PILOT_END_OFFSET;
-                obj.needToSearchPilot = 0;
+            if obj.needToSearchPreamble && obj.audioBufEnd > obj.AUDIO_SAMPLE_TO_FIND_PREAMBLE,
+                [obj.pilotEndOffsets] = FindPilotAutoSearch(obj.audioBuf(1:obj.AUDIO_SAMPLE_TO_FIND_PREAMBLE,:), obj.audioSource.preambleSource, 1:size(obj.audioBuf,2), 0);
+                assert(obj.pilotEndOffsets(1) > 0, '[ERROR]: unable to find pilot, (AUDIO_SAMPLE_TO_FIND_PREAMBLE is too short?)\n');
+                obj.pilotToRemoveLens = obj.pilotEndOffsets(1) + obj.audioSource.preambleSource.preambleEndOffset;
+                obj.needToSearchPreamble = 0;
             end
             
             % c. remove pilot if receive enough audio data
-            if obj.needToSearchPilot == 0 && obj.needToRemovePilot && obj.audioBufEnd > obj.pilotToRemoveLens(1),
+            if obj.needToSearchPreamble == 0 && obj.needToRemovePreamble && obj.audioBufEnd > obj.pilotToRemoveLens(1),
                 newAudioBufEnd = obj.audioBufEnd - obj.pilotToRemoveLens(1);
                 obj.audioBuf(1:newAudioBufEnd, :) = obj.audioBuf(obj.pilotToRemoveLens(1)+1:obj.audioBufEnd, :);
                 obj.audioBufEnd = newAudioBufEnd;
-                obj.needToRemovePilot = 0;
+                obj.needToRemovePreamble = 0;
             end
             
             % d. start cut the audio data for processing
             SINGLE_REPEAT_LEN = size(obj.audioSource.signal,1);
-            if obj.needToSearchPilot == 0 && obj.needToRemovePilot == 0 && obj.audioBufEnd > SINGLE_REPEAT_LEN,
+            if obj.needToSearchPreamble == 0 && obj.needToRemovePreamble == 0 && obj.audioBufEnd > SINGLE_REPEAT_LEN,
                 repeatToProcess = floor(obj.audioBufEnd/SINGLE_REPEAT_LEN);
                 lenToProcess = repeatToProcess*SINGLE_REPEAT_LEN;
                 newAudioBufEnd = obj.audioBufEnd - lenToProcess;

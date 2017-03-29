@@ -3,9 +3,9 @@ classdef AudioSource < handle
     %   Detailed explanation goes here
     
     properties
-        pilotSource;
-        pilotGain;
-        payload;
+        preambleSource;
+        preambleGain;
+        
         FS;
         repeatCnt;
         chCnt;
@@ -16,12 +16,12 @@ classdef AudioSource < handle
     methods
         % deafult constructor -> use default pilot
         function obj=AudioSource()
-            obj.pilotSource=PilotSource();
+            obj.preambleSource = PreambleSource();
+            obj.preambleGain=0.9;
+            
             obj.repeatCnt=1;
-            obj.payload=[];
-            obj.FS=obj.pilotSource.FS;
+            obj.FS=obj.preambleSource.FS;
             obj.chCnt=2;        
-            obj.pilotGain=0.9;
             obj.signalGain=0.9;
         end
             

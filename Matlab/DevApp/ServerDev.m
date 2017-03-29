@@ -13,6 +13,7 @@ time = 0:1/48000:0.1;
 signal = floor(chirp(time, 0, time(end), 1000).*400);
 signal = signal./max(abs(signal));
 signal = signal'; % row-based signal
+
 as.signal = signal;
 as.repeatCnt = 25;
 as.signalGain = 0.001;

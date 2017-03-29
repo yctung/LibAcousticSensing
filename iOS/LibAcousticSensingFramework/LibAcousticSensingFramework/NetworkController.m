@@ -20,13 +20,7 @@
 }
 
 - (void) connectServer{
-    //NSURL *website = [NSURL URLWithString:@"10.0.0.12"];
     NSString *addr = C_SERVER_ADDR;
-    //NSString *addr = @"10.0.0.12"; // Umich5566 in my offsee
-    //NSString *addr = @"35.2.60.249"; // MWireless
-    //NSString *addr = @"192.168.1.143"; // Home
-    //NSString *addr = @"35.2.107.98"; // ME MWireless
-    //NSString *addr = @"35.2.107.98"; // Other
     
     int port = C_DETECT_SERVER_PORT;
     

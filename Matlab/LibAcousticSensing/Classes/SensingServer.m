@@ -27,8 +27,6 @@ classdef SensingServer < handle
         DEVICE_AUDIO_MODE_RECORD_ONLY       = 1;
         DEVICE_AUDIO_MODE_PLAY_ONLY         = 2;
         DEVICE_AUDIO_MODE_PLAY_AND_RECORD   = 3;
-        
-        
     end
     
     properties
@@ -57,15 +55,18 @@ classdef SensingServer < handle
         function obj = SensingServer(port, callback)
             obj.port=port;
             obj.callback=callback;
+            obj.startSensingAfterConnectionInit=1; % the server start asking device to sense after the connection initialized as default
             
             feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, [1:10]); % add some dummy data to init the callback figures
         end
         
         % start server waiting for the incoming connections
         function startServer(obj, audioSource, deviceAudioMode)
+            set(0,'UserData','NONE');
+            
             obj.audioSource=audioSource;
             obj.deviceAudioMode=deviceAudioMode;
-            obj.startSensingAfterConnectionInit=1; % the server start asking device to sense after the connection initialized as default
+            
             
             obj.socket=tcpip('0.0.0.0', obj.port, 'NetworkRole', 'server', 'Timeout', obj.SOCKET_TIME_OUT);
             obj.socket.ReadAsyncMode='continuous';
@@ -74,7 +75,7 @@ classdef SensingServer < handle
             obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback; % correct format of passing callback, ref: https://www.mathworks.com/matlabcentral/answers/176729-matlab-arduino-communication-using-bytesavailablefcn-too-many-input-arguments
             obj.socket.InputBufferSize = 4800;
             
-            obj.keepReading = 0;
+            obj.keepReading = 1;
             
             % wait on connections from remote devices
             fprintf(obj.dfid, '=== start wait connection to port = %d ===\n', obj.port);
@@ -109,7 +110,7 @@ classdef SensingServer < handle
             
             obj.socket.BytesAvailableFcn=''; % *** just for debug ***
             %while obj.socket.BytesAvailable>0,
-            obj.keepReading = 1;
+            %obj.keepReading = 1;
             while obj.keepReading,
                 action=fread(obj.socket, 1, 'int8');
                 %**********************************************************
@@ -127,9 +128,15 @@ classdef SensingServer < handle
                     
                     % send audio to device
                     ServerWriteAudioData(obj.socket, obj.audioSource);
-                    if obj.startSensingAfterConnectionInit,
+                    if obj.startSensingAfterConnectionInit == 1,
                         obj.startSensing();
                     end
+                    set(0,'UserData','ACTION_INIT');
+                    fprintf(obj.dfid, '  - UserData = %s\n', get(0,'UserData'));
+                    
+                    % *** just for debug ***
+                    obj.keepReading = 0;
+                    break;
                 %**********************************************************
                 % ACTION_DATA: received audio data 
                 %**********************************************************
@@ -179,6 +186,7 @@ classdef SensingServer < handle
                 %**********************************************************
                 elseif action == obj.ACTION_SENSING_END,
                     fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
+                    set(0,'UserData','ACTION_SENSING_END');
                     break;
                 %**********************************************************
                 % ACTION_CLOSE: read the end of sockets -> close loop
