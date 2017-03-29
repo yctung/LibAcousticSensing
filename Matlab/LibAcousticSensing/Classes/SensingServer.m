@@ -34,7 +34,16 @@ classdef SensingServer < handle
         % socket variables
         port;
         callback;
-        socket;
+        csocket;
+        con;
+        
+        % UI variables
+        fig; % figure handler -> there must be a handle because I am reusing the intteruable feature of Matlab UI to build async socket read
+        panel;
+        buttonStartServer;
+        buttonStartSensing;
+        
+        axe;
         
         latestReceivedAction;
         
@@ -54,81 +63,122 @@ classdef SensingServer < handle
     
     methods
         % constructor 
-        function obj = SensingServer(port, callback)
+        function obj = SensingServer(port, callback, deviceAudioMode, audioSource)
+            obj.audioSource = audioSource;
+            obj.deviceAudioMode = deviceAudioMode;
             obj.port=port;
             obj.callback=callback;
             obj.startSensingAfterConnectionInit=1; % the server start asking device to sense after the connection initialized as default
             
-            feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, [1:10]); % add some dummy data to init the callback figures
+            % build a UI sample
+            obj.fig = figure('Position',[50,420,230,230],'Toolbar','none','MenuBar','none');
+            obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
+            
+            obj.buttonStartServer = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[30,110,120,30],...
+                        'String','Start Server',...
+                        'TooltipString','Started',...
+                        'Interruptible','on',...
+                        'Callback',@(~,~)obj.callbackStartServerInterruptible);
+            %obj.buttonStartServer.Callback=@(~,~)obj.callbackStartServerInterruptible;
+            obj.buttonStartSensing = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[30,40,120,30],...
+                        'String','Start Sensing',...
+                        'TooltipString','Sensing',...
+                        'Interruptible','on');%,...
+                        %'Callback',@obj.callbackStartSensingInterruptible);
+            
+                        
+                        
+            % just for debug
+            h_fig2 = figure('Position',[50,50,550,330],'Toolbar','none',...
+                'MenuBar','none');
+            h_panel2 = uipanel(h_fig2,'Units','pixels','Position',[15,15,520,300]);
+            h_text2 = uicontrol(h_panel2,'Style','text',...
+                        'Position',[10,255,180,30],'String',...
+                        '2. Click a button to try and interrupt the waitbar.');
+            hsurf_queue = uicontrol(h_panel2,'Style','pushbutton',...
+                        'Position',[30,200,110,30],...
+                        'String','Surf Plot (queue)',...
+                        'BusyAction','queue',...
+                        'TooltipString','BusyAction = queue',...
+                        'Callback',@(~,~)obj.callbackTemp);
+            hmesh_cancel = uicontrol(h_panel2,'Style','pushbutton',...
+                        'Position',[30,130,110,30],...
+                        'String','Mesh Plot (cancel)',...
+                        'BusyAction','cancel',...
+                        'TooltipString','BusyAction = cancel',...
+                        'Callback',@(~,~)obj.callbackTemp);
+            obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220,30,270,250]);
+                        
+            %feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, [1:10]); % add some dummy data to init the callback figures
         end
         
         % start server waiting for the incoming connections
         function startServer(obj, audioSource, deviceAudioMode)
-            set(0,'UserData','NONE');
+            %obj.audioSource = audioSource;
+            %obj.deviceAudioMode = deviceAudioMode;
             
-            obj.audioSource=audioSource;
-            obj.deviceAudioMode=deviceAudioMode;
-            
-            obj.latestReceivedAction = -1;
-            
-            obj.socket=tcpip('0.0.0.0', obj.port, 'NetworkRole', 'server', 'Timeout', obj.SOCKET_TIME_OUT);
-            obj.socket.ReadAsyncMode='continuous';
-            %obj.socket.BytesAvailableFcnMode='byte';
-            %obj.socket.BytesAvailableFcnCount=1; % trigger the event every byte available
-            %obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback; % correct format of passing callback, ref: https://www.mathworks.com/matlabcentral/answers/176729-matlab-arduino-communication-using-bytesavailablefcn-too-many-input-arguments
-            obj.socket.InputBufferSize = 4800;
-            
-            obj.keepReading = 1;
-            
-            % wait on connections from remote devices
-            fprintf(obj.dfid, '=== start wait connection to port = %d ===\n', obj.port);
-            fopen(obj.socket);
-            fprintf(obj.dfid, '=== succeesfully get a connection to port = %d ===\n', obj.port);
-            
-            % intentionally wait one second to avoid first few packets lost
-            % (matlab bug, ref: http://stackoverflow.com/questions/31435942/matlab-tcp-ip-socket-only-sometimes-works)
-            pause(1);
-            
-            % run the main socket receiving loop on another thread by timer
-            % ref: http://undocumentedmatlab.com/blog/explicit-multi-threading-in-matlab-part4
-            % ref: https://www.mathworks.com/help/matlab/matlab_prog/timer-callback-functions.html
-            t = timer('StartDelay',0.1, 'TimerFcn',@utilityFcn);
-            t.TimerFcn=@(~,~)obj.socketReadCallback;
-            start(t);
         end
         
         % start ask device to record or play audio
         function startSensing(obj)
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
-            fwrite(obj.socket, int8(obj.REACTION_ASK_SENSING), 'int8');
+            %fwrite(obj.socket, int8(obj.REACTION_ASK_SENSING), 'int8');
+            
             % TODO: send the whole audio record setting to device
         end
         
         % stop server waiting
         function stopServer(obj)
-            fclose(obj.socket);
-            delete(obj.socket);
+            %fclose(obj.socket);
+            %delete(obj.socket);
             clear obj.object;
         end
         
 %==========================================================================
-%  Internal networking functions for parsing recevied packets
+%  Internal UI/networking functions for parsing recevied packets
 %==========================================================================
+        function callbackTemp(obj,eventdata)
+            fprintf('    callbackTemp is called\n');
+            elements=pnet(obj.con,'write', int32(5566))
+        end
+        
+        function callbackStartServerInterruptible(obj,eventdata)
+            fprintf('    callbackStartServerInterruptible is called\n');
+            
+            obj.latestReceivedAction = -1;
+            obj.keepReading = 1;
+            
+            obj.csocket=pnet('tcpsocket',obj.port); % use c socket instead of Matlab socket
+            
+            % wait on connections from remote devices
+            fprintf(obj.dfid, '=== start wait connection to port = %d ===\n', obj.port);
+            obj.con = pnet(obj.csocket,'tcplisten');
+            fprintf(obj.dfid, '=== succeesfully get a connection to port = %d ===\n', obj.port);
+            
+            % intentionally wait one second to avoid first few packets lost
+            % (matlab bug, ref: http://stackoverflow.com/questions/31435942/matlab-tcp-ip-socket-only-sometimes-works)
+            %pause(1);
+            
+            % run the main socket receiving loop on another thread by timer
+            obj.socketReadCallback();
+        end
+
+        function callbackStartSensingInterruptible(obj,eventdata)
+            fprintf('    callbackStartSensingInterruptible is called\n');
+            
+        end
+        
+
         % socket read callback
         function socketReadCallback(obj)
-            fprintf('    get a read callback, byte available = %d\n',obj.socket.BytesAvailable);
+            fprintf('    start a interruptable callback on receive socket data\n');
             
-            obj.socket.BytesAvailableFcn=''; % *** just for debug ***
-            %while obj.socket.BytesAvailable>0,
-            %obj.keepReading = 1;
             while obj.keepReading,
-                while obj.socket.BytesAvailable == 0,
-                    fprintf('.');
-                    pause(0.1); % debug mode
-                end
-                
-                action=fread(obj.socket, 1, 'int8');
+                action = pnet(obj.con,'read',1, 'int8')
                 obj.latestReceivedAction = action;
+                %{
                 %**********************************************************
                 % ACTION_CONNECT: just connect the socket -> doing nothing
                 %**********************************************************
@@ -214,13 +264,9 @@ classdef SensingServer < handle
                 
                 
                 pause(0.001); % real-time mode
+                %}
             end
-            
-            
-            % remember to set callback function back is we remove it before
-            %obj.socket.BytesAvailableFcn=@(~,~)obj.socketReadCallback;
         end
-        
 %==========================================================================
 %  Internal networking functions for sending packets
 %==========================================================================
