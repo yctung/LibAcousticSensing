@@ -141,7 +141,8 @@ classdef SensingServer < handle
 %==========================================================================
         function callbackTemp(obj,eventdata)
             fprintf('    callbackTemp is called\n');
-            elements=pnet(obj.con,'write', int32(5566))
+            %elements=pnet(obj.con,'write', int32([5566]))
+            pnet(obj.con,'write', int32([5566]));
         end
         
         function callbackStartServerInterruptible(obj,eventdata)
@@ -162,13 +163,17 @@ classdef SensingServer < handle
             %pause(1);
             
             % run the main socket receiving loop on another thread by timer
+            % note C++ socket read/write is thread safe 
+            %(ref: http://stackoverflow.com/questions/1981372/are-parallel-calls-to-send-recv-on-the-same-socket-valid)
             obj.socketReadCallback();
+            
         end
 
         function callbackStartSensingInterruptible(obj,eventdata)
             fprintf('    callbackStartSensingInterruptible is called\n');
             
         end
+        
         
 
         % socket read callback
