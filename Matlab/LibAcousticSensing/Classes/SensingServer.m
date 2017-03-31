@@ -43,6 +43,7 @@ classdef SensingServer < handle
         buttonStartServer;
         buttonStartSensing;
         
+        userfig;
         axe;
         
         latestReceivedAction;
@@ -70,6 +71,8 @@ classdef SensingServer < handle
             obj.callback=callback;
             obj.startSensingAfterConnectionInit=1; % the server start asking device to sense after the connection initialized as default
             
+            obj.latestReceivedAction = -1;
+            
             % build a UI sample
             obj.fig = figure('Position',[50,420,230,230],'Toolbar','none','MenuBar','none');
             obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
@@ -80,7 +83,7 @@ classdef SensingServer < handle
                         'TooltipString','Started',...
                         'Interruptible','on',...
                         'Callback',@(~,~)obj.callbackStartServerInterruptible);
-            %obj.buttonStartServer.Callback=@(~,~)obj.callbackStartServerInterruptible;
+            
             obj.buttonStartSensing = uicontrol(obj.panel,'Style','pushbutton',...
                         'Position',[30,40,120,30],...
                         'String','Start Sensing',...
@@ -88,30 +91,10 @@ classdef SensingServer < handle
                         'Interruptible','on');%,...
                         %'Callback',@obj.callbackStartSensingInterruptible);
             
-                        
-                        
-            % just for debug
-            h_fig2 = figure('Position',[50,50,550,330],'Toolbar','none',...
-                'MenuBar','none');
-            h_panel2 = uipanel(h_fig2,'Units','pixels','Position',[15,15,520,300]);
-            h_text2 = uicontrol(h_panel2,'Style','text',...
-                        'Position',[10,255,180,30],'String',...
-                        '2. Click a button to try and interrupt the waitbar.');
-            hsurf_queue = uicontrol(h_panel2,'Style','pushbutton',...
-                        'Position',[30,200,110,30],...
-                        'String','Surf Plot (queue)',...
-                        'BusyAction','queue',...
-                        'TooltipString','BusyAction = queue',...
-                        'Callback',@(~,~)obj.callbackTemp);
-            hmesh_cancel = uicontrol(h_panel2,'Style','pushbutton',...
-                        'Position',[30,130,110,30],...
-                        'String','Mesh Plot (cancel)',...
-                        'BusyAction','cancel',...
-                        'TooltipString','BusyAction = cancel',...
-                        'Callback',@(~,~)obj.callbackTemp);
-            obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220,30,270,250]);
-                        
-            %feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, [1:10]); % add some dummy data to init the callback figures
+            % add some dummy data to init the userfig
+            obj.userfig = -1; % init as a dummy figure handle
+            feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, 1:2); 
+            % NOTE: the userfig must be initialized in the user-defined
         end
         
         % start server waiting for the incoming connections
@@ -123,6 +106,7 @@ classdef SensingServer < handle
         
         % start ask device to record or play audio
         function startSensing(obj)
+            
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
             %fwrite(obj.socket, int8(obj.REACTION_ASK_SENSING), 'int8');
             
