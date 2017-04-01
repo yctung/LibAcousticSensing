@@ -69,13 +69,17 @@ public class JavaSensingServer extends Thread {
 //===============================================================
 //  Public interface (called by Matlab) 	
 //===============================================================
-	public void writeByte(byte dataByte) {
-		try {
-			dataOut.writeByte(dataByte);
-		} catch (IOException e) {
-			threadErrMessage("[ERROR]: faile to write (forget to write after the socket is connected?)");
-			e.printStackTrace();
-		}
+	public void writeByte(byte dataByte) throws IOException {
+		dataOut.writeByte(dataByte);
+	}
+	
+	public void writeInt(int dataInt) throws IOException {
+		dataOut.writeInt(dataInt);
+	}
+	
+	public int write(byte[] dataBytes) throws IOException {
+		dataOut.write(dataBytes);
+		return dataBytes.length; // just for debug
 	}
 	
 	public static void closeAll(){
@@ -206,7 +210,7 @@ public class JavaSensingServer extends Thread {
                 //**********************************************************
                 else if (action == ACTION_INIT) { // % one time initialization
                 	threadMessage("--- ACTION_INIT ---");
-                	writeAudioData();
+                	//writeAudioData();
                 	// just for debug -> start sensing
                 	//dataOut.write(REACTION_ASK_SENSING);
                 	
@@ -311,6 +315,7 @@ public class JavaSensingServer extends Thread {
 	}
 	
 	// this method should be implemented in Matlab, but this one is just for debug purpose
+	/*
 	private void writeAudioData() throws IOException {
 		// a. write reaction identifier
 		dataOut.writeByte(REACTION_SET_MEDIA);
@@ -337,6 +342,7 @@ public class JavaSensingServer extends Thread {
 	    byte check = -1;
 	    dataOut.writeByte(check);
 	}
+	*/
 	
 
 //===============================================================

@@ -19,6 +19,14 @@ classdef SensingServer < handle
         REACTION_ASK_SENSING    = 2;
         REACTION_SET_RESULT 	= 3;
         
+        % Supported type for ACTION_SET
+        SET_TYPE_BYTE_ARRAY = 1;
+        SET_TYPE_STRING = 2;
+        SET_TYPE_DOUBLE = 3;
+        SET_TYPE_INT = 4;
+        SET_TYPE_VALUE_STRING = 5;
+        
+        
         % Types of user-defined callback messages 
         CALLBACK_TYPE_ERROR     = -1;
         CALLBACK_TYPE_DATA      = 1;
@@ -116,10 +124,7 @@ classdef SensingServer < handle
         % start ask device to record or play audio
         function startSensing(obj)
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
-            % TODO: write action to sense
-            %fwrite(obj.socket, int8(obj.REACTION_ASK_SENSING), 'int8');
-            
-            % TODO: send the whole audio record setting to device
+            obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
         end
         
         % stop server waiting
@@ -137,124 +142,155 @@ classdef SensingServer < handle
 %==========================================================================
         function onAcceptCallback(obj, event)
             fprintf('    onAcceptCallback is called\n');
+            % do nothing
         end
         
         
         function onDataCallback(obj, javahandle, event)
             fprintf('    onDataCallback is called\n');
             action = event.action;
-            dataBytes = event.dataBytes;
             setType = event.setType;
             nameBytes = event.nameBytes;
             time = event.time;
             fprintf('    action = %d\n', action);
             
-            if action == obj.ACTION_INIT,
-                obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
+            %**********************************************************
+            % ACTION_CONNECT: just connect the socket -> doing nothing
+            %**********************************************************
+            if action == obj.ACTION_CONNECT,
+                fprintf(obj.dfid, '--- ACTION_CONNECT ---\n');
+            %**********************************************************
+            % ACTION_INIT: initialize necessary commponent
+            %  ***NOTE***: This action is triggered only when necessary
+            %            : variables are setted by ACTION_SET
+            %**********************************************************
+            elseif action == obj.ACTION_INIT, % one time initialization
+                fprintf(obj.dfid, '--- ACTION_INIT: %s ---\n', obj.userDevice);
+                % send audio to device
+                obj.sendMediaData();
+                
+                if obj.startSensingAfterConnectionInit == 1,
+                    obj.startSensing();
+                end
+                set(0,'UserData','ACTION_INIT'); % for trigger the 
+
+            %**********************************************************
+            % ACTION_DATA: received audio data 
+            %**********************************************************
+            elseif action == obj.ACTION_DATA,
+                % a. parse the recieved payload as audio
+                dataTemp = double(typecast(event.dataBytes,'int16'));
+                if obj.traceChannelCnt == 1, % single-chanell ->ex: iphone
+                    audioNow = dataTemp;
+                else % stereo-recroding
+                    audioNow = [dataTemp(1:2:end), dataTemp(2:2:end)];
+                end
+                
+                audioToProcess = obj.traceParser.parse(audioNow);
+                if ~isempty(audioToProcess),
+                    % only parse the last audio data
+                    fprintf('callback is called\n');
+                    feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, squeeze(audioToProcess(:,end,:)));
+                end
+            %**********************************************************
+            % ACTION_SET: set matlab variable based on code
+            %**********************************************************
+            elseif action == obj.ACTION_SET,
+                [name, value, evalString] = parseSetActionData(obj, event);
+                fprintf(obj.dfid, '--- ACTION_SET: %s ---\n', name);
+
+                if ~isprop(obj,name),
+                    fprintf(2,'[ERROR]: obj has no property named %s, (typo or forget to set this property in the class?)\n', name);
+                end
+
+                if strcmp(evalString,''),
+                    fprintf(obj.dfid, '   :get a byte array (%s) not able to be eval -> use assignin instead\n', name);
+                    assignin('base', strcat('obj.',name), value);
+                else
+                    eval(strcat('obj.',evalString));
+                end
+            %**********************************************************
+            % ACTION_SENSING_END: just break the loop
+            %**********************************************************
+            elseif action == obj.ACTION_SENSING_END,
+                fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
+                set(0,'UserData','ACTION_SENSING_END');
+            %**********************************************************
+            % ACTION_CLOSE: read the end of sockets -> close loop
+            %**********************************************************
+            elseif action == obj.ACTION_CLOSE,
+                fprintf(obj.dfid, '--- ACTION_CLOSE: socket is closed remotely ---\n');
+                obj.jss.close();
+            else
+                fprintf(2, '[ERROR]: undefined action=%d\n',action);
             end
+            
         end
 
         
         function callbackStartSensingInterruptible(obj, eventdata)
             fprintf('    callbackStartSensingInterruptible is called\n');
-            
         end
         
-        % socket read callback
-        function socketReadCallback(obj)
-            fprintf('    start a interruptable callback on receive socket data\n');
-            
-            while obj.keepReading,
-                %action = pnet(obj.con,'read',1, 'int8')
-                obj.latestReceivedAction = action;
-                %{
-                %**********************************************************
-                % ACTION_CONNECT: just connect the socket -> doing nothing
-                %**********************************************************
-                if action == obj.ACTION_CONNECT,
-                    fprintf(obj.dfid, '--- ACTION_CONNECT ---\n');
-                %**********************************************************
-                % ACTION_INIT: initialize necessary commponent
-                %  ***NOTE***: This action is triggered only when necessary
-                %            : variables are setted by ACTION_SET
-                %**********************************************************
-                elseif action == obj.ACTION_INIT, % one time initialization
-                    fprintf(obj.dfid, '--- ACTION_INIT: %s ---\n', obj.userDevice);
-                    
-                    % send audio to device
-                    ServerWriteAudioData(obj.socket, obj.audioSource);
-                    if obj.startSensingAfterConnectionInit == 1,
-                        obj.startSensing();
-                    end
-                    set(0,'UserData','ACTION_INIT');
-                    fprintf(obj.dfid, '  - UserData = %s\n', get(0,'UserData'));
-                    
-                %**********************************************************
-                % ACTION_DATA: received audio data 
-                %**********************************************************
-                elseif action == obj.ACTION_DATA,
-                    tic;
-                    fprintf(obj.dfid, '.');
-                    toc;
-                    dataBytes = ServerReadFullData(obj.socket);
-                    toc;
-                    % a. parse the recieved payload as audio
-                    dataTemp = double(typecast(dataBytes,'int16'));
-                    if obj.traceChannelCnt == 1, % single-chanell ->ex: iphone
-                        audioNow = dataTemp;
-                    else % stereo-recroding
-                        audioNow = [dataTemp(1:2:end), dataTemp(2:2:end)];
-                    end
-                    toc;
-                    audioToProcess = obj.traceParser.parse(audioNow);
-                    if ~isempty(audioToProcess),
-                        % only parse the last audio data
-                        fprintf('callback is called\n');
-                        tic;
-                        feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, squeeze(audioToProcess(:,end,:)));
-                        toc;
-                    end
-                    %fprintf(obj.dfid, '--- ACTION_DATA: end ---\n');
-                %**********************************************************
-                % ACTION_SET: set matlab variable based on code
-                %**********************************************************
-                elseif action == obj.ACTION_SET,
-                    [name, value, evalString] = ServerReadSetAction(obj.socket);
-                    fprintf(obj.dfid, '--- ACTION_SET: %s ---\n', name);
-
-                    if ~isprop(obj,name),
-                        fprintf(2,'[ERROR]: obj has no property named %s, (typo or forget to set this property in the class?)\n', name);
-                        break;
-                    end
-                    
-                    if strcmp(evalString,''),
-                        fprintf(obj.dfid, '   :get a byte array (%s) not able to be eval -> use assignin instead\n', name);
-                        assignin('base', strcat('obj.',name), value);
-                    else
-                        eval(strcat('obj.',evalString));
-                    end
-                %**********************************************************
-                % ACTION_SENSING_END: just break the loop
-                %**********************************************************
-                elseif action == obj.ACTION_SENSING_END,
-                    fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
-                    set(0,'UserData','ACTION_SENSING_END');
-                    break;
-                %**********************************************************
-                % ACTION_CLOSE: read the end of sockets -> close loop
-                %**********************************************************
-                elseif action == obj.ACTION_CLOSE,
-                    fprintf(obj.dfid, '--- ACTION_CLOSE: socket is closed remotely ---\n');
-                    break;
-                else
-                    fprintf(2, '[ERROR]: undefined action=%d\n',action);
-                    break;
-                end
-                
-                
-                pause(0.001); % real-time mode
-                %}
+        
+        function [ name, value, evalString ] = parseSetActionData(obj, event)
+            valueBytes = event.dataBytes; % reuse the same field to store the bytes of value
+            name = native2unicode(event.nameBytes);
+            name = name(:)'; % ensure name is the row-based string
+    
+            switch event.setType,
+                case obj.SET_TYPE_STRING,
+                    value = native2unicode(valueBytes);
+                    evalString = sprintf('%s = ''%s'';', name, value);
+                case obj.SET_TYPE_INT, %int 32
+                    value = valueBytes(end:-1:1);
+                    value = typecast(value, 'INT32');
+                    evalString = sprintf('%s = %d;', name, value);
+                case obj.SET_TYPE_VALUE_STRING,
+                    value = str2double(native2unicode(valueBytes));
+                    evalString = sprintf('%s = %s;', name, native2unicode(valueBytes));
+                case obj.SET_TYPE_BYTE_ARRAY,
+                    value = valueBytes;
+                    evalString = '';
+                otherwise
+                    fprintf(2, '[ERROR]: undefined setType = %s', setType);
             end
+        end
+        
+        function sendMediaData(obj) 
+            if any(abs(obj.audioSource.signal*obj.audioSource.signalGain)>1.0)
+                fprintf(2, '[WARN]: signal amplitude is cropped to ensure it is in the right range (need to tune audio gain in AudioNoiseMake.m?)\n');
+            end
+    
+            SHORT_MAX_RANGE = 2^15-1;
+            
+            % a. write reaction identifier
+            obj.jss.writeByte(int8(obj.REACTION_SET_MEDIA));
+
+            % b. write sample rate and other information
+            obj.jss.writeInt(int32(obj.audioSource.FS));
+            obj.jss.writeInt(int32(obj.audioSource.chCnt));
+            obj.jss.writeInt(int32(obj.audioSource.repeatCnt));
+    
+            % c. write preamble
+            preambleShortRange = floor(obj.audioSource.preambleSource.preambleToAdd*obj.audioSource.preambleGain*SHORT_MAX_RANGE);
+            obj.jss.writeInt(int32(length(preambleShortRange)));
+            preambleShort = int16(preambleShortRange);
+            preabmleBytes = typecast(preambleShort, 'int8');
+            temp = obj.jss.write(preabmleBytes)
+    
+    
+            % d. write signal
+            signalShortRange = floor(obj.audioSource.signal*obj.audioSource.signalGain*SHORT_MAX_RANGE);
+            obj.jss.writeInt(int32(length(signalShortRange)));
+            signalShort = int16(signalShortRange);
+            signalBytes = typecast(signalShort, 'int8');
+            temp = obj.jss.write(signalBytes)
+    
+    
+            % e. write check
+            CHECK = -1;
+            obj.jss.writeByte(int8(CHECK));
         end
 %==========================================================================
 %  Internal networking functions for sending packets

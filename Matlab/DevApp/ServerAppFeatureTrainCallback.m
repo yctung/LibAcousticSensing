@@ -69,7 +69,6 @@ function callbackStartSensing(obj, event)
         pause(1.0);
     end
     ss.startSensing();
-    
 end
 
 function recordButtonCallback(obj, event)
