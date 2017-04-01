@@ -2,7 +2,7 @@
 % function onAccept(hObj, event)
 %  Template callback function for the OpAcceptCallback of the socket manager.
 %==========================================================================
-function JavaServerOnAcceptCallback(hObj, event) 
+function JavaServerOnDataCallback(hObj, event) 
 %global bAutoRequest
 	
 	%=========================================

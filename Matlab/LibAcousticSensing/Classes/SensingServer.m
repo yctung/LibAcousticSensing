@@ -102,7 +102,8 @@ classdef SensingServer < handle
             % create java sensing server
             obj.jss = edu.umich.cse.yctung.JavaSensingServer.create(port);
             set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
-            set(obj.jss,'OpDataCallback',@(~,~)obj.onDataCallback);
+            set(obj.jss,'OpDataCallback',@(h,e)obj.onDataCallback(h,e));
+            %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);
         end
         
         % start server waiting for the incoming connections
@@ -134,15 +135,23 @@ classdef SensingServer < handle
 %  NOTE: callbacks are triggered from a seperate java thread 
 %  evendata format is defined in JavaSensingServer.java
 %==========================================================================
-        function onAcceptCallback(obj, eventdata)
+        function onAcceptCallback(obj, event)
             fprintf('    onAcceptCallback is called\n');
-            
         end
         
         
-        function onDataCallback(obj, eventdata)
+        function onDataCallback(obj, javahandle, event)
             fprintf('    onDataCallback is called\n');
+            action = event.action;
+            dataBytes = event.dataBytes;
+            setType = event.setType;
+            nameBytes = event.nameBytes;
+            time = event.time;
+            fprintf('    action = %d\n', action);
             
+            if action == obj.ACTION_INIT,
+                obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
+            end
         end
 
         

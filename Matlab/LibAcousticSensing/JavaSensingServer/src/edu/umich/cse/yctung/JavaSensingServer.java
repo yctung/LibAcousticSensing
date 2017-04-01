@@ -69,6 +69,15 @@ public class JavaSensingServer extends Thread {
 //===============================================================
 //  Public interface (called by Matlab) 	
 //===============================================================
+	public void writeByte(byte dataByte) {
+		try {
+			dataOut.writeByte(dataByte);
+		} catch (IOException e) {
+			threadErrMessage("[ERROR]: faile to write (forget to write after the socket is connected?)");
+			e.printStackTrace();
+		}
+	}
+	
 	public static void closeAll(){
 		for (JavaSensingServer server : servers.values()) {
 			server.close();
@@ -116,32 +125,43 @@ public class JavaSensingServer extends Thread {
 	// TODO: modify this even based on my need
 	public class SocketEvent extends java.util.EventObject {
 		private static final long serialVersionUID = 1L;
-		public SocketChannel channel 	= null;
-		public byte[] data	= null;
+		public int action = -1;
+		public byte[] dataBytes	= null;
+		public int setType = -1;
+		public byte[] nameBytes = null;
 		public double time 	= -1;		//(sec)
 		
-		public SocketEvent(Object source, SocketChannel channel, byte[] data) {
+		public SocketEvent(Object source, int action, byte[] dataBytes) {
 			super(source);
-			this.channel	= channel;
-			this.data 		= data;
+			this.action		= action;
+			this.dataBytes 	= dataBytes;
+			this.time 		= ((double)System.currentTimeMillis())/1000;
+		}
+		
+		// for set action
+		public SocketEvent(Object source, int action, byte[] dataBytes, int setType, byte[] nameBytes) {
+			super(source);
+			this.action		= action;
+			this.dataBytes 	= dataBytes;
+			this.setType 	= setType;
+			this.nameBytes  = nameBytes;
 			this.time 		= ((double)System.currentTimeMillis())/1000;
 		}
 	}
 	
-	private void fireDataEvent(SocketChannel channel, byte[] data) {
+	private void fireDataEvent(SocketEvent event) {
 		for( SocketListener listener : eventListeners ) {
 			if( listener != null ) {
-				SocketEvent event 	= new SocketEvent(this, channel, data);
 				listener.opData(event);
 			}
 		}
 	}
 	
-	private void fireAcceptEvent(SocketChannel channel) {
+	private void fireAcceptEvent() {
+		SocketEvent dummyEvent 	= new SocketEvent(this, -1, null);
 		for( SocketListener listener : eventListeners ) {
 			if( listener != null ) {
-				SocketEvent event 	= new SocketEvent(this, channel, null);
-				listener.opAccept(event);
+				listener.opAccept(dummyEvent);
 			}
 		}
 	}
@@ -160,7 +180,7 @@ public class JavaSensingServer extends Thread {
 			threadMessage("socket has been connected at port :"+port);
 		    dataOut = new DataOutputStream(clientSocket.getOutputStream());
 			dataIn = new DataInputStream(clientSocket.getInputStream());
-			fireAcceptEvent(null);
+			fireAcceptEvent();
 			
 			// 2. infinite loop to read any available message
 			while(true) {
@@ -177,6 +197,7 @@ public class JavaSensingServer extends Thread {
                 //**********************************************************
                 if (action == ACTION_CONNECT) {
                     threadMessage("--- ACTION_CONNECT ---");
+                    fireDataEvent(new SocketEvent(this, action, null));
                 }
                 //**********************************************************
                 // ACTION_INIT: initialize necessary commponent
@@ -187,7 +208,9 @@ public class JavaSensingServer extends Thread {
                 	threadMessage("--- ACTION_INIT ---");
                 	writeAudioData();
                 	// just for debug -> start sensing
-                	dataOut.write(REACTION_ASK_SENSING);
+                	//dataOut.write(REACTION_ASK_SENSING);
+                	
+                	fireDataEvent(new SocketEvent(this, action, null));
                 }
                 //**********************************************************
                 // ACTION_DATA: received audio data 
@@ -195,8 +218,7 @@ public class JavaSensingServer extends Thread {
                 else if (action == ACTION_DATA) { // acoustic sensing data received
                 	threadMessage("--- ACTION_DATA ---");
                     byte[] dataBytes = readFullData();
-                    // TODO: fire callback
-                    
+                    fireDataEvent(new SocketEvent(this, action, dataBytes));
                     
                     // a. parse the recieved payload as audio
                 	/*
@@ -224,7 +246,10 @@ public class JavaSensingServer extends Thread {
                 else if (action == ACTION_SET) {
                     //[name, value, evalString] = ServerReadSetAction(obj.socket);
                     threadMessage("--- ACTION_SET ---");
-                    readSetActionAndFireCallback();                    
+                    int setType = dataIn.readInt();
+            	    byte[] nameBytes = readFullData();
+            	    byte[] valueBytes = readFullData();
+            	    fireDataEvent(new SocketEvent(this, action, valueBytes, setType, nameBytes));
                 }
                 //**********************************************************
                 // ACTION_SENSING_END: just break the loop
@@ -232,19 +257,20 @@ public class JavaSensingServer extends Thread {
                 else if (action == ACTION_SENSING_END) {
                     threadMessage("--- ACTION_SENSING_END: this round of sensing ends ---");
                     //set(0,'UserData','ACTION_SENSING_END');   
+                    fireDataEvent(new SocketEvent(this, action, null));
                 }
                 //**********************************************************
                 // ACTION_CLOSE: read the end of sockets -> close loop
                 //**********************************************************
                 else if (action == ACTION_CLOSE) {
                     threadMessage("--- ACTION_CLOSE: socket is closed remotely ---");
+                    fireDataEvent(new SocketEvent(this, action, null));
                     break;
                 }
                 else { // error action 
                     threadMessage("[ERROR]: undefined action ="+action);
                     break;
                 }
-				
 				
                 // sleep a short period to avoid overwhelming the CPU by a single thread
 				try {
@@ -265,12 +291,6 @@ public class JavaSensingServer extends Thread {
 //===============================================================
 // Internal sensing control functions	
 //===============================================================
-	private void readSetActionAndFireCallback() throws IOException {
-		int setType = dataIn.readInt();
-	    byte[] nameBytes = readFullData();
-	    byte[] valueBytes = readFullData();
-	    // TODO: fire set action
-	}
 	
 	private byte[] readFullData() throws IOException {
 	    int byteToRead = dataIn.readInt();
