@@ -14,7 +14,6 @@ function [ name, value, evalString ] = ServerReadSetAction(t)
     nameBytes = ServerReadFullData(t);
     valueBytes = ServerReadFullData(t);
 
-    
     % convert format 
     name = native2unicode(nameBytes);
     name = name(:)'; % ensure name is the row-based string

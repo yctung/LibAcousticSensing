@@ -15,16 +15,12 @@ as.signal = signal;
 as.repeatCnt = 5;
 as.signalGain = 0.1;
 
+
 ss = SensingServer(SERVER_PORT,@ServerDevCallback);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 ss.startServer(as,ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD);
 %ss.startSensing();
 
-
-% busy-wait the server is connected and initialized
-while ss.latestReceivedAction ~= ss.ACTION_INIT,
-    fprintf
-end
 
 REPEAT_CNT = 10;
 for repeatIdx = 1:REPEAT_CNT,

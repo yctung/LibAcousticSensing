@@ -3,7 +3,7 @@
 %==========================================================================
 SERVER_PORT = 50005; % remember to diable firewall for this port
 close all;
-pnet('closeall');
+JavaSensingServer.closeAll(); % close all previous open socket
 
 % build dummy "audible" audios for knowing the sound is played correctly on device
 as = AudioSource(); % default audio source
@@ -15,7 +15,7 @@ as.signal = signal;
 as.repeatCnt = 5;
 as.signalGain = 0.1;
 
-ss = SensingServer(SERVER_PORT, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
+ss = SensingServer(SERVER_PORT, @ServerAppFeatureTrainCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
 %ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);

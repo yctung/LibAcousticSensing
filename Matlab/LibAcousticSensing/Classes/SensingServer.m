@@ -1,4 +1,5 @@
 classdef SensingServer < handle
+    
     % 2017/01/27: class handles all the remote communication to mobile
     % device
     
@@ -31,18 +32,18 @@ classdef SensingServer < handle
     
     properties
         dfid=2; % debug fid
-        % socket variables
+        
+        callback; % user-defined callback
+        
+        % socket variables (NOTE: all socket operations is delgated to the JavaSensingServer)
         port;
-        callback;
-        csocket;
-        con;
+        jss; % instance of Java socket server
         
         % UI variables
         fig; % figure handler -> there must be a handle because I am reusing the intteruable feature of Matlab UI to build async socket read
         panel;
         buttonStartServer;
         buttonStartSensing;
-        
         userfig;
         axe;
         
@@ -68,6 +69,7 @@ classdef SensingServer < handle
             obj.audioSource = audioSource;
             obj.deviceAudioMode = deviceAudioMode;
             obj.port=port;
+            
             obj.callback=callback;
             obj.startSensingAfterConnectionInit=1; % the server start asking device to sense after the connection initialized as default
             
@@ -95,6 +97,12 @@ classdef SensingServer < handle
             obj.userfig = -1; % init as a dummy figure handle
             feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, 1:2); 
             % NOTE: the userfig must be initialized in the user-defined
+            
+            
+            % create java sensing server
+            obj.jss = edu.umich.cse.yctung.JavaSensingServer.create(port);
+            set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
+            set(obj.jss,'OpDataCallback',@(~,~)obj.onDataCallback);
         end
         
         % start server waiting for the incoming connections
@@ -106,66 +114,49 @@ classdef SensingServer < handle
         
         % start ask device to record or play audio
         function startSensing(obj)
-            
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
+            % TODO: write action to sense
             %fwrite(obj.socket, int8(obj.REACTION_ASK_SENSING), 'int8');
             
             % TODO: send the whole audio record setting to device
         end
         
         % stop server waiting
-        function stopServer(obj)
+        function close(obj)
             %fclose(obj.socket);
             %delete(obj.socket);
+            obj.jss.close();
             clear obj.object;
         end
         
 %==========================================================================
 %  Internal UI/networking functions for parsing recevied packets
+%  NOTE: callbacks are triggered from a seperate java thread 
+%  evendata format is defined in JavaSensingServer.java
 %==========================================================================
-        function callbackTemp(obj,eventdata)
-            fprintf('    callbackTemp is called\n');
-            %elements=pnet(obj.con,'write', int32([5566]))
-            pnet(obj.con,'write', int32([5566]));
+        function onAcceptCallback(obj, eventdata)
+            fprintf('    onAcceptCallback is called\n');
+            
         end
         
-        function callbackStartServerInterruptible(obj,eventdata)
-            fprintf('    callbackStartServerInterruptible is called\n');
-            
-            obj.latestReceivedAction = -1;
-            obj.keepReading = 1;
-            
-            obj.csocket=pnet('tcpsocket',obj.port); % use c socket instead of Matlab socket
-            
-            % wait on connections from remote devices
-            fprintf(obj.dfid, '=== start wait connection to port = %d ===\n', obj.port);
-            obj.con = pnet(obj.csocket,'tcplisten');
-            fprintf(obj.dfid, '=== succeesfully get a connection to port = %d ===\n', obj.port);
-            
-            % intentionally wait one second to avoid first few packets lost
-            % (matlab bug, ref: http://stackoverflow.com/questions/31435942/matlab-tcp-ip-socket-only-sometimes-works)
-            %pause(1);
-            
-            % run the main socket receiving loop on another thread by timer
-            % note C++ socket read/write is thread safe 
-            %(ref: http://stackoverflow.com/questions/1981372/are-parallel-calls-to-send-recv-on-the-same-socket-valid)
-            obj.socketReadCallback();
+        
+        function onDataCallback(obj, eventdata)
+            fprintf('    onDataCallback is called\n');
             
         end
 
-        function callbackStartSensingInterruptible(obj,eventdata)
+        
+        function callbackStartSensingInterruptible(obj, eventdata)
             fprintf('    callbackStartSensingInterruptible is called\n');
             
         end
         
-        
-
         % socket read callback
         function socketReadCallback(obj)
             fprintf('    start a interruptable callback on receive socket data\n');
             
             while obj.keepReading,
-                action = pnet(obj.con,'read',1, 'int8')
+                %action = pnet(obj.con,'read',1, 'int8')
                 obj.latestReceivedAction = action;
                 %{
                 %**********************************************************

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -34,6 +35,19 @@ public class JavaSensingServer extends Thread {
 	
 	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 5; //ms, NOTE: should set this value as small as possible
 	
+	
+	// Types of actions (for identifying packets sent to the server)
+	private final static int ACTION_CONNECT = 1; 	// ACTION_CONNECT format: | ACTION_CONNECT | xxx parater setting
+	private final static int ACTION_DATA 	= 2; 	// ACTION_SEND format: | ACTION_DATA | # of bytes to send | byte[] | -1
+	private final static int ACTION_CLOSE 	= -1;	// ACTION_CLOSE format: | ACTION_CLOSE |
+	private final static int ACTION_SET 	= 3;
+	private final static int ACTION_INIT 	= 4;
+	private final static int ACTION_SENSING_END = 5;
+	
+	// Types of reactions (for identifying packet sent from the server)
+	private final static int REACTION_SET_MEDIA 	= 1;
+	private final static int REACTION_ASK_SENSING   = 2;
+	private final static int REACTION_SET_RESULT 	= 3;
 //===============================================================
 //	Constructors	
 //===============================================================
@@ -64,6 +78,12 @@ public class JavaSensingServer extends Thread {
 	public void close() {
 		shutdown = true; // TODO: set time out for socket read, so the shutdown will work 
 		servers.remove(port);
+		try {
+			serverSocket.close();
+			clientSocket.close();
+		} catch (IOException e) {
+			threadErrMessage("[ERROR]: unable to close socket"+e.getMessage());
+		}
 	}
 	
 
@@ -150,9 +170,83 @@ public class JavaSensingServer extends Thread {
 				}
 				
 				byte action = dataIn.readByte();
-				threadMessage("receive a action data = "+action+" in port = "+port);
-				fireDataEvent(null, null);
+				threadMessage("receive a action = "+action+" in port = "+port);
 				
+				//**********************************************************
+                // ACTION_CONNECT: just connect the socket -> doing nothing
+                //**********************************************************
+                if (action == ACTION_CONNECT) {
+                    threadMessage("--- ACTION_CONNECT ---");
+                }
+                //**********************************************************
+                // ACTION_INIT: initialize necessary commponent
+                //  ***NOTE***: This action is triggered only when necessary
+                //            : variables are setted by ACTION_SET
+                //**********************************************************
+                else if (action == ACTION_INIT) { // % one time initialization
+                	threadMessage("--- ACTION_INIT ---");
+                	writeAudioData();
+                	// just for debug -> start sensing
+                	dataOut.write(REACTION_ASK_SENSING);
+                }
+                //**********************************************************
+                // ACTION_DATA: received audio data 
+                //**********************************************************
+                else if (action == ACTION_DATA) { // acoustic sensing data received
+                	threadMessage("--- ACTION_DATA ---");
+                    byte[] dataBytes = readFullData();
+                    // TODO: fire callback
+                    
+                    
+                    // a. parse the recieved payload as audio
+                	/*
+                    dataTemp = double(typecast(dataBytes,'int16'));
+                    if obj.traceChannelCnt == 1, % single-chanell ->ex: iphone
+                        audioNow = dataTemp;
+                    else % stereo-recroding
+                        audioNow = [dataTemp(1:2:end), dataTemp(2:2:end)];
+                    end
+                    toc;
+                    audioToProcess = obj.traceParser.parse(audioNow);
+                    */
+                    /*
+                    if ~isempty(audioToProcess),
+                        // only parse the last audio data
+                        fprintf('callback is called\n');
+                        feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, squeeze(audioToProcess(:,end,:)));
+                    end
+                    */
+                    
+                }
+                //**********************************************************
+                // ACTION_SET: set matlab variable based on code
+                //**********************************************************
+                else if (action == ACTION_SET) {
+                    //[name, value, evalString] = ServerReadSetAction(obj.socket);
+                    threadMessage("--- ACTION_SET ---");
+                    readSetActionAndFireCallback();                    
+                }
+                //**********************************************************
+                // ACTION_SENSING_END: just break the loop
+                //**********************************************************
+                else if (action == ACTION_SENSING_END) {
+                    threadMessage("--- ACTION_SENSING_END: this round of sensing ends ---");
+                    //set(0,'UserData','ACTION_SENSING_END');   
+                }
+                //**********************************************************
+                // ACTION_CLOSE: read the end of sockets -> close loop
+                //**********************************************************
+                else if (action == ACTION_CLOSE) {
+                    threadMessage("--- ACTION_CLOSE: socket is closed remotely ---");
+                    break;
+                }
+                else { // error action 
+                    threadMessage("[ERROR]: undefined action ="+action);
+                    break;
+                }
+				
+				
+                // sleep a short period to avoid overwhelming the CPU by a single thread
 				try {
 					Thread.sleep(DATA_SENDING_THREAD_LOOP_DELAY);
 				} catch (InterruptedException e) {
@@ -161,23 +255,83 @@ public class JavaSensingServer extends Thread {
 			}
 			
 		} catch (IOException e) {
-			threadErrMessage("[ERROR]: unable to start server on port = "+port);
+			threadErrMessage("[WARN]: on port = "+port+", e="+e.getMessage());
 		}
 		
 		
-		
+		threadMessage("end of thread");
 	}
 	
+//===============================================================
+// Internal sensing control functions	
+//===============================================================
+	private void readSetActionAndFireCallback() throws IOException {
+		int setType = dataIn.readInt();
+	    byte[] nameBytes = readFullData();
+	    byte[] valueBytes = readFullData();
+	    // TODO: fire set action
+	}
 	
+	private byte[] readFullData() throws IOException {
+	    int byteToRead = dataIn.readInt();
+	    byte[] data = new byte[byteToRead];
+	    
+	    int totalByteRead = 0;
+	    while(totalByteRead<byteToRead) {
+	    	int byteIsRead = dataIn.read(data, totalByteRead, byteToRead - totalByteRead);
+	    	totalByteRead += byteIsRead;
+	    }
+	    // check if data format is correct -> end with -1
+	    byte check = dataIn.readByte();
+	    if (check != -1){
+	    	threadErrMessage("[ERROR]: wrong represetation of message send (size inconsistence?)");
+	    	close();
+	    }
+	    return data;
+	}
+	
+	// this method should be implemented in Matlab, but this one is just for debug purpose
+	private void writeAudioData() throws IOException {
+		// a. write reaction identifier
+		dataOut.writeByte(REACTION_SET_MEDIA);
+		// b. write sample rate and other information
+		dataOut.writeInt(48000); // FS
+		dataOut.writeInt(2); // chCnt
+		dataOut.writeInt(5); // repeatCnt
+		
+		// c. write preamble
+		int preambleSize = 4800; // NOTE the size is for short
+		dataOut.writeInt(preambleSize);
+		byte[] preamble = new byte[preambleSize*2]; 
+		new Random().nextBytes(preamble);
+	    dataOut.write(preamble);
+		
+		// d. write signal
+		int signalSize = 48000; // NOTE the size is for short
+		dataOut.writeInt(signalSize);
+		byte[] signal = new byte[signalSize*2]; 
+		new Random().nextBytes(signal);
+		dataOut.write(signal);
+		
+		// e. write check
+	    byte check = -1;
+	    dataOut.writeByte(check);
+	}
 	
 
 //===============================================================
 //	Main function (used for debug only)	
 //===============================================================
 	public static void main(String[] args) {
-		JavaSensingServer jss = JavaSensingServer.create(50005);
+		JavaSensingServer.closeAll();
 		
-
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JavaSensingServer jss = JavaSensingServer.create(50005);
 	}
 
 
