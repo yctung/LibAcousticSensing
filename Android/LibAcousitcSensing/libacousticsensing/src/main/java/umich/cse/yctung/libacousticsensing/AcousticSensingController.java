@@ -1,8 +1,12 @@
 package umich.cse.yctung.libacousticsensing;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
+import android.view.LayoutInflater;
 
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
@@ -92,6 +96,26 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         } else {
             Log.e(LOG_TAG, "Fail to init the AudioController");
         }
+    }
+
+    // funtion to show the customized dialog for initailzation
+    public Dialog createInitModeDialog(Activity activity, String serverIpDefault, int serverPortDefault) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.dialog_acoustic_sensing_controller_init, null))
+                .setTitle("Please select init mode")
+                // Add action buttons
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // sign in the user ...
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        return builder.create();
     }
 
 //=================================================================================================

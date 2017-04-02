@@ -12,12 +12,11 @@ signal = floor(chirp(time, 0, time(end), 1000).*400);
 signal = signal./max(abs(signal));
 signal = signal'; % row-based signal
 as.signal = signal;
-as.repeatCnt = 5;
+as.repeatCnt = 500;
 as.signalGain = 0.1;
 
 ss = SensingServer(SERVER_PORT, @ServerAppFeatureTrainCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
-
 
 %ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 %ss2.startSensingAfterConnectionInit = 0; % avoid auto sensing

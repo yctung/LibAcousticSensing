@@ -50,12 +50,17 @@ classdef SensingServer < handle
         % UI variables
         fig; % figure handler -> there must be a handle because I am reusing the intteruable feature of Matlab UI to build async socket read
         panel;
-        buttonStartServer;
-        buttonStartSensing;
+        buttonStartOrStopSensing;
+        textServerInfo;
+        textServerStatus;
+        
         userfig;
         axe;
         
+        % internal server status
         latestReceivedAction;
+        isConnected;
+        isSensing;
         
         % audio variables
         audioSource;
@@ -81,33 +86,17 @@ classdef SensingServer < handle
             obj.callback=callback;
             obj.startSensingAfterConnectionInit=1; % the server start asking device to sense after the connection initialized as default
             
-            obj.latestReceivedAction = -1;
+            obj.isConnected = 0;
+            obj.isSensing = 0;
+            obj.latestReceivedAction = obj.ACTION_CLOSE;
             
             % build a UI sample
-            obj.fig = figure('Position',[50,420,230,230],'Toolbar','none','MenuBar','none');
-            obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
-            
-            %{
-            obj.buttonStartServer = uicontrol(obj.panel,'Style','pushbutton',...
-                        'Position',[30,110,120,30],...
-                        'String','Start Server',...
-                        'TooltipString','Started',...
-                        'Interruptible','on',...
-                        'Callback',@(~,~)obj.callbackStartServerInterruptible);
-            %}
-            
-            obj.buttonStartSensing = uicontrol(obj.panel,'Style','pushbutton',...
-                        'Position',[30,40,120,30],...
-                        'String','Start Sensing',...
-                        'TooltipString','Sensing',...
-                        'Interruptible','on',...
-                        'Callback',@(~,~)obj.startSensing);
+            obj.buildUI();
             
             % add some dummy data to init the userfig
             obj.userfig = -1; % init as a dummy figure handle
             feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, 1:2); 
             % NOTE: the userfig must be initialized in the user-defined
-            
             
             % create java sensing server
             obj.jss = edu.umich.cse.yctung.JavaSensingServer.create(port);
@@ -116,21 +105,22 @@ classdef SensingServer < handle
             %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);
         end
         
-        % start server waiting for the incoming connections
-        function startServer(obj, audioSource, deviceAudioMode)
-            %obj.audioSource = audioSource;
-            %obj.deviceAudioMode = deviceAudioMode;
-            
-        end
-        
         % start ask device to record or play audio
         function startSensing(obj)
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
             obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
+            obj.isSensing = 1;
+            obj.updateUI();
+        end
+        
+        function stopSensing(obj)
+            %obj.jss.writeByte(int8(obj.REACTION_ASK_STOP_SENSING));
         end
         
         % stop server waiting
         function close(obj)
+            obj.isConnected = 0;
+            close(obj.fig); % close the UI control in case the users will trigger the button when the server stops
             obj.jss.close();
             clear obj.object;
         end
@@ -143,14 +133,15 @@ classdef SensingServer < handle
         function onAcceptCallback(obj, event)
             fprintf('    onAcceptCallback is called\n');
             % do nothing
+            obj.isConnected = 1;
+            obj.updateUI();
         end
-        
         
         function onDataCallback(obj, javahandle, event)
             fprintf('    onDataCallback is called\n');
             action = event.action;
-            setType = event.setType;
-            nameBytes = event.nameBytes;
+            obj.latestReceivedAction = action;
+            
             time = event.time;
             fprintf('    action = %d\n', action);
             
@@ -215,16 +206,17 @@ classdef SensingServer < handle
             elseif action == obj.ACTION_SENSING_END,
                 fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
                 set(0,'UserData','ACTION_SENSING_END');
+                obj.isSensing = 0;
+                obj.updateUI();
             %**********************************************************
             % ACTION_CLOSE: read the end of sockets -> close loop
             %**********************************************************
             elseif action == obj.ACTION_CLOSE,
                 fprintf(obj.dfid, '--- ACTION_CLOSE: socket is closed remotely ---\n');
-                obj.jss.close();
+                obj.close();
             else
                 fprintf(2, '[ERROR]: undefined action=%d\n',action);
             end
-            
         end
 
         
@@ -293,9 +285,71 @@ classdef SensingServer < handle
             obj.jss.writeByte(int8(CHECK));
         end
 %==========================================================================
-%  Internal networking functions for sending packets
+%  Internal UI functions
 %==========================================================================
+        function buildUI(obj)
+            TEXT_FONT_SIZE = 15;
+            obj.fig = figure('Position',[50,420,230,230],'Toolbar','none','MenuBar','none');
+            obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
+            
+            % ref: https://www.mathworks.com/matlabcentral/newsreader/view_thread/292100
+            address = java.net.InetAddress.getLocalHost ;
+            IPaddress = char(address.getHostAddress);
+
+            obj.textServerInfo = uicontrol(obj.panel,'Style','text',...
+                        'Position',[20,160,140,40],...
+                        'FontSize',TEXT_FONT_SIZE,...
+                        'String',sprintf('Server at %s:%d',IPaddress,obj.port));
+                    
+            obj.textServerStatus = uicontrol(obj.panel,'Style','text',...
+                        'Position',[30,110,120,30],...
+                        'FontSize',TEXT_FONT_SIZE,...
+                        'String','Server Status');
+            
+            %{
+            obj.buttonStartServer = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[30,110,120,30],...
+                        'String','Start Server',...
+                        'TooltipString','Started',...
+                        'Interruptible','on',...
+                        'Callback',@(~,~)obj.callbackStartServerInterruptible);
+            %}
+            
+            obj.buttonStartOrStopSensing = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[30,40,120,30],...
+                        'String','Start Sensing',...
+                        'TooltipString','Sensing',...
+                        'Interruptible','on',...
+                        'Callback',@(~,~)obj.buttonStartOrStopSensingCallback);
+                    
+            obj.updateUI();
+        end
         
+        % update UI based on server status
+        function updateUI(obj)
+            % determine the sensing status string
+            if obj.isConnected == 0,
+                obj.buttonStartOrStopSensing.Enable = 'off';
+                textConnectionStatus = 'wait connection';
+            else
+                obj.buttonStartOrStopSensing.Enable = 'on';
+                textConnectionStatus = 'ready to sense';
+                if obj.isSensing,
+                    textConnectionStatus = 'sensing...';
+                end
+            end
+            obj.textServerStatus.String=textConnectionStatus;
+        end
+        
+        function buttonStartOrStopSensingCallback(obj)
+            if obj.isSensing == 0, % need to start sensing 
+                obj.startSensing();
+                obj.buttonStartOrStopSensing.String = 'Stop Sensing';
+            else % need to stop sensing
+                obj.stopSensing(); % TODO: implement this part
+                obj.buttonStartOrStopSensing.String = 'Start Sensing';
+            end
+        end
     end
     
 end
