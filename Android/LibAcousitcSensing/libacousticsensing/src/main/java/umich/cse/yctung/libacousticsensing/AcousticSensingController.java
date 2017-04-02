@@ -2,6 +2,7 @@ package umich.cse.yctung.libacousticsensing;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
@@ -20,6 +21,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 //=================================================================================================
 // Constants
 //=================================================================================================
+    private final static String LOG_TAG = "AcousticSensingContr..";
     public int PARSE_MODE_OFFLINE=1; // TOOD: implement the jni parser
     public int PARSE_MODE_REMOTE=2;  // This mode
     public int PARSE_MODE_DEFAULT=PARSE_MODE_REMOTE;
@@ -85,8 +87,10 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     private void startSensingNow() {
         recordSetting = new AudioSetting(audioMode);
         ac = new AudioController(context, this, audioSource, recordSetting);
-        if (ac.init()) {
+        if (ac.init(audioSource, recordSetting)) {
             ac.startSensing();
+        } else {
+            Log.e(LOG_TAG, "Fail to init the AudioController");
         }
     }
 

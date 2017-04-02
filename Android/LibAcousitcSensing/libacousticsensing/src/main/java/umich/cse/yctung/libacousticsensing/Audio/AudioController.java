@@ -5,6 +5,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
+import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
@@ -57,7 +58,9 @@ public class AudioController {
         this.listener = listener;
         sensingTimer = new SensingTimer();
         setAudioSource(audioSource);
-        setAudioSetting(recordSetting);
+        this.audioSetting = recordSetting;
+
+        //setAudioSetting(recordSetting);
     }
 
     // this method is separated from constructor so the same AudioController can be used more than once
@@ -73,15 +76,23 @@ public class AudioController {
     }
 
     // this method is separated from constructor so the same AudioController can be used more than once
+    /*
     public void setAudioSetting(AudioSetting audioSetting) {
         this.audioSetting = audioSetting;
         audioRecord = audioSetting.createNewAudioRecord();
-
     }
+    */
 
-    public boolean init() {
+    public boolean init(AudioSource audioSource, AudioSetting recordSetting) {
         if (keepSensing||isPlaying||isRecording) {
             Log.e(LOG_TAG, "[ERROR]: unable to init because the previous sensing is not stopped yet (forget to stop it?)");
+            return false;
+        }
+
+        this.audioSetting = recordSetting; // TOOD: move it to a better way
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
+        if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
+            Log.e(LOG_TAG, "Unable to init AudioRecord class (forget to request the permission or using a wrong setting?)");
             return false;
         }
 
@@ -102,6 +113,19 @@ public class AudioController {
         keepSensing = false; // NOTE: set this flag will enforce the play & recording thread to stop
         while (isPlaying||isRecording) Log.w(LOG_TAG, "wait audio playing and recording terminate");
     }
+
+    /*
+    public void destroy() {
+        stopSensing();
+        if (audioRecord!=null) {
+            audioRecord.stop();
+            audioRecord.release();
+            audioRecord = null;
+        }
+        audioTrack.stop();
+        audioTrack.release();
+        audioTrack = null;
+    }*/
 //=================================================================================================
 //  Internal help functions
 //=================================================================================================
@@ -122,6 +146,7 @@ public class AudioController {
     private void sensingEnd() {
         // TODO: tune the audio record/play to the begin
         // TODO: move the folder?
+
         keepSensing = false;
         listener.onAudioRecordAndPlayEnd();
     }
@@ -208,6 +233,14 @@ public class AudioController {
                 audioRecord.read(byteBuffer, 0, RECORDER_BUFFER_ELEMENTS * RECORDER_BYTE_PER_ELEMENT);
             }
         }
+
+        // stop recording
+        // *** just for debug ***
+        // ref: http://stackoverflow.com/questions/5139739/android-audiorecord-wont-initialize-2nd-time
+        audioRecord.stop();
+        audioRecord.release();
+        audioRecord = null;
+        Log.w(LOG_TAG, "audioRecord is released");
     }
 
 //=================================================================================================

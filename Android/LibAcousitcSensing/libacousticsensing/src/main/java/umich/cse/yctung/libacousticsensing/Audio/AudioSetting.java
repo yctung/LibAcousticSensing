@@ -16,7 +16,7 @@ public class AudioSetting {
     public static int AUDIO_MODE_PLAY_ONLY=2;
     public static int AUDIO_MODE_PLAY_AND_RECORD=AUDIO_MODE_RECORD_ONLY|AUDIO_MODE_PLAY_ONLY;
 
-    private static final int RECORDER_TOTAL_BUFFER_SIZE = 480000;
+    public static final int RECORDER_TOTAL_BUFFER_SIZE = 480000;
 
     int audioMode;
     int recordChCnt;
@@ -28,6 +28,7 @@ public class AudioSetting {
         this.recordFS = 48000;
     }
 
+    // don't use this vraible any more becuase it might avoid the audio record being released correctly
     public AudioRecord createNewAudioRecord() {
         // TODO: create recorder based on user's setting
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, RECORDER_TOTAL_BUFFER_SIZE);

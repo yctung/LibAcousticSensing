@@ -18,6 +18,7 @@ as.signalGain = 0.1;
 ss = SensingServer(SERVER_PORT, @ServerAppFeatureTrainCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
+
 %ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 %ss2.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
