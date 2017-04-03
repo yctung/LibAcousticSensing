@@ -1,5 +1,8 @@
 package umich.cse.yctung.demoforcephone;
 
+import android.Manifest;
+import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,6 +15,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -367,8 +372,16 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
     @Override
     protected void onResume (){
         super.onResume();
-        //uc.startEverything();
-        // TODO: ask sensing
+
+        if (hasRecordAudioPermission()) {
+            if (!asc.isConnected()) {
+                Dialog dialog = asc.createInitModeDialog(this, Constant.DEFAULT_SERVER_ADDR, Constant.DEFAULT_SERVER_PORT);
+                dialog.show();
+            }
+        } else {
+            requestRecordAudioPermission();
+        }
+
     }
 
     @Override
@@ -380,6 +393,40 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
         }
         */
         super.onPause();
+    }
+
+    // request permission if need
+    // ref: http://stackoverflow.com/questions/32217831/how-to-grant-more-permissions-to-android-shell-user
+    private boolean hasRecordAudioPermission(){
+        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
+
+        Log.d(LOG_TAG,"Has RECORD_AUDIO permission? " + hasPermission);
+        return hasPermission;
+    }
+
+    final int REQUEST_RECORD_AUDIO = 1;
+    private void requestRecordAudioPermission(){
+
+        String requiredPermission = Manifest.permission.RECORD_AUDIO;
+
+        // If the user previously denied this permission then show a message explaining why
+        // this permission is needed
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                requiredPermission)) {
+
+            showToast("This app needs to record audio through the microphone....");
+        }
+
+        // request the permission.
+        ActivityCompat.requestPermissions(this, new String[]{requiredPermission}, REQUEST_RECORD_AUDIO);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        // This method is called when the user responds to the permissions dialog
     }
 
     // NOTE: dispatchTouchEvent can get event even the touch is intercepted by other elements

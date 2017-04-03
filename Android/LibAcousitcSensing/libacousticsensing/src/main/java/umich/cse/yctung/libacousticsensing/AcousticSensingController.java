@@ -1,12 +1,19 @@
 package umich.cse.yctung.libacousticsensing;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
@@ -32,10 +39,8 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
 
     public int AUDIO_MODE_DEFAULT=AudioSetting.AUDIO_MODE_PLAY_AND_RECORD;
-
     public int LOG_MODE_SAVE_AUDIO_TO_FILE=1;
     public int LOG_MODE_DEFAULT=LOG_MODE_SAVE_AUDIO_TO_FILE;
-
 //=================================================================================================
 // Internal status
 //=================================================================================================
@@ -101,23 +106,47 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     // funtion to show the customized dialog for initailzation
     public Dialog createInitModeDialog(Activity activity, String serverIpDefault, int serverPortDefault) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.dialog_acoustic_sensing_controller_init, null))
+        final LayoutInflater inflater = activity.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_acoustic_sensing_controller_init, null);
+
+        final EditText editTextServerAddr = (EditText)view.findViewById(R.id.editTextServerAddr);
+        editTextServerAddr.setText(serverIpDefault);
+        final EditText editTextServerPort = (EditText)view.findViewById(R.id.editTextServerPort);
+        editTextServerPort.setText(String.format("%d",serverPortDefault));
+
+        final Spinner spinnerMode = (Spinner)view.findViewById(R.id.spinnerMode);
+        String[] modes = new String[]{"Server-client Mode","Real-time Mode"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, R.layout.support_simple_spinner_dropdown_item, modes);
+        spinnerMode.setAdapter(adapter);
+        spinnerMode.setSelection(0);
+
+        builder.setView(view)
                 .setTitle("Please select init mode")
                 // Add action buttons
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // sign in the user ...
+                        AcousticSensingController asc = AcousticSensingController.this;
+                        boolean result = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
+                        if (!result) asc.updateDebugStatus("Init fails");
+                        else {
+                            asc.startSensingWhenPossible();
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
                 });
+
+
+
         return builder.create();
     }
 
+    public boolean isConnected() {
+        return nc.isConnected();
+    }
 //=================================================================================================
 // Network callbacks
 //=================================================================================================

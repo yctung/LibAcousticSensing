@@ -67,6 +67,9 @@ classdef SensingServer < handle
         deviceAudioMode;
         traceParser;
         
+        audioToProcessAll;
+        audioToProcessAllEnd;
+        
         startSensingAfterConnectionInit; % set this variable to 0 if users want to manually trigger the senisng after the connection is established
         
         keepReading;
@@ -107,14 +110,19 @@ classdef SensingServer < handle
         
         % start ask device to record or play audio
         function startSensing(obj)
+            DEBUG_CH_CNT = 2; % TODO: load from audio sensing setting
+            obj.audioToProcessAll = zeros(length(obj.audioSource.signal), obj.audioSource.repeatCnt, DEBUG_CH_CNT);
+            obj.audioToProcessAllEnd = 0;
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
             obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
             obj.isSensing = 1;
+            obj.buttonStartOrStopSensing.String = 'Stop Sensing';
             obj.updateUI();
         end
         
         function stopSensing(obj)
             %obj.jss.writeByte(int8(obj.REACTION_ASK_STOP_SENSING));
+            obj.buttonStartOrStopSensing.String = 'Start Sensing';
         end
         
         % stop server waiting
@@ -178,10 +186,18 @@ classdef SensingServer < handle
                 end
                 
                 audioToProcess = obj.traceParser.parse(audioNow);
+                
+                
                 if ~isempty(audioToProcess),
+                    processCnt = size(audioToProcess,2); % number of trace to be processed
+                    size(audioToProcess)
+                    size(obj.audioToProcessAll(:,obj.audioToProcessAllEnd+1:obj.audioToProcessAllEnd+processCnt,:))
+                    obj.audioToProcessAll(:,obj.audioToProcessAllEnd+1:obj.audioToProcessAllEnd+processCnt,:) = audioToProcess;
+                    obj.audioToProcessAllEnd = obj.audioToProcessAllEnd+1;
+                    
                     % only parse the last audio data
                     fprintf('callback is called\n');
-                    feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, squeeze(audioToProcess(:,end,:)));
+                    feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
                 end
             %**********************************************************
             % ACTION_SET: set matlab variable based on code
@@ -344,10 +360,8 @@ classdef SensingServer < handle
         function buttonStartOrStopSensingCallback(obj)
             if obj.isSensing == 0, % need to start sensing 
                 obj.startSensing();
-                obj.buttonStartOrStopSensing.String = 'Stop Sensing';
             else % need to stop sensing
                 obj.stopSensing(); % TODO: implement this part
-                obj.buttonStartOrStopSensing.String = 'Start Sensing';
             end
         end
     end

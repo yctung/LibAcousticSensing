@@ -14,8 +14,11 @@ classdef PreambleSource < handle
     methods
         % Default constructor, load default pilot
         function obj=PreambleSource(settingPath)
-            if ~exist('settingPath','var'),
+            if ~exist('settingPath','var'), % use the default setting
                 settingPath = 'latestPreambleSetting.mat';
+                if ~exist(settingPath,'file'),
+                    PreambleBuilder(); % creat the latestPreambleSetting.mat by default setting
+                end
             end
             
             obj.name=settingPath;
