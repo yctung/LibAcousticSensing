@@ -94,7 +94,6 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
         layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         layout.setBackgroundColor(Color.BLACK);
 
-
         // Load image as bitmap instead
         /*
         bitmapScreenBase = BitmapFactory.decodeResource(getResources(), R.drawable.screen_s6_app_no_title_smaller);
@@ -102,11 +101,10 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
         blurableBackgroundView.setUpBitmap(bitmapScreenBase);
         */
 
-
         //ImageView Setup
         imageScreenBase = new ImageView(this);
-        //imageScreenBase.setImageResource(R.drawable.screen_s6_app_no_title_smaller);
-        imageScreenBase.setImageResource(R.drawable.screen_base_small_no_title_smaller);
+        imageScreenBase.setImageResource(R.drawable.screen_s6_app_no_title_300);
+        //imageScreenBase.setImageResource(R.drawable.screen_base_small_no_title_smaller);
         //imageScreenBase.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         imageScreenBase.setLayoutParams(new LayoutParams(screenWidth, screenHeight));
         imageScreenBase.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -181,6 +179,7 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
                         needToShowOptionWhenPressureIsHighEnough = true;
                         //uc.startCheckPressure(new Point(0, 0));
                         // TODO: ask checking pressure
+                        asc.sendUserData("pse",1,1.5f,-2.0f);
 
                         return true;
                         //break;
@@ -189,14 +188,12 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
                         needToShowOptionWhenPressureIsHighEnough = false;
                         //uc.stopCheckPressure();
                         // TODO: stop checking pressure
-
-
+                        asc.sendUserData("pse",0,0,0);
 
                         if (!isOptionShown) { // only show app image when option is not triggered
                             isAppShown = true;
                             imageClockAppTimer.setImageAlpha(255);
                             imageClockAppTimer.setClickable(true);
-
                             makeBlur(0.0); // force blurred view disappered
                         }
 

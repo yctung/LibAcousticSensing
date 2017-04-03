@@ -12,57 +12,80 @@ function [] = ServerAppForcePhoneCallback( obj, type, data )
         return;
     end
 
-    
-    LINE_CNTS = [2,2,1]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-    %hFig = findobj('Tag',FIG_CON_TAG);
-    if obj.userfig == -1, % need to create a new UI window
-        detectResultsEnd = 0;
-        detectResults = zeros(DETECT_RESULT_SIZE, 1);
-        
-        createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
-    else
-        % process data
-        
-        % convlution of all data
-        cons = convn(data, PS.signalToCorrelate,'same');
-        
-        % line1: data 
-        check1 = findobj('Tag','check01');
-        if check1.Value == 1,
-            for chIdx = 1:2,
-                line = findobj('Tag',sprintf('line01_%02d',chIdx));
-                dataToPlot = data(:,end,chIdx);
-                set(line, 'yData', dataToPlot); % only show the 1st ch
-            end
-        end
-        
-        % line2: con 
-        check2 = findobj('Tag','check02');
-        if check2.Value == 1,
-            for chIdx = 1:2,
-                line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                conToPlot = smooth(abs(cons(:,end,chIdx)),100);
-                set(line, 'yData', conToPlot); % only show the 1st ch
-            end
-        end
-        
-        % line3: detect result
-        check3 = findobj('Tag','check03');
-        if check3.Value == 1,
-            line = findobj('Tag','line03_01');
+    % parse audio data
+    if type == obj.CALLBACK_TYPE_DATA,
+        LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
+        %hFig = findobj('Tag',FIG_CON_TAG);
+        if obj.userfig == -1, % need to create a new UI window
+            detectResultsEnd = 0;
+            detectResults = zeros(DETECT_RESULT_SIZE, 1);
+
+            createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
+        else
+            % process data
+            
+            % convlution of all data
+            cons = convn(data, PS.signalToCorrelate,'same');
             detectChIdx = 1;
             detectResultNow = squeeze(mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, detectChIdx)),1));
             nowSize = length(detectResultNow);
-
-            if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
-                toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
-                detectResults(1:end-toShift) = detectResults(toShift+1:end);
-                detectResultsEnd = detectResultsEnd - nowSize;
+            
+            % return the result if need
+            if PS.detectEnabled,
+                %obj.jss.write()
+            end
+            
+            % line1: data 
+            check1 = findobj('Tag','check01');
+            if check1.Value == 1,
+                for chIdx = 1:2,
+                    line = findobj('Tag',sprintf('line01_%02d',chIdx));
+                    dataToPlot = data(:,end,chIdx);
+                    set(line, 'yData', dataToPlot); % only show the 1st ch
+                end
             end
 
-            detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
-            detectResultsEnd = detectResultsEnd+nowSize;
-            set(line, 'yData', detectResults); % only show the 1st ch
+            % line2: con 
+            check2 = findobj('Tag','check02');
+            if check2.Value == 1,
+                for chIdx = 1:2,
+                    line = findobj('Tag',sprintf('line02_%02d',chIdx));
+                    conToPlot = smooth(abs(cons(:,end,chIdx)),100);
+                    set(line, 'yData', conToPlot); % only show the 1st ch
+                end
+            end
+
+            % line3: detect result
+            check3 = findobj('Tag','check03');
+            if check3.Value == 1,
+                line = findobj('Tag','line03_01');
+                if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
+                    toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
+                    detectResults(1:end-toShift) = detectResults(toShift+1:end);
+                    detectResultsEnd = detectResultsEnd - nowSize;
+                end
+
+                detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
+                detectResultsEnd = detectResultsEnd+nowSize;
+                set(line, 'yData', detectResults); % only show the 1st ch
+            end
+        end
+    elseif type == obj.CALLBACK_TYPE_USER,
+        % parse user data
+        % must be 'pse' in this app
+        if data.code == 1, % update the vertical line
+            PS.detectEnabled = 1;
+            refIdx = detectResultsEnd-1;
+            if refIdx<0
+                refIdx = 1;
+            end
+            PS.detectRef = detectResults(refIdx); % latest detect reuslt is the reference
+            
+            line = findobj('Tag','line03_02');
+            set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
+        else
+            PS.detectEnabled = 0;
+            PS.detectRef = 1;
         end
     end
 end

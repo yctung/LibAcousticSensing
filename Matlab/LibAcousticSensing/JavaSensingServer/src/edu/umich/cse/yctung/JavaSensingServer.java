@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavaSensingServer extends Thread {
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
-	private static final boolean SHOW_DEBUG_MESSAGE = true;
+	private static final boolean SHOW_DEBUG_MESSAGE = false;
 	
 	// set this flag to volatile because it will be read/write on different thread (ref: http://stackoverflow.com/questions/106591/do-you-ever-use-the-volatile-keyword-in-java)
 	private volatile boolean shutdown; // flag to shutdown the socket reading loop
@@ -35,7 +35,6 @@ public class JavaSensingServer extends Thread {
 	
 	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 5; //ms, NOTE: should set this value as small as possible
 	
-	
 	// Types of actions (for identifying packets sent to the server)
 	private final static int ACTION_CONNECT = 1; 	// ACTION_CONNECT format: | ACTION_CONNECT | xxx parater setting
 	private final static int ACTION_DATA 	= 2; 	// ACTION_SEND format: | ACTION_DATA | # of bytes to send | byte[] | -1
@@ -43,11 +42,8 @@ public class JavaSensingServer extends Thread {
 	private final static int ACTION_SET 	= 3;
 	private final static int ACTION_INIT 	= 4;
 	private final static int ACTION_SENSING_END = 5;
+	private final static int ACTION_USER 	= 6;
 	
-	// Types of reactions (for identifying packet sent from the server)
-	private final static int REACTION_SET_MEDIA 	= 1;
-	private final static int REACTION_ASK_SENSING   = 2;
-	private final static int REACTION_SET_RESULT 	= 3;
 //===============================================================
 //	Constructors	
 //===============================================================
@@ -134,6 +130,10 @@ public class JavaSensingServer extends Thread {
 		public int setType = -1;
 		public byte[] nameBytes = null;
 		public double time 	= -1;		//(sec)
+		public int stamp = -1;
+		public float arg0 = 0, arg1 = 0;
+		public int code = -1;
+		
 		
 		public SocketEvent(Object source, int action, byte[] dataBytes) {
 			super(source);
@@ -149,6 +149,18 @@ public class JavaSensingServer extends Thread {
 			this.dataBytes 	= dataBytes;
 			this.setType 	= setType;
 			this.nameBytes  = nameBytes;
+			this.time 		= ((double)System.currentTimeMillis())/1000;
+		}
+		
+		// for user action
+		public SocketEvent(Object source, int action, int stamp, byte[] nameBytes, int code, float arg0, float arg1) {
+			super(source);
+			this.action 	= action;
+			this.stamp 		= stamp;
+			this.nameBytes  = nameBytes;
+			this.code 		= code;
+			this.arg0 		= arg0;
+			this.arg1  		= arg1;
 			this.time 		= ((double)System.currentTimeMillis())/1000;
 		}
 	}
@@ -223,38 +235,31 @@ public class JavaSensingServer extends Thread {
                 	threadMessage("--- ACTION_DATA ---");
                     byte[] dataBytes = readFullData();
                     fireDataEvent(new SocketEvent(this, action, dataBytes));
-                    
-                    // a. parse the recieved payload as audio
-                	/*
-                    dataTemp = double(typecast(dataBytes,'int16'));
-                    if obj.traceChannelCnt == 1, % single-chanell ->ex: iphone
-                        audioNow = dataTemp;
-                    else % stereo-recroding
-                        audioNow = [dataTemp(1:2:end), dataTemp(2:2:end)];
-                    end
-                    toc;
-                    audioToProcess = obj.traceParser.parse(audioNow);
-                    */
-                    /*
-                    if ~isempty(audioToProcess),
-                        // only parse the last audio data
-                        fprintf('callback is called\n');
-                        feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, squeeze(audioToProcess(:,end,:)));
-                    end
-                    */
-                    
                 }
                 //**********************************************************
                 // ACTION_SET: set matlab variable based on code
                 //**********************************************************
                 else if (action == ACTION_SET) {
-                    //[name, value, evalString] = ServerReadSetAction(obj.socket);
                     threadMessage("--- ACTION_SET ---");
                     int setType = dataIn.readInt();
             	    byte[] nameBytes = readFullData();
             	    byte[] valueBytes = readFullData();
             	    fireDataEvent(new SocketEvent(this, action, valueBytes, setType, nameBytes));
                 }
+                
+                //**********************************************************
+                // ACTION_USER: application's user-defined data
+                //**********************************************************
+                else if (action == ACTION_USER) {
+                	threadMessage("--- ACTION_USER ---");
+                	int stamp = dataIn.readInt();
+                	byte[] tagBytes = readFullData();
+                	int code = dataIn.readInt();
+                	float arg0 = dataIn.readFloat();
+                	float arg1 = dataIn.readFloat();
+                	fireDataEvent(new SocketEvent(this, action, stamp, tagBytes, code, arg0, arg1));
+                }
+                
                 //**********************************************************
                 // ACTION_SENSING_END: just break the loop
                 //**********************************************************

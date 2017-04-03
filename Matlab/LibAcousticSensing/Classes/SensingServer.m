@@ -13,6 +13,7 @@ classdef SensingServer < handle
         ACTION_SET              = 3;    % ACTION_SET format: | ACTION_SET | type(int) | name(string) | var(byte[])
         ACTION_INIT             = 4;    % ACTION_INIT format: | ACTION_INIT | 
         ACTION_SENSING_END      = 5;
+        ACTION_USER             = 6;
         
         % Types of sending packets to deivce
         REACTION_SET_MEDIA      = 1;
@@ -30,6 +31,7 @@ classdef SensingServer < handle
         % Types of user-defined callback messages 
         CALLBACK_TYPE_ERROR     = -1;
         CALLBACK_TYPE_DATA      = 1;
+        CALLBACK_TYPE_USER      = 2;
         
         SOCKET_TIME_OUT         = 60*60*24;
         
@@ -196,7 +198,7 @@ classdef SensingServer < handle
                     obj.audioToProcessAllEnd = obj.audioToProcessAllEnd+1;
                     
                     % only parse the last audio data
-                    fprintf('callback is called\n');
+                    fprintf('callback is called for parsing audio data\n');
                     feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
                 end
             %**********************************************************
@@ -216,6 +218,22 @@ classdef SensingServer < handle
                 else
                     eval(strcat('obj.',evalString));
                 end
+            %**********************************************************
+            % ACTION_USER: application's user-defined data
+            %**********************************************************
+            elseif action == obj.ACTION_USER,
+                fprintf(obj.dfid, '--- ACTION_USER ---\n');
+                data = struct();
+                data.stamp = event.stamp;
+                data.name = native2unicode(event.nameBytes);
+                data.name = data.name(:)'; % ensure name is the row-based string
+                data.code = event.code;
+                data.arg0 = event.arg0;
+                data.arg1 = event.arg1;
+            
+                fprintf('callback is called for parsing user data\n');
+                feval(obj.callback, obj, obj.CALLBACK_TYPE_USER, data);
+            
             %**********************************************************
             % ACTION_SENSING_END: just break the loop
             %**********************************************************

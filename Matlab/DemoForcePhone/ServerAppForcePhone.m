@@ -21,6 +21,8 @@ global PS; PS = struct(); % parse setting, easy for the callback to get
 PS.FS = FS;
 PS.detectRangeStart = 580;
 PS.detectRangeEnd = 600;
+PS.detectEnabled = 0;
+PS.detectRef = 0;
 
 signal = zeros(PERIOD, 1);
 

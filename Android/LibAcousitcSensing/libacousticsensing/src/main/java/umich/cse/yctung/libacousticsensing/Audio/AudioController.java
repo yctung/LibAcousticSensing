@@ -50,7 +50,7 @@ public class AudioController {
     boolean startAndKeepRecording;
     boolean isRecording;
     boolean isPlaying;
-    private long audioTotalRecordedSampleCnt; // TODO: check the overflow issue
+    public long audioTotalRecordedSampleCnt = -1; // TODO: check the overflow issue
 
 
     public AudioController(Context context, AudioControllerListener listener, AudioSource audioSource, AudioSetting recordSetting) {

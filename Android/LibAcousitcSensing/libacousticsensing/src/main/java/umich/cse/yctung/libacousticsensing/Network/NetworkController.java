@@ -31,11 +31,12 @@ public class NetworkController {
 	private static String LOG_TAG= Constant.LOG_TAG+"_NetworkController";
 	// Types of actions (for packets sent from the server)
 	private final static int ACTION_CONNECT = 1; 	// ACTION_CONNECT format: | ACTION_CONNECT | xxx parater setting
-	private final static int ACTION_DATA 	= 2; 	// ACTION_SEND format: | ACTION_DATA | # of bytes to send | byte[] | -1
+	private final static int ACTION_DATA 	= 2; 	// ACTION_DATA format: | ACTION_DATA | # of bytes to send | byte[] | -1
 	private final static int ACTION_CLOSE 	= -1;	// ACTION_CLOSE format: | ACTION_CLOSE |
 	private final static int ACTION_SET 	= 3;
 	private final static int ACTION_INIT 	= 4;
 	private final static int ACTION_SENSING_END = 5;
+	private final static int ACTION_USER	= 6; 	// used for sending application's user-defined variables
 
 	// Types of set actions (for packets sent to the server)
 	public final static int SET_TYPE_BYTE_ARRAY 	= 1;
@@ -135,7 +136,16 @@ public class NetworkController {
 	}
 
 	public void sendSetAction(int setType, String name, byte[] data) {
+
 		NetworkRequest r = new NetworkRequest(ACTION_SET, name, data, setType);
+		requestQueue.add(r);
+		sendPacketByAnotherThread();
+	}
+
+	public void sendUserAction(int stamp, String tag, int code, float arg0, float arg1, byte[] data) {
+		// follow the previous ForcePhone's log setting format
+		int TEMP_TYPE = 1; // TODO: support real types like float or int
+		NetworkRequest r = new NetworkRequest(ACTION_USER, stamp, tag, code, arg0, arg1, data, TEMP_TYPE);
 		requestQueue.add(r);
 		sendPacketByAnotherThread();
 	}
@@ -248,6 +258,8 @@ public class NetworkController {
 						bos.flush();
 						bos.close();
 					}
+				} else if (reaction == REACTION_SET_RESULT) {
+					// TODO: update result to user-app callbacks
 				}
 			} catch (IOException e) {
 				Log.w(LOG_TAG, "Read socket data timeout (need more data? or wait a while?)");
@@ -308,6 +320,20 @@ public class NetworkController {
 								dataOut.write(r.data);
 								dataOut.write(-1); // use as the sanity check of send message
 								break;
+							case ACTION_USER:
+								dataOut.write(ACTION_USER);
+								dataOut.writeInt(r.stamp);
+
+								byte[] tagBytes = r.name.getBytes();
+								dataOut.writeInt(tagBytes.length);
+								dataOut.write(tagBytes);
+								dataOut.write(-1); // use as the sanity check of send message
+
+								dataOut.writeInt(r.code);
+								dataOut.writeFloat(r.arg0);
+								dataOut.writeFloat(r.arg1);
+
+								//dataOut.write(-1); // use as the sanity check of send message
 							case ACTION_SENSING_END:
 								dataOut.write(ACTION_SENSING_END);
 								break;

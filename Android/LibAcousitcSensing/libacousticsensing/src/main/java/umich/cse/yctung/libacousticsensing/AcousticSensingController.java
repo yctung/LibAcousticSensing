@@ -144,6 +144,12 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         return builder.create();
     }
 
+    public void sendUserData(String tag, int code, float arg0, float arg1) {
+        int stamp = -1;
+        if (ac!=null) stamp = (int) ac.audioTotalRecordedSampleCnt;
+        nc.sendUserAction(stamp, tag, code, arg0, arg1, null);
+    }
+
     public boolean isConnected() {
         return nc.isConnected();
     }
