@@ -11,9 +11,10 @@
 
 @interface ServerClientViewController : UIViewController {
     BOOL isSensing;
-    
+    AcousticSensingController *asc;
 }
 
+@property (retain, nonatomic) AcousticSensingController *asc;
 @property (retain, nonatomic) IBOutlet UIButton *startOrStopButton;
 - (IBAction) actionStartOrStopSensing;
 

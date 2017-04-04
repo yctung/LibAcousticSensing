@@ -7,7 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface AcousticSensingController : NSObject
+
+
+
+- (void) createInitModeDialog;
 
 @end

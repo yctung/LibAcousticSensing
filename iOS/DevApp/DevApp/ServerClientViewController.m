@@ -11,18 +11,22 @@
 
 @implementation ServerClientViewController
 @synthesize startOrStopButton;
+@synthesize asc;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     isSensing = NO;
     
+    asc = [[AcousticSensingController alloc] init];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
 
 /*
 #pragma mark - Navigation
@@ -36,7 +40,7 @@
 
 
 - (IBAction)actionStartOrStopSensing {
-    
+    [asc createInitModeDialog];
 }
 
 @end
