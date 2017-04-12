@@ -25,7 +25,6 @@ static const char SET_TYPE_VALUE_STRING = 5; // sent value by string
     
     int currentDataToSendOffset;
 
-    
     NSInputStream *inputStream;
     NSOutputStream *outputStream;
     NSMutableArray *dataWaitToSend;
@@ -40,7 +39,7 @@ static const char SET_TYPE_VALUE_STRING = 5; // sent value by string
 - (void)sendSetStringAction:(NSString*)name andStringToSet:(NSString *) dataString;
 - (void)sendSetValueStringAction:(NSString*)name andStringToSet:(NSString *) dataString;
 - (void)sendData:(UInt32)byteSize audioData:(void *)audioData;
-- (void)connectServer;
+- (void) connectServerWithIp: (NSString*) addr andPort: (int) port;
 - (void)closeServer;
 
 

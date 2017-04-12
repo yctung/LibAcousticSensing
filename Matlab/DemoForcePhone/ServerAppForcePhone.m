@@ -49,7 +49,7 @@ end
 signal = signal./max(abs(signal));
 signal = signal(:);
 
-PS.signalToCorrelate = signal(1:CHIRP_LEN);
+PS.signalToCorrelate = signal(CHIRP_LEN:-1:1); % reverse the chirp is the optimal matched filter to detect chirp singals
 
 as.signal = signal;
 as.repeatCnt = 20*60*4;

@@ -13,17 +13,12 @@
 @implementation NetworkController
 @synthesize refCaller;
 
-
-
 - (BOOL)getIsConnected{
     return isConnected;
 }
 
-- (void) connectServer{
-    NSString *addr = C_SERVER_ADDR;
-    
-    int port = C_DETECT_SERVER_PORT;
-    
+- (void) connectServerWithIp: (NSString*) addr andPort: (int) port{
+    NSLog(@"Try to connect to server at %@:%d", addr, port);
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
     CFStreamCreatePairWithSocketToHost(NULL,CFBridgingRetain(addr),port, &readStream, &writeStream);

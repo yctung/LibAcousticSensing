@@ -8,11 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+//#import "NetworkController.h"
 
-@interface AcousticSensingController : NSObject
+#ifndef AcousticSensingController_h
+#define AcousticSensingController_h
 
+@interface AcousticSensingController : NSObject<UIAlertViewDelegate>
 
-
-- (void) createInitModeDialog;
+- (void) createInitModeDialogWithIp: (NSString*) serverIpDefault andPort: (int) serverPortDefault;
 
 @end
+
+#endif /* AcousticSensingController_h */

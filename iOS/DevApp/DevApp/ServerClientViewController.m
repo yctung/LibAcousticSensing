@@ -40,7 +40,7 @@
 
 
 - (IBAction)actionStartOrStopSensing {
-    [asc createInitModeDialog];
+    [asc createInitModeDialogWithIp:@"35.2.195.254" andPort:50005];
 }
 
 @end
