@@ -1,4 +1,7 @@
 **/UserInterfaceState.xcuserstate
 **/.DS_Store
 **/.idea
-/Tizen/DevApp/Debug
+Tizen/DevApp/Debug
+Tizen/**/.rds_delta
+Tizen/**/.sdk_delta.info
+Tizen/**/.sign

@@ -19,6 +19,8 @@ typedef struct appdata {
 	int input_buffer_idx;
 
 	FILE *fout;
+
+	int sockfd;
 } appdata_s;
 
 #define STATUS_WAIT_SENSING 0
@@ -62,11 +64,29 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 
 //=============================================================================================
 // Network related functions
+// ref: http://www.cs.rpi.edu/~moorthy/Courses/os98/Pgms/socket.html
 //=============================================================================================
 static void connect_sensing_server(void *userdata) {
 	appdata_s *ad = userdata;
 	// open a client socket to connect
+	struct sockaddr_in server_addr;
+	struct hostent *server;
+	ad->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	server = gethostbyname(SERVER_ADDR);
+	if (server == NULL) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Undefined host");
+	}
+	bzero((char*) &server_addr, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	bcopy((char*) server->h_addr, (char*) &server_addr.sin_addr.s_addr, server->h_length);
+	server_addr.sin_port = htons(SERVER_PORT);
 
+	if (connect(ad->sockfd, (struct sockaddr*) &server_addr, sizeof(server_addr)) < 0){
+		dlog_print(DLOG_ERROR, LOG_TAG, "connect fails");
+		return;
+	}
+
+	dlog_print(DLOG_DEBUG, LOG_TAG, "connect to server successfully");
 }
 
 //=============================================================================================
@@ -158,11 +178,12 @@ static void button_clicked_request_cb(void *data, Evas_Object *obj, void *event_
 	dlog_print(DLOG_DEBUG, LOG_TAG, "button is clicked");
 	appdata_s *ad = data;
 	if (status == STATUS_WAIT_SENSING) { // need to start sensing
-		start_sensing(ad);
+		//start_sensing(ad);
+		connect_sensing_server(ad);
 		status = STATUS_IS_SENSING;
 		elm_object_text_set(ad->button, "<aligh=center>Sensing</align>");
 	} else {
-		stop_sensing(ad);
+		//stop_sensing(ad);
 		status = STATUS_WAIT_SENSING;
 		elm_object_text_set(ad->button, "<aligh=center>Stopped</align>");
 	}

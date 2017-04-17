@@ -13,6 +13,9 @@
 #define SAMPLE_RATE 44100
 #define RECORDING_SEC 5
 
+#define SERVER_ADDR "192.168.1.114"
+#define SERVER_PORT 50005
+
 #ifdef  LOG_TAG
 #undef  LOG_TAG
 #endif
