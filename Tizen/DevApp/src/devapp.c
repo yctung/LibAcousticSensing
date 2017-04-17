@@ -66,6 +66,20 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 // Network related functions
 // ref: http://www.cs.rpi.edu/~moorthy/Courses/os98/Pgms/socket.html
 //=============================================================================================
+static void _keep_reading_socket(void *userdata) {
+	appdata_s *ad = userdata;
+	// keep reading data
+	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_reading_socket starts");
+	int n;
+	char action = -1;
+	while (1) {
+		dlog_print(DLOG_DEBUG, LOG_TAG, "wait to read action");
+		n = read(ad->sockfd, &action, 1);
+		dlog_print(DLOG_DEBUG, LOG_TAG, "n = %d, action = %d", n, action);
+	}
+	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_reading_socket ends");
+}
+
 static void connect_sensing_server(void *userdata) {
 	appdata_s *ad = userdata;
 	// open a client socket to connect
@@ -87,6 +101,11 @@ static void connect_sensing_server(void *userdata) {
 	}
 
 	dlog_print(DLOG_DEBUG, LOG_TAG, "connect to server successfully");
+
+	// TODO: send socket init arguments to server
+
+	// read socket in another thread
+	ecore_thread_run(_keep_reading_socket, NULL, NULL, ad);
 }
 
 //=============================================================================================
