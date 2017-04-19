@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavaSensingServer extends Thread {
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
-	private static final boolean SHOW_DEBUG_MESSAGE = false;
+	private static final boolean SHOW_DEBUG_MESSAGE = true;
 	
 	// set this flag to volatile because it will be read/write on different thread (ref: http://stackoverflow.com/questions/106591/do-you-ever-use-the-volatile-keyword-in-java)
 	private volatile boolean shutdown; // flag to shutdown the socket reading loop
@@ -242,6 +242,7 @@ public class JavaSensingServer extends Thread {
                 else if (action == ACTION_SET) {
                     threadMessage("--- ACTION_SET ---");
                     int setType = dataIn.readInt();
+                    threadMessage("setType = " + setType);
             	    byte[] nameBytes = readFullData();
             	    byte[] valueBytes = readFullData();
             	    fireDataEvent(new SocketEvent(this, action, valueBytes, setType, nameBytes));
@@ -290,7 +291,7 @@ public class JavaSensingServer extends Thread {
 			}
 			
 		} catch (IOException e) {
-			threadErrMessage("[WARN]: on port = "+port+", e="+e.getMessage());
+			threadErrMessage("[WARN]: on port = "+port+", e="+e.toString());
 		}
 		
 		
@@ -303,6 +304,7 @@ public class JavaSensingServer extends Thread {
 	
 	private byte[] readFullData() throws IOException {
 	    int byteToRead = dataIn.readInt();
+	    threadMessage("readFullData: byteToRead = "+byteToRead);
 	    byte[] data = new byte[byteToRead];
 	    
 	    int totalByteRead = 0;
@@ -312,6 +314,7 @@ public class JavaSensingServer extends Thread {
 	    }
 	    // check if data format is correct -> end with -1
 	    byte check = dataIn.readByte();
+	    threadMessage("readFullData: check = "+check);
 	    if (check != -1){
 	    	threadErrMessage("[ERROR]: wrong represetation of message send (size inconsistence?)");
 	    	close();

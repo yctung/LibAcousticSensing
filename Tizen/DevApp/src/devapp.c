@@ -102,10 +102,55 @@ static void connect_sensing_server(void *userdata) {
 
 	dlog_print(DLOG_DEBUG, LOG_TAG, "connect to server successfully");
 
-	// TODO: send socket init arguments to server
+
 
 	// read socket in another thread
 	ecore_thread_run(_keep_reading_socket, NULL, NULL, ad);
+
+	// send socket init arguments to server
+	// NOTE: these command (including the INIT) needs to be sent after the receiving loops starts
+	char buffer[100];
+	int buffer_size = 0;
+	// a. send channel setting
+	//nc.sendSetAction(NetworkController.SET_TYPE_VALUE_STRING, "traceChannelCnt", "2".getBytes()); // TODO: modify it based on device
+	char action = LIBAS_ACTION_SET;
+	char check = -1;
+	uint32_t type = LIBAS_SET_TYPE_VALUE_STRING;
+	char* val1 = "traceChannelCnt";
+	uint32_t size1 = strlen(val1);
+	char* val2 = "2";
+	int size2 = strlen(val2);
+
+	int temp;
+
+	// send header
+	buffer[buffer_size++] = action;
+	temp = htonl(type);
+	memcpy(buffer+buffer_size, &temp, sizeof(int));
+	buffer_size += sizeof(int);
+	dlog_print(DLOG_DEBUG, LOG_TAG, "temp = %d", temp);
+
+	temp = htonl(size1);
+	memcpy(buffer+buffer_size, &temp, sizeof(int));
+	buffer_size += sizeof(int);
+	memcpy(buffer+buffer_size, val1, size1);
+	buffer_size += size1;
+	buffer[buffer_size++] = check;
+
+	temp = htonl(size2);
+	memcpy(buffer+buffer_size, &temp, sizeof(int));
+	buffer_size += sizeof(int);
+	memcpy(buffer+buffer_size, val2, size2);
+	buffer_size += size2;
+	buffer[buffer_size++] = check;
+
+	int n = write(ad->sockfd, buffer, buffer_size);
+	if (n < 0) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: write to socket fails, n = %d", n);
+	} else if (n < buffer_size) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: unable to write socket buffer completely, n = %d and buffer_size = %d", n, buffer_size);
+	}
+	dlog_print(DLOG_DEBUG, LOG_TAG, "write to socket bytes n = %d / %d", n, buffer_size);
 }
 
 //=============================================================================================
