@@ -104,13 +104,31 @@ static void _keep_reading_socket(void *userdata) {
 			dlog_print(DLOG_DEBUG, LOG_TAG, "FS = %d, chCnt = %d, repeatCnt = %d", FS, chCnt, repeatCnt);
 
 			// read pilot
-			n = read(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read, n = %d", n);
+			n = blockread(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read, n = %d", n);
 			int shortToRead = ntohl(temp);
+			dlog_print(DLOG_DEBUG, LOG_TAG, "shortToRead = %d", shortToRead);
+
 			int16_t *pilot = (int16_t *) malloc(sizeof(int16_t)*shortToRead);
-			void *buffer_temp = pilot;
-			n = read(ad->sockfd, &buffer_temp, sizeof(int16_t)*shortToRead);
+			n = blockread(ad->sockfd, pilot, sizeof(int16_t)*shortToRead);
 			dlog_print(DLOG_DEBUG, LOG_TAG, "pilot[0..2] = %d, %d, %d ...", pilot[0], pilot[1], pilot[2]);
 
+			// read signal
+			n = blockread(ad->sockfd, &temp, sizeof(int));
+			shortToRead = ntohl(temp);
+			dlog_print(DLOG_DEBUG, LOG_TAG, "shortToRead = %d", shortToRead);
+
+			int16_t *signal = (int16_t *) malloc(sizeof(int16_t)*shortToRead);
+			n = blockread(ad->sockfd, signal, sizeof(int16_t)*shortToRead);
+			dlog_print(DLOG_DEBUG, LOG_TAG, "signal[0..2] = %d, %d, %d ...", signal[0], signal[1], signal[2]);
+
+			char check;
+			n = read(ad->sockfd, &check, 1);
+			dlog_print(DLOG_DEBUG, LOG_TAG, "check = %d/%d", check, LIBAS_CHECK_OK);
+
+			if (check != LIBAS_CHECK_OK) {
+				dlog_print(DLOG_ERROR, LOG_TAG, "wrong check = %d", check);
+				break;
+			}
 		} else {
 			dlog_print(DLOG_ERROR, LOG_TAG, "undefined reaction = %d", reaction);
 			break;

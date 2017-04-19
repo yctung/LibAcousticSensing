@@ -302,6 +302,9 @@ classdef SensingServer < handle
             preambleShortRange = floor(obj.audioSource.preambleSource.preambleToAdd*obj.audioSource.preambleGain*SHORT_MAX_RANGE);
             obj.jss.writeInt(int32(length(preambleShortRange)));
             preambleShort = int16(preambleShortRange);
+            % *** just for debug ***
+            preambleShort(1:3) = [5566, 1234, -1234];
+            
             preabmleBytes = typecast(preambleShort, 'int8');
             temp = obj.jss.write(preabmleBytes)
     

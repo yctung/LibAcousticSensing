@@ -38,6 +38,8 @@
 #define LIBAS_REACTION_ASK_SENSING  2
 #define LIBAS_REACTION_SET_RESULT 	3
 
+#define LIBAS_CHECK_OK 255 // Tizen treate char -1 as 255 in comparison
+
 #ifdef  LOG_TAG
 #undef  LOG_TAG
 #endif
