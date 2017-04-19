@@ -66,16 +66,55 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 // Network related functions
 // ref: http://www.cs.rpi.edu/~moorthy/Courses/os98/Pgms/socket.html
 //=============================================================================================
+
+static int blockread(int sockfd, void* dest, int size) {
+	int size_has_been_read = 0;
+	while (size_has_been_read < size) {
+		int n = read(sockfd, dest+size_has_been_read, size-size_has_been_read);
+		size_has_been_read += n;
+	}
+	return size_has_been_read;
+}
+
 static void _keep_reading_socket(void *userdata) {
 	appdata_s *ad = userdata;
 	// keep reading data
 	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_reading_socket starts");
 	int n;
-	char action = -1;
+	char reaction = -1;
 	while (1) {
 		dlog_print(DLOG_DEBUG, LOG_TAG, "wait to read action");
-		n = read(ad->sockfd, &action, 1);
-		dlog_print(DLOG_DEBUG, LOG_TAG, "n = %d, action = %d", n, action);
+		n = read(ad->sockfd, &reaction, 1);
+		dlog_print(DLOG_DEBUG, LOG_TAG, "n = %d, reaction = %d", n, reaction);
+		if (n!=1) {
+			// TODO: error handling
+			dlog_print(DLOG_ERROR, LOG_TAG, "read reaction fails, n = %d ", n);
+			break;
+		}
+
+		if (reaction == LIBAS_REACTION_SET_MEDIA) {
+			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_SET_MEDIA");
+			int temp;
+			n = blockread(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read FS, n = %d", n);
+			int FS = ntohl(temp);
+			n = blockread(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read chCnt, n = %d", n);
+			int chCnt = ntohl(temp);
+			n = blockread(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read repeatCnt, n = %d", n);
+			int repeatCnt = ntohl(temp);
+			dlog_print(DLOG_DEBUG, LOG_TAG, "FS = %d, chCnt = %d, repeatCnt = %d", FS, chCnt, repeatCnt);
+
+			// read pilot
+			n = read(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read, n = %d", n);
+			int shortToRead = ntohl(temp);
+			int16_t *pilot = (int16_t *) malloc(sizeof(int16_t)*shortToRead);
+			void *buffer_temp = pilot;
+			n = read(ad->sockfd, &buffer_temp, sizeof(int16_t)*shortToRead);
+			dlog_print(DLOG_DEBUG, LOG_TAG, "pilot[0..2] = %d, %d, %d ...", pilot[0], pilot[1], pilot[2]);
+
+		} else {
+			dlog_print(DLOG_ERROR, LOG_TAG, "undefined reaction = %d", reaction);
+			break;
+		}
 	}
 	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_reading_socket ends");
 }
@@ -102,6 +141,19 @@ static void connect_sensing_server(void *userdata) {
 
 	dlog_print(DLOG_DEBUG, LOG_TAG, "connect to server successfully");
 
+	// set socket to blocking mode
+	// ref: http://stackoverflow.com/questions/12773509/read-is-not-blocking-in-socket-programming
+	struct timeval t;
+	t.tv_sec = 0;
+	t.tv_usec = 0;
+	void *ptr = &t;
+	setsockopt(
+	      ad->sockfd,     // Socket descriptor
+	      SOL_SOCKET, // To manipulate options at the sockets API level
+	      SO_RCVTIMEO,// Specify the receiving or sending timeouts
+	      ptr, // option values
+	      sizeof(t)
+	 );
 
 
 	// read socket in another thread
@@ -118,9 +170,8 @@ static void connect_sensing_server(void *userdata) {
 	uint32_t type = LIBAS_SET_TYPE_VALUE_STRING;
 	char* val1 = "traceChannelCnt";
 	uint32_t size1 = strlen(val1);
-	char* val2 = "2";
+	char* val2 = "1";
 	int size2 = strlen(val2);
-
 	int temp;
 
 	// send header
@@ -151,6 +202,10 @@ static void connect_sensing_server(void *userdata) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: unable to write socket buffer completely, n = %d and buffer_size = %d", n, buffer_size);
 	}
 	dlog_print(DLOG_DEBUG, LOG_TAG, "write to socket bytes n = %d / %d", n, buffer_size);
+
+	// b. send init
+	buffer[0] = LIBAS_ACTION_INIT;
+	n = write(ad->sockfd, buffer, 1);
 }
 
 //=============================================================================================
