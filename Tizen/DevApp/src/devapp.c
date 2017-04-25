@@ -21,6 +21,12 @@ typedef struct appdata {
 	FILE *fout;
 
 	int sockfd;
+
+	// sensing audio
+	void *pilot;
+	int pilot_byte_size;
+	void *signal;
+	int signal_byte_size;
 } appdata_s;
 
 #define STATUS_WAIT_SENSING 0
@@ -39,6 +45,9 @@ bool myassert(int error_code, int error_code_ok, const char* msg) {
 }
 
 
+//=============================================================================================
+// Audio related utility functions
+//=============================================================================================
 static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *userdata)
 {
 	appdata_s *ad = userdata;
@@ -60,6 +69,108 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 		error_code = audio_in_drop(handle); // remove audio data from internal buffer
 		myassert(error_code, 0, "audio_in_drop() failed!");
 	}
+}
+
+// this need to be executed in a separate thread to avoid hanging the UI thread
+bool _need_to_keep_audio_playing = false;
+static void _keep_audio_playing(appdata_s *ad) {
+	// 1. enable audio playing
+	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_audio_playing starts");
+	_need_to_keep_audio_playing = true;
+	int error_code = audio_out_prepare(ad->output);
+	myassert(error_code, 0, "audio_out_prepare() fails");
+
+	// 2. play pilot
+	dlog_print(DLOG_DEBUG, LOG_TAG, "pilot_byte_size = %d", ad->pilot_byte_size);
+	int bytes_number = audio_out_write(ad->output, ad->pilot, ad->pilot_byte_size);
+	dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
+
+	// 3. TODO: play signal in a while loop
+	while(_need_to_keep_audio_playing) {
+		int bytes_number = audio_out_write(ad->output, ad->pilot, ad->pilot_byte_size);
+		dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
+	}
+
+	// 4. release audio interface
+	error_code = audio_out_unprepare(ad->output);
+	myassert(error_code, 0, "audio_out_unprepare() fails");
+	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_audio_playing ends");
+}
+
+
+static void start_audio_playing(appdata_s *ad) {
+	ecore_thread_run(_keep_audio_playing, NULL, NULL, ad);
+
+	// 1. load audio to play
+	/*
+	char fin_path[200];
+	sprintf(fin_path, "%s%s", ad->base_path, "audio.pcm");
+	struct stat info;
+	stat(fin_path, &info);
+	ad->output_buffer_size = info.st_size;
+	dlog_print(DLOG_DEBUG, LOG_TAG, "output_buffer_size = %d", ad->output_buffer_size);
+
+	FILE *fin = fopen(fin_path, "rb");
+	size_t res = fread(ad->output_buffer, sizeof(char), ad->output_buffer_size, fin);
+	dlog_print(DLOG_DEBUG, LOG_TAG, "fread res = %d", res);
+	fclose(fin);
+	dlog_print(DLOG_DEBUG, LOG_TAG, "buffer = [%x,%x,%x,%x,...]", ad->output_buffer[0], ad->output_buffer[1], ad->output_buffer[2], ad->output_buffer[3]);
+
+
+	// 2. play audio
+	int error_code = audio_out_prepare(ad->output);
+	myassert(error_code, 0, "audio_out_prepare() fails");
+
+	int bytes_number = audio_out_write(ad->output, ad->output_buffer, ad->output_buffer_size);
+	dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
+
+	// 3. release audio
+	error_code = audio_out_unprepare(ad->output);
+	myassert(error_code, 0, "audio_out_unprepare() fails");
+
+	*/
+}
+
+static void stop_audio_playing(appdata_s *ad) {
+	dlog_print(DLOG_DEBUG, LOG_TAG, "stop_audio_playing is called");
+	_need_to_keep_audio_playing = false; // this flag force the audio playing loop to stop
+}
+
+static void start_audio_recording(appdata_s *ad) {
+	// 1. create the file to record
+	dlog_print(DLOG_DEBUG, LOG_TAG, ad->base_path);
+	char fout_path[200];
+	sprintf(fout_path, "%s%s", ad->base_path, "yctung_w.pcm");
+	dlog_print(DLOG_DEBUG, LOG_TAG, fout_path);
+	ad->input_buffer_idx = 0;
+
+	ad->fout = fopen(fout_path, "w");
+	if (!ad->fout) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "unable to open file for recording");
+	}
+
+	// 2. start async recording
+	int error_code = audio_in_set_stream_cb(ad->input, _audio_io_stream_read_cb, ad);
+	myassert(error_code, 0, "unable to set stream input callback");
+	error_code = audio_in_prepare(ad->input);
+	myassert(error_code, 0, "unable to prepare audio input");
+}
+
+static void stop_audio_recording(appdata_s *ad) {
+	// 1. stop audio recording
+	int error_code;
+	error_code = audio_in_unprepare(ad->input);
+	myassert(error_code, 0, "unable to unprepare audio input");
+
+	error_code = audio_in_unset_stream_cb(ad->input);
+	myassert(error_code, 0, "audio_in_unset_stream_cb fails");
+	// NOTE: don't destroy the class here, so we can reuse the class for the next recording
+
+	// 2. close the recorded file
+	fwrite(ad->input_buffer, sizeof(char), ad->input_buffer_idx, ad->fout);
+	fflush(ad->fout);
+	fclose(ad->fout);
+	ad->fout = NULL;
 }
 
 //=============================================================================================
@@ -92,7 +203,14 @@ static void _keep_reading_socket(void *userdata) {
 			break;
 		}
 
-		if (reaction == LIBAS_REACTION_SET_MEDIA) {
+		// parse reaction
+		if (reaction == LIBAS_REACTION_ASK_SENSING) {
+			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_ASK_SENSING");
+			start_audio_playing(ad);
+		} else if (reaction == LIBAS_REACTION_STOP_SENSING) {
+			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_STOP_SENSING");
+			stop_audio_playing(ad);
+		} else if (reaction == LIBAS_REACTION_SET_MEDIA) {
 			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_SET_MEDIA");
 			int temp;
 			n = blockread(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read FS, n = %d", n);
@@ -106,20 +224,24 @@ static void _keep_reading_socket(void *userdata) {
 			// read pilot
 			n = blockread(ad->sockfd, &temp, sizeof(int)); if (n!=sizeof(int)) dlog_print(DLOG_ERROR, LOG_TAG, "wrong # of byte read, n = %d", n);
 			int shortToRead = ntohl(temp);
+			ad->pilot_byte_size = sizeof(int16_t)*shortToRead;
 			dlog_print(DLOG_DEBUG, LOG_TAG, "shortToRead = %d", shortToRead);
 
 			int16_t *pilot = (int16_t *) malloc(sizeof(int16_t)*shortToRead);
 			n = blockread(ad->sockfd, pilot, sizeof(int16_t)*shortToRead);
 			dlog_print(DLOG_DEBUG, LOG_TAG, "pilot[0..2] = %d, %d, %d ...", pilot[0], pilot[1], pilot[2]);
+			ad->pilot = pilot;
 
 			// read signal
 			n = blockread(ad->sockfd, &temp, sizeof(int));
 			shortToRead = ntohl(temp);
+			ad->signal_byte_size = sizeof(int16_t)*shortToRead;
 			dlog_print(DLOG_DEBUG, LOG_TAG, "shortToRead = %d", shortToRead);
 
 			int16_t *signal = (int16_t *) malloc(sizeof(int16_t)*shortToRead);
 			n = blockread(ad->sockfd, signal, sizeof(int16_t)*shortToRead);
 			dlog_print(DLOG_DEBUG, LOG_TAG, "signal[0..2] = %d, %d, %d ...", signal[0], signal[1], signal[2]);
+			ad->signal = signal;
 
 			char check;
 			n = read(ad->sockfd, &check, 1);
@@ -226,76 +348,7 @@ static void connect_sensing_server(void *userdata) {
 	n = write(ad->sockfd, buffer, 1);
 }
 
-//=============================================================================================
-// Audio related utility functions
-//=============================================================================================
-static void start_audio_playing(appdata_s *ad) {
-	// 1. load audio to play
-	char fin_path[200];
-	sprintf(fin_path, "%s%s", ad->base_path, "audio.pcm");
-	struct stat info;
-	stat(fin_path, &info);
-	ad->output_buffer_size = info.st_size;
-	dlog_print(DLOG_DEBUG, LOG_TAG, "output_buffer_size = %d", ad->output_buffer_size);
 
-	FILE *fin = fopen(fin_path, "rb");
-	size_t res = fread(ad->output_buffer, sizeof(char), ad->output_buffer_size, fin);
-	dlog_print(DLOG_DEBUG, LOG_TAG, "fread res = %d", res);
-	fclose(fin);
-	dlog_print(DLOG_DEBUG, LOG_TAG, "buffer = [%x,%x,%x,%x,...]", ad->output_buffer[0], ad->output_buffer[1], ad->output_buffer[2], ad->output_buffer[3]);
-
-	// 2. play audio
-	int error_code = audio_out_prepare(ad->output);
-	myassert(error_code, 0, "audio_out_prepare() fails");
-
-	int bytes_number = audio_out_write(ad->output, ad->output_buffer, ad->output_buffer_size);
-	dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
-
-	// 3. release audio
-	error_code = audio_out_unprepare(ad->output);
-	myassert(error_code, 0, "audio_out_unprepare() fails");
-}
-
-static void stop_audio_playing(appdata_s *ad) {
-
-}
-
-static void start_audio_recording(appdata_s *ad) {
-	// 1. create the file to record
-	dlog_print(DLOG_DEBUG, LOG_TAG, ad->base_path);
-	char fout_path[200];
-	sprintf(fout_path, "%s%s", ad->base_path, "yctung_w.pcm");
-	dlog_print(DLOG_DEBUG, LOG_TAG, fout_path);
-	ad->input_buffer_idx = 0;
-
-	ad->fout = fopen(fout_path, "w");
-	if (!ad->fout) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "unable to open file for recording");
-	}
-
-	// 2. start async recording
-	int error_code = audio_in_set_stream_cb(ad->input, _audio_io_stream_read_cb, ad);
-	myassert(error_code, 0, "unable to set stream input callback");
-	error_code = audio_in_prepare(ad->input);
-	myassert(error_code, 0, "unable to prepare audio input");
-}
-
-static void stop_audio_recording(appdata_s *ad) {
-	// 1. stop audio recording
-	int error_code;
-	error_code = audio_in_unprepare(ad->input);
-	myassert(error_code, 0, "unable to unprepare audio input");
-
-	error_code = audio_in_unset_stream_cb(ad->input);
-	myassert(error_code, 0, "audio_in_unset_stream_cb fails");
-	// NOTE: don't destroy the class here, so we can reuse the class for the next recording
-
-	// 2. close the recorded file
-	fwrite(ad->input_buffer, sizeof(char), ad->input_buffer_idx, ad->fout);
-	fflush(ad->fout);
-	fclose(ad->fout);
-	ad->fout = NULL;
-}
 
 static void start_sensing(appdata_s *ad) {
 	start_audio_recording(ad);

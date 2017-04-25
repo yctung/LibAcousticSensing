@@ -19,6 +19,7 @@ classdef SensingServer < handle
         REACTION_SET_MEDIA      = 1;
         REACTION_ASK_SENSING    = 2;
         REACTION_SET_RESULT 	= 3;
+        REACTION_STOP_SENSING   = 4;
         
         % Supported type for ACTION_SET
         SET_TYPE_BYTE_ARRAY = 1;
@@ -123,8 +124,10 @@ classdef SensingServer < handle
         end
         
         function stopSensing(obj)
-            %obj.jss.writeByte(int8(obj.REACTION_ASK_STOP_SENSING));
+            obj.jss.writeByte(int8(obj.REACTION_STOP_SENSING));
+            obj.isSensing = 0;
             obj.buttonStartOrStopSensing.String = 'Start Sensing';
+            obj.updateUI();
         end
         
         % stop server waiting

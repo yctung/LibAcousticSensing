@@ -13,7 +13,7 @@
 #define SAMPLE_RATE 44100
 #define RECORDING_SEC 5
 
-#define SERVER_ADDR "192.168.1.114"
+#define SERVER_ADDR "192.168.100.193"
 #define SERVER_PORT 50005
 
 
@@ -37,6 +37,7 @@
 #define LIBAS_REACTION_SET_MEDIA 	1
 #define LIBAS_REACTION_ASK_SENSING  2
 #define LIBAS_REACTION_SET_RESULT 	3
+#define LIBAS_REACTION_STOP_SENSING 4
 
 #define LIBAS_CHECK_OK 255 // Tizen treate char -1 as 255 in comparison
 
