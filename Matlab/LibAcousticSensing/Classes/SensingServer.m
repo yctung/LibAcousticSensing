@@ -113,8 +113,8 @@ classdef SensingServer < handle
         
         % start ask device to record or play audio
         function startSensing(obj)
-            DEBUG_CH_CNT = 2; % TODO: load from audio sensing setting
-            obj.audioToProcessAll = zeros(length(obj.audioSource.signal), obj.audioSource.repeatCnt, DEBUG_CH_CNT);
+            %DEBUG_CH_CNT = 2; % TODO: load from audio sensing setting
+            obj.audioToProcessAll = zeros(length(obj.audioSource.signal), obj.audioSource.repeatCnt, obj.traceChannelCnt);
             obj.audioToProcessAllEnd = 0;
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
             obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));

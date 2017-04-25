@@ -60,11 +60,38 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 		int error_code = audio_in_peek(handle, &buffer, &nbytes);
 		myassert(error_code, 0, "audio_in_peek() failed");
 
+		// write to a file
+		/*
 		fwrite(buffer, sizeof(char), nbytes, ad->fout);
-
 		//memcpy(ad->input_buffer+ad->input_buffer_idx, buffer, sizeof(char)*nbytes);
 		ad->input_buffer_idx += sizeof(char)*nbytes;
 		dlog_print(DLOG_DEBUG, LOG_TAG, "stream_read_cb is called, input_buffer_idx = %d", ad->input_buffer_idx);
+		*/
+
+		// write to socket
+		int temp = htonl(nbytes);
+		char check = -1;
+
+		ad->buffer_size = 0;
+
+		char action = LIBAS_ACTION_DATA;
+		memcpy(ad->buffer, &action, sizeof(char));
+		ad->buffer_size += sizeof(char);
+		memcpy(ad->buffer+ad->buffer_size, &temp, sizeof(int));
+		ad->buffer_size += sizeof(int);
+		memcpy(ad->buffer+ad->buffer_size, buffer, nbytes);
+		ad->buffer_size += nbytes;
+		memcpy(ad->buffer+ad->buffer_size, &check, sizeof(char));
+		ad->buffer_size += sizeof(char);
+
+		int n = write(ad->sockfd, ad->buffer, ad->buffer_size);
+		if (n < 0) {
+			dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: write to socket fails, n = %d", n);
+		} else if (n < ad->buffer_size) {
+			dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: unable to write socket buffer completely, n = %d and buffer_size = %d", n, ad->buffer_size);
+		}
+		dlog_print(DLOG_DEBUG, LOG_TAG, "write to socket bytes n = %d / %d", n, ad->buffer_size);
+
 
 		error_code = audio_in_drop(handle); // remove audio data from internal buffer
 		myassert(error_code, 0, "audio_in_drop() failed!");
@@ -85,9 +112,9 @@ static void _keep_audio_playing(appdata_s *ad) {
 	int bytes_number = audio_out_write(ad->output, ad->pilot, ad->pilot_byte_size);
 	dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
 
-	// 3. TODO: play signal in a while loop
+	// 3. play signal
 	while(_need_to_keep_audio_playing) {
-		int bytes_number = audio_out_write(ad->output, ad->pilot, ad->pilot_byte_size);
+		int bytes_number = audio_out_write(ad->output, ad->signal, ad->signal_byte_size);
 		dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
 	}
 
@@ -206,9 +233,11 @@ static void _keep_reading_socket(void *userdata) {
 		// parse reaction
 		if (reaction == LIBAS_REACTION_ASK_SENSING) {
 			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_ASK_SENSING");
+			start_audio_recording(ad); // remember to start recording before playing the sensing audio
 			start_audio_playing(ad);
 		} else if (reaction == LIBAS_REACTION_STOP_SENSING) {
 			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_STOP_SENSING");
+			stop_audio_recording(ad);
 			stop_audio_playing(ad);
 		} else if (reaction == LIBAS_REACTION_SET_MEDIA) {
 			dlog_print(DLOG_DEBUG, LOG_TAG, "reaction == LIBAS_REACTION_SET_MEDIA");
