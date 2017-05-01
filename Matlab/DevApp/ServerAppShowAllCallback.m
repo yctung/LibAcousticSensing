@@ -12,6 +12,8 @@ function [] = ServerAppShowAllCallback( obj, type, data )
         return;
     end
 
+    CH_CNT_TO_SHOW = 1; % TOOD: set it based on device settings
+    
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA,
         LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
@@ -43,7 +45,7 @@ function [] = ServerAppShowAllCallback( obj, type, data )
             % line1: data 
             check1 = findobj('Tag','check01');
             if check1.Value == 1,
-                for chIdx = 1:2,
+                for chIdx = 1:CH_CNT_TO_SHOW,
                     line = findobj('Tag',sprintf('line01_%02d',chIdx));
                     dataToPlot = data(:,end,chIdx);
                     set(line, 'yData', dataToPlot); % only show the 1st ch
@@ -53,7 +55,7 @@ function [] = ServerAppShowAllCallback( obj, type, data )
             % line2: con 
             check2 = findobj('Tag','check02');
             if check2.Value == 1,
-                for chIdx = 1:2,
+                for chIdx = 1:CH_CNT_TO_SHOW,
                     line = findobj('Tag',sprintf('line02_%02d',chIdx));
                     conToPlot = 10*log10(smooth(abs(cons(:,end,chIdx)),100));
                     set(line, 'yData', conToPlot); % only show the 1st ch

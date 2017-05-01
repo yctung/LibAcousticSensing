@@ -8,4 +8,4 @@ addpath('LocalHelpers');
 clear oriPath
 
 % check if the java class is correctly included
-which EchoServer
+which JavaSensingServer

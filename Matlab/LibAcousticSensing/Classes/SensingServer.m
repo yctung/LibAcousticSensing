@@ -28,7 +28,6 @@ classdef SensingServer < handle
         SET_TYPE_INT = 4;
         SET_TYPE_VALUE_STRING = 5;
         
-        
         % Types of user-defined callback messages 
         CALLBACK_TYPE_ERROR     = -1;
         CALLBACK_TYPE_DATA      = 1;
@@ -64,6 +63,8 @@ classdef SensingServer < handle
         latestReceivedAction;
         isConnected;
         isSensing;
+        slaveServers; % number of slave servers to activate when start sensing
+        masterServer; % can only has one master server
         
         % audio variables
         audioSource;
@@ -109,6 +110,19 @@ classdef SensingServer < handle
             set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
             set(obj.jss,'OpDataCallback',@(h,e)obj.onDataCallback(h,e));
             %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);
+        end
+        
+        % add slave server to acitavet when this server start sense
+        function addSlaveServer(obj, serverToAdd)
+            if ~isempty(serverToAdd.masterServer),
+                fprintf(2, '[ERROR]: unable to add a slave server whcih has master server allocated (add slave server twice?)\n');
+            elseif ~isempty(obj.masterServer), 
+                fprintf(2, '[ERROR]: unable to add a slave server to a server that is also slave (add the wrong server as master?)\n');
+            else
+                obj.slaveServers = serverToAdd;
+                serverToAdd.masterServer = obj;
+                serverToAdd.updateUI(); % update UI to adapt to the slave mode
+            end
         end
         
         % start ask device to record or play audio
@@ -337,7 +351,7 @@ classdef SensingServer < handle
             IPaddress = char(address.getHostAddress);
 
             obj.textServerInfo = uicontrol(obj.panel,'Style','text',...
-                        'Position',[20,160,140,40],...
+                        'Position',[20,160,170,40],...
                         'FontSize',TEXT_FONT_SIZE,...
                         'String',sprintf('Server at %s:%d',IPaddress,obj.port));
                     
@@ -368,7 +382,10 @@ classdef SensingServer < handle
         % update UI based on server status
         function updateUI(obj)
             % determine the sensing status string
-            if obj.isConnected == 0,
+            if ~isempty(obj.masterServer),
+                obj.buttonStartOrStopSensing.Enable = 'off';
+                obj.buttonStartOrStopSensing.String = 'Slave Mode';
+            elseif obj.isConnected == 0,
                 obj.buttonStartOrStopSensing.Enable = 'off';
                 textConnectionStatus = 'wait connection';
             else

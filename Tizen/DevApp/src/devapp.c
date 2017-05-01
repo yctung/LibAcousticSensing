@@ -112,10 +112,19 @@ static void _keep_audio_playing(appdata_s *ad) {
 	int bytes_number = audio_out_write(ad->output, ad->pilot, ad->pilot_byte_size);
 	dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
 
+
+
 	// 3. play signal
 	while(_need_to_keep_audio_playing) {
 		int bytes_number = audio_out_write(ad->output, ad->signal, ad->signal_byte_size);
 		dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
+
+		if (bytes_number < 0) {
+			char* error_msg;
+			error_msg = get_error_message(bytes_number);
+			dlog_print(DLOG_ERROR, LOG_TAG, error_msg);
+		}
+
 	}
 
 	// 4. release audio interface

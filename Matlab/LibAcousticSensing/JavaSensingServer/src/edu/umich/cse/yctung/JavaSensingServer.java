@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavaSensingServer extends Thread {
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
-	private static final boolean SHOW_DEBUG_MESSAGE = true;
+	private static final boolean SHOW_DEBUG_MESSAGE = false;
 	
 	// set this flag to volatile because it will be read/write on different thread (ref: http://stackoverflow.com/questions/106591/do-you-ever-use-the-volatile-keyword-in-java)
 	private volatile boolean shutdown; // flag to shutdown the socket reading loop
@@ -60,6 +60,8 @@ public class JavaSensingServer extends Thread {
 	private JavaSensingServer(int port) {
 		this.port = port;
 		shutdown = false;
+		serverSocket = null;
+		clientSocket = null;
 	}
 
 //===============================================================
@@ -80,19 +82,21 @@ public class JavaSensingServer extends Thread {
 	
 	public static void closeAll(){
 		for (JavaSensingServer server : servers.values()) {
+			threadMessage("closeAll: going to close server at port = "+server.port);
 			server.close();
 		}
 	}
 	
 	public void close() {
 		shutdown = true; // TODO: set time out for socket read, so the shutdown will work 
-		servers.remove(port);
 		try {
-			serverSocket.close();
-			clientSocket.close();
+			threadMessage("close: going to close socket at port = "+port);
+			if (serverSocket != null) serverSocket.close();
+			if (clientSocket != null) clientSocket.close();
 		} catch (IOException e) {
 			threadErrMessage("[ERROR]: unable to close socket"+e.getMessage());
 		}
+		servers.remove(port);
 	}
 	
 
@@ -291,7 +295,11 @@ public class JavaSensingServer extends Thread {
 			}
 			
 		} catch (IOException e) {
-			threadErrMessage("[WARN]: on port = "+port+", e="+e.toString());
+			if (e.toString().equals("java.net.SocketException: Socket closed")) {
+				threadMessage("[WARN]: socket is closed (either by local or remote entity)");
+			} else {
+				threadErrMessage("[WARN]: on port = "+port+", e="+e.toString());
+			}
 		}
 		
 		
