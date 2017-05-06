@@ -1,4 +1,4 @@
-function [] = ServerAppForcePhoneCallback( obj, type, data )
+function [] = ServerAppShowAllCallback( obj, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
     global USER_FIG_TAG;
     USER_FIG_TAG = 'USER_FIG_TAG';
@@ -12,6 +12,8 @@ function [] = ServerAppForcePhoneCallback( obj, type, data )
         return;
     end
 
+    CH_CNT_TO_SHOW = 1; % TOOD: set it based on device settings
+    
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA,
         LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
@@ -26,9 +28,14 @@ function [] = ServerAppForcePhoneCallback( obj, type, data )
             
             % convlution of all data
             cons = convn(data, PS.signalToCorrelate,'same');
+            
             detectChIdx = 1;
-            detectResultNow = squeeze(mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, detectChIdx)),1));
-            nowSize = length(detectResultNow);
+            dataTime = data(:,end,detectChIdx); 
+            FS = 48000;
+            DF = FS/length(dataTime);
+            freqs = -FS/2:DF:(FS/2-DF);
+            SMOOTH_FACTOR = 5;
+            dataFreq = smooth(fftshift(abs(fft(dataTime))), SMOOTH_FACTOR);
             
             % return the result if need
             if PS.detectEnabled,
@@ -38,7 +45,7 @@ function [] = ServerAppForcePhoneCallback( obj, type, data )
             % line1: data 
             check1 = findobj('Tag','check01');
             if check1.Value == 1,
-                for chIdx = 1:2,
+                for chIdx = 1:CH_CNT_TO_SHOW,
                     line = findobj('Tag',sprintf('line01_%02d',chIdx));
                     dataToPlot = data(:,end,chIdx);
                     set(line, 'yData', dataToPlot); % only show the 1st ch
@@ -48,9 +55,9 @@ function [] = ServerAppForcePhoneCallback( obj, type, data )
             % line2: con 
             check2 = findobj('Tag','check02');
             if check2.Value == 1,
-                for chIdx = 1:2,
+                for chIdx = 1:CH_CNT_TO_SHOW,
                     line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    conToPlot = smooth(abs(cons(:,end,chIdx)),100);
+                    conToPlot = 10*log10(smooth(abs(cons(:,end,chIdx)),100));
                     set(line, 'yData', conToPlot); % only show the 1st ch
                 end
             end
@@ -59,16 +66,9 @@ function [] = ServerAppForcePhoneCallback( obj, type, data )
             check3 = findobj('Tag','check03');
             if check3.Value == 1,
                 line = findobj('Tag','line03_01');
-                if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
-                    toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
-                    detectResults(1:end-toShift) = detectResults(toShift+1:end);
-                    detectResultsEnd = detectResultsEnd - nowSize;
-                end
-
-                detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
-                detectResultsEnd = detectResultsEnd+nowSize;
-                set(line, 'yData', detectResults); % only show the 1st ch
+                set(line, 'yData', dataFreq(PS.detectRangeStart:PS.detectRangeEnd)); % only show the 1st ch
             end
+            
         end
     elseif type == obj.CALLBACK_TYPE_USER,
         % parse user data

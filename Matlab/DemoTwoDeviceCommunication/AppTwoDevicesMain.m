@@ -1,26 +1,30 @@
 %==========================================================================
-% 2017/03/29: 
+% 2017/04/26: Modified to send audio from one device to another
 %==========================================================================
-SERVER_PORT = 50005; % remember to diable firewall for this port
+
+TX_SERVER_PORT = 50005; % remember to diable firewall for this port
+RX_SERVER_PORT = 50006; % remember to diable firewall for this port
+
 close all;
 JavaSensingServer.closeAll(); % close all previous open socket
+pause(1.0);
 
+% create signal to send
 % build dummy "audible" audios for knowing the sound is played correctly on device
 as = AudioSource(); % default audio source
-
 
 FS = 48000;
 PERIOD = 2400;
 CHIRP_LEN = 1200;
 CHIRP_FREQ_START = 18000;
-CHIRP_FREQ_END = 24000;
+CHIRP_FREQ_END = 23000;
 APPLY_FADING_TO_SIGNAL = 1;
 FADING_RATIO = 0.5;
 
 global PS; PS = struct(); % parse setting, easy for the callback to get
 PS.FS = FS;
-PS.detectRangeStart = 580;
-PS.detectRangeEnd = 600;
+PS.detectRangeStart = 2000;
+PS.detectRangeEnd = 2350;
 PS.detectEnabled = 0;
 PS.detectRef = 0;
 
@@ -49,24 +53,18 @@ end
 signal = signal./max(abs(signal));
 signal = signal(:);
 
-PS.signalToCorrelate = signal(CHIRP_LEN:-1:1); % reverse the chirp is the optimal matched filter to detect chirp singals
+PS.signalToCorrelate = signal(CHIRP_LEN:-1:1);
 
 as.signal = signal;
 as.repeatCnt = 20*60*4;
 as.signalGain = 0.8;
 
-ss = SensingServer(SERVER_PORT, @ServerAppForcePhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
-ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
+% create servers
+txss = SensingServer(TX_SERVER_PORT, @AppTwoDevicesTxCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_ONLY, as);
+txss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
-%ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
-%ss2.startSensingAfterConnectionInit = 0; % avoid auto sensing
-
-%{
-pause(1.0);
-for i=1:1000
-    fprintf('busy...\n');
-    temp = rand(1000,1000)*rand(1000,1000);
-    pause(1.0);
-end
-%}
-%ss.startServer(as,);
+% NOTE: as should be assigned to rxss as well, so it know how to parse it
+rxss = SensingServer(RX_SERVER_PORT, @AppTwoDevicesRxCallback, SensingServer.DEVICE_AUDIO_MODE_RECORD_ONLY, as);
+rxss.startSensingAfterConnectionInit = 0;
+rxss.addSlaveServer(txss);
+% TODO: set rx as the chain mode

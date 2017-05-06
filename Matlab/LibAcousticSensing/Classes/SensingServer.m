@@ -165,12 +165,12 @@ classdef SensingServer < handle
         end
         
         function onDataCallback(obj, javahandle, event)
-            fprintf('    onDataCallback is called\n');
+            %fprintf('    onDataCallback is called\n');
             action = event.action;
             obj.latestReceivedAction = action;
             
             time = event.time;
-            fprintf('    action = %d\n', action);
+            %fprintf('    action = %d\n', action);
             
             %**********************************************************
             % ACTION_CONNECT: just connect the socket -> doing nothing
@@ -190,8 +190,6 @@ classdef SensingServer < handle
                 if obj.startSensingAfterConnectionInit == 1,
                     obj.startSensing();
                 end
-                set(0,'UserData','ACTION_INIT'); % for trigger the 
-
             %**********************************************************
             % ACTION_DATA: received audio data 
             %**********************************************************
@@ -209,13 +207,13 @@ classdef SensingServer < handle
                 
                 if ~isempty(audioToProcess),
                     processCnt = size(audioToProcess,2); % number of trace to be processed
-                    size(audioToProcess)
-                    size(obj.audioToProcessAll(:,obj.audioToProcessAllEnd+1:obj.audioToProcessAllEnd+processCnt,:))
+                    % size(audioToProcess)
+                    % size(obj.audioToProcessAll(:,obj.audioToProcessAllEnd+1:obj.audioToProcessAllEnd+processCnt,:))
                     obj.audioToProcessAll(:,obj.audioToProcessAllEnd+1:obj.audioToProcessAllEnd+processCnt,:) = audioToProcess;
                     obj.audioToProcessAllEnd = obj.audioToProcessAllEnd+1;
                     
                     % only parse the last audio data
-                    fprintf('callback is called for parsing audio data\n');
+                    % fprintf('callback is called for parsing audio data\n');
                     feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
                 end
             %**********************************************************
@@ -256,7 +254,6 @@ classdef SensingServer < handle
             %**********************************************************
             elseif action == obj.ACTION_SENSING_END,
                 fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
-                set(0,'UserData','ACTION_SENSING_END');
                 obj.isSensing = 0;
                 obj.updateUI();
             %**********************************************************

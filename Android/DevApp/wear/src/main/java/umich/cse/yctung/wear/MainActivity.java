@@ -55,7 +55,7 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         Dialog dialog = asc.createInitModeDialog(this, "35.2.141.147", 50005);
         dialog.show();
         */
-        boolean result = asc.initAsSlaveMode("10.0.0.12",50005);
+        boolean result = asc.initAsSlaveMode("192.168.100.193",50005);
         if (!result) asc.updateDebugStatus("Init fails");
         else {
             asc.startSensingWhenPossible();
