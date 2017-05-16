@@ -13,13 +13,13 @@
 		13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 13099BF91E300947006D8A06 /* FrameworkCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BFA1E300947006D8A06 /* FrameworkCheck.m */; };
 		13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18D91E48F400008CB0AE /* NetworkController.h */; };
-		13BF18DC1E48F400008CB0AE /* NetworkControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18DA1E48F400008CB0AE /* NetworkControllerCallerDelegate.h */; };
+		13BF18DC1E48F400008CB0AE /* NetworkControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18DA1E48F400008CB0AE /* NetworkControllerCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13BF18E01E48F460008CB0AE /* AcousticSensingController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18DE1E48F460008CB0AE /* AcousticSensingController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13BF18E11E48F460008CB0AE /* AcousticSensingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18DF1E48F460008CB0AE /* AcousticSensingController.m */; };
 		13BF18E61E48F48D008CB0AE /* AcousticController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E21E48F48D008CB0AE /* AcousticController.h */; };
-		13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E31E48F48D008CB0AE /* AcousticControllerCallerDelegate.h */; };
+		13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E31E48F48D008CB0AE /* AcousticControllerCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13BF18E81E48F48D008CB0AE /* AudioRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E41E48F48D008CB0AE /* AudioRecorder.h */; };
-		13BF18E91E48F48D008CB0AE /* AudioRecorderCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E51E48F48D008CB0AE /* AudioRecorderCallerDelegate.h */; };
+		13BF18E91E48F48D008CB0AE /* AudioRecorderCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18E51E48F48D008CB0AE /* AudioRecorderCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13BF18EB1E48F49F008CB0AE /* AcousticController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EA1E48F49F008CB0AE /* AcousticController.m */; };
 		13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EC1E48F4A4008CB0AE /* AudioRecorder.m */; };
 		13BF18EF1E48F4B3008CB0AE /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EE1E48F4B3008CB0AE /* NetworkController.m */; };
@@ -32,6 +32,7 @@
 		13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19021E48FAAE008CB0AE /* TraceSaver.h */; };
 		13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF19031E48FAAF008CB0AE /* TraceSaver.m */; };
 		13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */; };
+		13C919931EC710C900A4D1FA /* AcousticSensingControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -193,6 +194,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13C919931EC710C900A4D1FA /* AcousticSensingControllerCallerDelegate.h in Headers */,
 				13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */,
 				13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */,
 				13BF18E61E48F48D008CB0AE /* AcousticController.h in Headers */,

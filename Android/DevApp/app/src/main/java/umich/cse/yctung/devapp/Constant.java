@@ -6,6 +6,6 @@ package umich.cse.yctung.devapp;
 public class Constant {
     //public static String DEFAULT_SERVER_ADDR = "35.2.209.110"; // my office
     //public static String DEFAULT_SERVER_ADDR = "192.168.1.114";
-    public static String DEFAULT_SERVER_ADDR = "192.168.100.193"; // Taiwan
+    public static String DEFAULT_SERVER_ADDR = "192.168.0.108"; // Taiwan
     public static int DEFAULT_SERVER_PORT = 50005;
 }

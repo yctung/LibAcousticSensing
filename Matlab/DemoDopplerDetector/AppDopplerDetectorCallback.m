@@ -1,11 +1,18 @@
-function [] = ServerAppShowAllCallback( obj, type, data )
+function [] = AppDopplerDetectorCallback( obj, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
     global USER_FIG_TAG;
     USER_FIG_TAG = 'USER_FIG_TAG';
     global PS; % user parse setting
-    global detectResults;
-    global detectResultsEnd;
-    DETECT_RESULT_SIZE = 300; % number of result sample to show
+    global DF;
+    
+    global dataBuf; % circular buffer of data
+    DATA_BUF_SIZE = 4800*10; % buffer up to 10 of data
+    global peakBuf;
+    global peakRef;
+    PEAK_BUF_SIZE = 300; % store 300 of peak of processed data for UI
+    
+    
+    [dataSize, dataCnt, chCnt] = size(data);
     
     if type == obj.CALLBACK_TYPE_ERROR,
         fprintf(2, '[ERROR]: get the error callback data = %s', data);
@@ -19,27 +26,27 @@ function [] = ServerAppShowAllCallback( obj, type, data )
         LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
         %hFig = findobj('Tag',FIG_CON_TAG);
         if obj.userfig == -1, % need to create a new UI window
-            detectResultsEnd = 0;
-            detectResults = zeros(DETECT_RESULT_SIZE, 1);
-
+            dataBuf = zeros(DATA_BUF_SIZE, 1);
+            peakBuf = zeros(PEAK_BUF_SIZE, 1);
+            peakRef = 0;
             createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
         else
             % process data
-            
-            % convlution of all data
-            cons = convn(data, PS.signalToCorrelate,'same');
-            
-            detectChIdx = 1;
-            dataTime = data(:,end,detectChIdx); 
-            FS = 48000;
-            DF = FS/length(dataTime);
-            freqs = -FS/2:DF:(FS/2-DF);
-            SMOOTH_FACTOR = 5;
-            dataFreq = smooth(fftshift(abs(fft(dataTime))), SMOOTH_FACTOR);
-            
-            % return the result if need
-            if PS.detectEnabled,
-                %obj.jss.write()
+            freqMaxIdxs = zeros(dataCnt, 1);
+            for i = 1:dataCnt
+                % a. update data buf
+                debugChIdx = 1; % TODO: update to show both
+                dataBuf = [dataBuf(dataSize+1:end); data(:,i,debugChIdx)];
+                
+                % b. start doing fft to find freq shift
+                dataRef = dataBuf(end-dataSize*PS.combineFactor+1:end);
+                dataRef = downsample(dataRef, PS.downsampleFactor); % TODO: use other phase to increase stability
+                DF = PS.FS/length(dataRef);
+                dataFreq = abs(fft(dataRef));
+                dataFreq = dataFreq(1:ceil(length(dataFreq)/2)); % ignore negative freqs
+                [~, freqMaxIdxs(i)] = max(dataFreq(PS.detectRangeStart:PS.detectRangeEnd));
+                
+                peakBuf = [peakBuf(length(freqMaxIdxs)+1:end); freqMaxIdxs(i)];
             end
             
             % line1: data 
@@ -52,23 +59,35 @@ function [] = ServerAppShowAllCallback( obj, type, data )
                 end
             end
 
-            % line2: con 
+            % line2: freq
             check2 = findobj('Tag','check02');
             if check2.Value == 1,
-                for chIdx = 1:CH_CNT_TO_SHOW,
-                    line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    conToPlot = 10*log10(smooth(abs(cons(:,end,chIdx)),100));
-                    set(line, 'yData', conToPlot); % only show the 1st ch
-                end
+                line = findobj('Tag','line02_01');
+                set(line, 'yData', dataFreq(PS.detectRangeStart:PS.detectRangeEnd)); % only show the 1st ch
             end
 
             % line3: detect result
             check3 = findobj('Tag','check03');
+            [dfs, dvs, ads] = getResultBasedOnFreqDiffIdx(peakBuf-peakRef);
             if check3.Value == 1,
                 line = findobj('Tag','line03_01');
-                set(line, 'yData', dataFreq(PS.detectRangeStart:PS.detectRangeEnd)); % only show the 1st ch
+                set(line, 'yData', peakBuf); % only show the 1st ch
+                
+                line = findobj('Tag','line03_02');
+                set(line, 'yData', [peakRef, peakRef]);
+                set(line, 'xData', [0, length(peakBuf)-1]);
+                line = findobj('Tag','line03_03');
+                set(line, 'yData', ads);
             end
             
+            resultText = findobj('Tag','textResultFreq');
+            resultText.String = sprintf('Freq:    %dHz', dfs(end));
+            
+            resultText = findobj('Tag','textResultVel');
+            resultText.String = sprintf('Velocity:%dcm/s', round(dvs(end)));
+            
+            resultText = findobj('Tag','textResultDist');
+            resultText.String = sprintf('Distance:%dcm', round(ads(end)));
         end
     elseif type == obj.CALLBACK_TYPE_USER,
         % parse user data
@@ -94,6 +113,10 @@ function createUI(obj, figTag, data, lineCnts)
     % lineCnts is the number of lines per figure
     global PS;
     
+    TITLE_FONT_SIZE = 17;
+    TEXT_FONT_SIZE = 15;
+    set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
+    
     PLOT_AXE_IN_WIDTH = 270;
     PLOT_AXE_OUT_WIDTH = 290;
     PLOT_AXE_CNT = length(lineCnts);
@@ -102,16 +125,22 @@ function createUI(obj, figTag, data, lineCnts)
     set(obj.userfig,'UserData',obj); % attached the obj to fig property for future reference 
     
     h_panel2 = uipanel(obj.userfig,'Units','pixels','Position',[15,15,520+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),300]);
-    textIntro = uicontrol(h_panel2,'Style','text','Position',[10,255,180,30],'String','Control the sensing response');
+    textIntro = uicontrol(h_panel2,'Style','text','Position',[10,255,180,30],'FontSize',TITLE_FONT_SIZE,'String','Sensing Controls');
     
     RANGE_Y = 200;
     RANGE_FONT_SIZE = 15;
     textRange = uicontrol(h_panel2,'Style','text','Position',[25,RANGE_Y-5,50,30],'String','Range:','FontSize',RANGE_FONT_SIZE);
     uicontrol(h_panel2, 'Tag','editRangeStart', 'style','edit','units','pixels','position',[80,RANGE_Y,50,30],'String',num2str(PS.detectRangeStart),'FontSize',RANGE_FONT_SIZE);
     uicontrol(h_panel2, 'Tag','editRangeEnd', 'style','edit','units','pixels','position',[130,RANGE_Y,50,30],'String',num2str(PS.detectRangeEnd),'FontSize',RANGE_FONT_SIZE);
+    buttonApply = uicontrol(h_panel2,'Style','pushbutton','Position',[40,160,110,30],'FontSize',TEXT_FONT_SIZE,'String','Apply','Callback',@buttonApplyCallback);
     
     
-    buttonApply = uicontrol(h_panel2,'Style','pushbutton','Position',[30,130,110,30],'String','Apply','Callback',@buttonApplyCallback);
+    uicontrol(h_panel2,'Style','text','Position',[5,120,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Freq: ','Tag','textResultFreq');
+    uicontrol(h_panel2,'Style','text','Position',[5,90,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Velocity: ','Tag','textResultVel');
+    uicontrol(h_panel2,'Style','text','Position',[5,60,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Distance: ','Tag','textResultDist');
+    uicontrol(h_panel2,'Style','pushbutton','Position',[40,20,110,30],'FontSize',TEXT_FONT_SIZE,'String','Reset','Callback',@buttonLockCallback);
+    
+    
             
     
 
@@ -125,17 +154,24 @@ function createUI(obj, figTag, data, lineCnts)
             %}
             
     
-                
+    ylabels = {'data', 'energy','result'};
+    xlabels = {'time', 'freq', 'time'};
     for i = 1:PLOT_AXE_CNT,
         uicontrol(h_panel2, 'Style','checkbox','String','update','Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,80,20], 'Tag',sprintf('check%02d',i));
         
-        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),30,270,250]);
+        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),50,240,230]);
         hold on;
         for j = 1:lineCnts(i),
             plot(obj.axe, data(:,1),'Tag',sprintf('line%02d_%02d',i,j),'linewidth',2); % only show the 1st ch
         end
+        xlabel(xlabels{i});
+        ylabel(ylabels{i});
         hold off;
-        legend(arrayfun(@(x) sprintf('%d',x), 1:lineCnts(i),'uni',false).');
+        if i < 3
+            legend(arrayfun(@(x) sprintf('%d',x), 1:lineCnts(i),'uni',false).');
+        else
+            legend('peak (index)', 'velocity (cm/s)', 'distance (cm)','Location','southwest');
+        end
     end
         
 
@@ -185,6 +221,24 @@ function recordButtonCallback(obj, event)
         fprintf(2,'[ERROR]: undefined recordButton status\n');
     end
 end
+
+function [diffFreqs, diffVels, accDists] = getResultBasedOnFreqDiffIdx(diffBinIdxs)
+    global DF;
+    global PS;
+    diffFreqs = DF*diffBinIdxs/PS.downsampleFactor;
+    diffVels = diffFreqs*(34000)/PS.SIGNAL_FREQ;
+    accDists = cumsum(diffVels*(PS.PERIOD/PS.FS));
+end
+
+
+
+function buttonLockCallback(obj,event)
+    global peakBuf;
+    global peakRef;
+    peakRef = peakBuf(end);
+    peakBuf(:) = peakRef;
+end
+
 
 
 % apply ui control to parse value

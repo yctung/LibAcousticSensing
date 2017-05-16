@@ -17,6 +17,10 @@
 		13099C071E3009F3006D8A06 /* LibAcousticSensingFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 13099C031E3009E9006D8A06 /* LibAcousticSensingFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
 		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
+		13C919971EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919951EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
+		13C919981EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919961EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
+		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
+		13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +93,10 @@
 		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
 		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
 		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
+		13C919951EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
+		13C919961EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
+		13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToEstimateFreqResp.wav; sourceTree = "<group>"; };
+		13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToCheckAGC.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +149,7 @@
 		13099BC51E300914006D8A06 /* DevApp */ = {
 			isa = PBXGroup;
 			children = (
+				13C919941EC73B2500A4D1FA /* AudioSource */,
 				13099BC91E300914006D8A06 /* AppDelegate.h */,
 				13099BCA1E300914006D8A06 /* AppDelegate.m */,
 				13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */,
@@ -187,6 +196,17 @@
 				13099C051E3009E9006D8A06 /* LibAcousticSensingFrameworkTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		13C919941EC73B2500A4D1FA /* AudioSource */ = {
+			isa = PBXGroup;
+			children = (
+				13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */,
+				13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */,
+				13C919951EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */,
+				13C919961EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */,
+			);
+			name = AudioSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,6 +278,7 @@
 				TargetAttributes = {
 					13099BC21E300914006D8A06 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = F878Y85U3H;
 					};
 					13099BDB1E300915006D8A06 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -317,7 +338,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13C919981EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */,
 				13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */,
+				13C919971EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */,
+				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
+				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
 				13099BD31E300915006D8A06 /* Assets.xcassets in Resources */,
 			);
@@ -486,10 +511,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = DevApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -498,10 +526,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = DevApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

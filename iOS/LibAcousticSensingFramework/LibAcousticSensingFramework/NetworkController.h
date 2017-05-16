@@ -34,7 +34,8 @@ static const char SET_TYPE_VALUE_STRING = 5; // sent value by string
 @property (nonatomic, retain) id<NetworkControllerCallerDelegate> refCaller;
 
 - (BOOL)getIsConnected;
-- (id)initWithUILabel:(UILabel *) networkStatus andCaller:(id<NetworkControllerCallerDelegate>)callerIn;
+//- (id)initWithUILabel:(UILabel *) networkStatus andCaller:(id<NetworkControllerCallerDelegate>)callerIn;
+- (id)initWithCaller:(id<NetworkControllerCallerDelegate>)callerIn;
 - (void)sendInitAction;
 - (void)sendSetStringAction:(NSString*)name andStringToSet:(NSString *) dataString;
 - (void)sendSetValueStringAction:(NSString*)name andStringToSet:(NSString *) dataString;

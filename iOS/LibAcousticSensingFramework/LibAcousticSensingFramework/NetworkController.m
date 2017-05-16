@@ -141,6 +141,7 @@
 
 }
 
+/*
 - (id)initWithUILabel:(UILabel *) networkStatus andCaller:(id<NetworkControllerCallerDelegate>)callerIn {
     self = [super init];
     if (self) {
@@ -153,6 +154,20 @@
     }
     return self;
 }
+*/
+- (id)initWithCaller:(id<NetworkControllerCallerDelegate>)callerIn {
+    self = [super init];
+    if (self) {
+        //statusText = networkStatus;
+        isConnected = NO;
+        refCaller = callerIn;
+        dataWaitToSend = [[NSMutableArray alloc] init];
+        okToSendDataDirectly = NO;
+        currentDataToSendOffset = 0;
+    }
+    return self;
+}
+
 
 // wait the send operation until socket is ready to send
 -(void)sendDataWhenPossible:(NSData*) dataToSend{

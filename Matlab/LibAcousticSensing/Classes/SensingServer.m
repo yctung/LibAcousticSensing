@@ -63,6 +63,7 @@ classdef SensingServer < handle
         latestReceivedAction;
         isConnected;
         isSensing;
+        isPreambleDetectedCorrectly;
         slaveServers; % number of slave servers to activate when start sensing
         masterServer; % can only has one master server
         
@@ -96,6 +97,7 @@ classdef SensingServer < handle
             obj.isConnected = 0;
             obj.isSensing = 0;
             obj.latestReceivedAction = obj.ACTION_CLOSE;
+            obj.isPreambleDetectedCorrectly = -2; % init status meaning wait for result
             
             % build a UI sample
             obj.buildUI();
@@ -110,6 +112,8 @@ classdef SensingServer < handle
             set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
             set(obj.jss,'OpDataCallback',@(h,e)obj.onDataCallback(h,e));
             %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);
+            
+            obj.setWaitFlag('NONE');
         end
         
         % add slave server to acitavet when this server start sense
@@ -126,22 +130,44 @@ classdef SensingServer < handle
         end
         
         % start ask device to record or play audio
-        function startSensing(obj)
+        function startSensingSelf(obj) % only sense device connected to this server
             %DEBUG_CH_CNT = 2; % TODO: load from audio sensing setting
             obj.audioToProcessAll = zeros(length(obj.audioSource.signal), obj.audioSource.repeatCnt, obj.traceChannelCnt);
             obj.audioToProcessAllEnd = 0;
-            obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt);
+            obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt,obj);
             obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
             obj.isSensing = 1;
             obj.buttonStartOrStopSensing.String = 'Stop Sensing';
             obj.updateUI();
         end
         
+        % start ask device and other slave server's device to sense
+        function startSensing(obj)
+            if ~isempty(obj.slaveServers) % check if all the slave server (if existed) is connected
+                for i = 1:length(obj.slaveServers)
+                    if obj.slaveServers(i).isConnected == 0 % one of the slave server is not connected
+                        fprintf(2, '[ERROR]: start sensing fails since one of the slave server (at port = %d) is not connected\n', obj.slaveServers(i).port);
+                        return;
+                    end
+                end
+            end
+                
+            obj.startSensingSelf();
+            % start all slave server if existed
+            for i = 1:length(obj.slaveServers)
+                obj.slaveServers(i).startSensingSelf(); % TODO: add some delay before triggering the slave server
+            end
+        end
+        
+        
+        
         function stopSensing(obj)
             obj.jss.writeByte(int8(obj.REACTION_STOP_SENSING));
             obj.isSensing = 0;
             obj.buttonStartOrStopSensing.String = 'Start Sensing';
             obj.updateUI();
+            
+            obj.setWaitFlag('ACTION_SENSING_END');
         end
         
         % stop server waiting
@@ -152,6 +178,28 @@ classdef SensingServer < handle
             clear obj.object;
         end
         
+        % update preambleDetectResult by parser
+        function preambleDetectResult(obj, result)
+            obj.isPreambleDetectedCorrectly = result;
+            if result == 1, % preamble is detected correctly
+                % do nothing now
+            else % preamble is not detected
+                obj.stopSensing();
+            end
+        end
+        
+        % utility function to set 'UserData' for wait for master server
+        function setWaitFlag(obj, flag)
+            % only set flag when it is a master server
+            %if isempty(obj.masterServer), % mean it is the master server
+            %    set(0,'UserData', flag);
+            %end
+            set(obj.fig, 'UserData', flag);
+        end
+        
+        function waitfor(obj, flag)
+            waitfor(obj.fig, 'UserData', flag);
+        end
 %==========================================================================
 %  Internal UI/networking functions for parsing recevied packets
 %  NOTE: callbacks are triggered from a seperate java thread 
@@ -177,6 +225,7 @@ classdef SensingServer < handle
             %**********************************************************
             if action == obj.ACTION_CONNECT,
                 fprintf(obj.dfid, '--- ACTION_CONNECT ---\n');
+                obj.setWaitFlag('ACTION_CONNECT');
             %**********************************************************
             % ACTION_INIT: initialize necessary commponent
             %  ***NOTE***: This action is triggered only when necessary
@@ -190,6 +239,7 @@ classdef SensingServer < handle
                 if obj.startSensingAfterConnectionInit == 1,
                     obj.startSensing();
                 end
+                obj.setWaitFlag('ACTION_INIT');
             %**********************************************************
             % ACTION_DATA: received audio data 
             %**********************************************************
@@ -256,6 +306,8 @@ classdef SensingServer < handle
                 fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
                 obj.isSensing = 0;
                 obj.updateUI();
+                
+                obj.setWaitFlag('ACTION_SENSING_END');
             %**********************************************************
             % ACTION_CLOSE: read the end of sockets -> close loop
             %**********************************************************
@@ -340,7 +392,7 @@ classdef SensingServer < handle
 %==========================================================================
         function buildUI(obj)
             TEXT_FONT_SIZE = 15;
-            obj.fig = figure('Position',[50,420,230,230],'Toolbar','none','MenuBar','none');
+            obj.fig = figure('Position',[50,450,230,230],'Toolbar','none','MenuBar','none');
             obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
             
             % ref: https://www.mathworks.com/matlabcentral/newsreader/view_thread/292100
@@ -367,9 +419,10 @@ classdef SensingServer < handle
             %}
             
             obj.buttonStartOrStopSensing = uicontrol(obj.panel,'Style','pushbutton',...
-                        'Position',[30,40,120,30],...
+                        'Position',[30,40,140,30],...
                         'String','Start Sensing',...
                         'TooltipString','Sensing',...
+                        'FontSize',TEXT_FONT_SIZE,...
                         'Interruptible','on',...
                         'Callback',@(~,~)obj.buttonStartOrStopSensingCallback);
                     
@@ -379,10 +432,7 @@ classdef SensingServer < handle
         % update UI based on server status
         function updateUI(obj)
             % determine the sensing status string
-            if ~isempty(obj.masterServer),
-                obj.buttonStartOrStopSensing.Enable = 'off';
-                obj.buttonStartOrStopSensing.String = 'Slave Mode';
-            elseif obj.isConnected == 0,
+            if obj.isConnected == 0,
                 obj.buttonStartOrStopSensing.Enable = 'off';
                 textConnectionStatus = 'wait connection';
             else
@@ -392,9 +442,16 @@ classdef SensingServer < handle
                     textConnectionStatus = 'sensing...';
                 end
             end
+            
+            if ~isempty(obj.masterServer),
+                obj.buttonStartOrStopSensing.Enable = 'off';
+                obj.buttonStartOrStopSensing.String = 'Slave Mode';
+            end
+            
             obj.textServerStatus.String=textConnectionStatus;
         end
         
+        % callback for the start or stop sensing button
         function buttonStartOrStopSensingCallback(obj)
             if obj.isSensing == 0, % need to start sensing 
                 obj.startSensing();

@@ -7,16 +7,25 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <LibAcousticSensingFramework/AcousticSensingController.h>
 
-@interface ServerClientViewController : UIViewController {
+
+#ifndef ServerClientViewController_h
+#define ServerClientViewController_h
+
+#import <LibAcousticSensingFramework/AcousticSensingController.h>
+#import <LibAcousticSensingFramework/AcousticSensingControllerCallerDelegate.h>
+
+@interface ServerClientViewController : UIViewController<AcousticSensingControllerCallerDelegate> {
     BOOL isSensing;
     AcousticSensingController *asc;
 }
 
 @property (retain, nonatomic) AcousticSensingController *asc;
 @property (retain, nonatomic) IBOutlet UIButton *startOrStopButton;
+@property (retain, nonatomic) IBOutlet UILabel *debugStatus;
 - (IBAction) actionStartOrStopSensing;
+- (IBAction) connectToServer;
 
+#endif /* ServerClientViewController_h */
 
 @end

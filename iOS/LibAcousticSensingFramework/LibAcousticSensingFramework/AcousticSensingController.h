@@ -13,9 +13,15 @@
 #ifndef AcousticSensingController_h
 #define AcousticSensingController_h
 
-@interface AcousticSensingController : NSObject<UIAlertViewDelegate>
+#import "NetworkControllerCallerDelegate.h"
+#import "AcousticControllerCallerDelegate.h"
+#import "AcousticSensingControllerCallerDelegate.h"
 
+@interface AcousticSensingController : NSObject<UIAlertViewDelegate, NetworkControllerCallerDelegate, AcousticControllerCallerDelegate>
+
+- (id)initWithCaller: (id<AcousticSensingControllerCallerDelegate>) callerIn;
 - (void) createInitModeDialogWithIp: (NSString*) serverIpDefault andPort: (int) serverPortDefault;
+- (void) startSensingNow;
 
 @end
 

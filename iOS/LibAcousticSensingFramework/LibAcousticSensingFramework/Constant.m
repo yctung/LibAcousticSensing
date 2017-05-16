@@ -19,9 +19,9 @@
     BOOL const C_TRACE_SEND_TO_NETWORK = YES;
 
     // Network setting
-    NSString * const C_SERVER_ADDR = @"10.0.0.12"; // Umich5566 in office
+    //NSString * const C_SERVER_ADDR = @"10.0.0.12"; // Umich5566 in office
     //NSString * const C_SERVER_ADDR = @"192.168.1.143"; // Home
-    //NSString * const C_SERVER_ADDR = @"172.20.10.2"; // iphone hotspot
+    NSString * const C_SERVER_ADDR = @"192.168.0.108"; // Taiwan
     //NSString * const C_SERVER_ADDR = @"35.2.25.249"; // MWireless
     int const C_DETECT_SERVER_PORT = 50009;
     int const C_TRIGGER_SERVER_PORT = 50010;
@@ -51,12 +51,19 @@
     // Audio setting
     int C_RECORDER_SAMPLERATE = 48000;
     int C_RECORDER_CHANNEL = 1;
-    double C_PLAYER_VOL = 0.5; // *** just for debu -> need to get back in futrue ***
+    double C_PLAYER_VOL = 1.0; // *** just for debu -> need to get back in futrue ***
 
     BOOL C_PLAYER_USE_BOTTOM_SPEAKER = NO;
 
-    NSString * C_AUDIO_SOURCE = @"48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced";
-    NSString * const C_AUDIO_SOURCE_PREFIX = @"source_";
+    //NSString * C_AUDIO_SOURCE = @"48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced";
+    //NSString * const C_AUDIO_SOURCE_PREFIX = @"source_";
+
+    //NSString * C_AUDIO_SOURCE = @"latestAudioToEstimateFreqResp"; // no need .wav
+    NSString * C_AUDIO_SOURCE = @"latestAudioToCheckAGC"; // no need .wav
+
+
+    NSString * const C_AUDIO_SOURCE_PREFIX = @"";
+
     NSString * const C_AUDIO_SOURCE_SUFFIX = @".wav";
     NSString * const C_TRACE_AUDIO_PREFIX = @"record_";
 

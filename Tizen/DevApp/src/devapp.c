@@ -99,6 +99,7 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 }
 
 // this need to be executed in a separate thread to avoid hanging the UI thread
+// yctung: this would not work, it seems that I have overflowed the audio buffer
 bool _need_to_keep_audio_playing = false;
 static void _keep_audio_playing(appdata_s *ad) {
 	// 1. enable audio playing
@@ -113,10 +114,12 @@ static void _keep_audio_playing(appdata_s *ad) {
 	dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
 
 
-
 	// 3. play signal
 	while(_need_to_keep_audio_playing) {
-		int bytes_number = audio_out_write(ad->output, ad->signal, ad->signal_byte_size);
+		//int bytes_number = audio_out_write(ad->output, ad->signal, ad->signal_byte_size);
+
+		int bytes_number = audio_out_write(ad->output, ad->pilot, ad->pilot_byte_size);
+
 		dlog_print(DLOG_DEBUG, LOG_TAG, "bytes_number being played = %d", bytes_number);
 
 		if (bytes_number < 0) {
@@ -133,9 +136,80 @@ static void _keep_audio_playing(appdata_s *ad) {
 	dlog_print(DLOG_DEBUG, LOG_TAG, "_keep_audio_playing ends");
 }
 
+// callback for play audio asynchronously
+void *_latest_play_buffer;
+int _latest_play_buffer_size;
+int _latest_play_buffer_offset;
+void _audio_io_stream_write_cb(audio_out_h handle, size_t nbytes, void *userdata)
+{
+    appdata_s *ad = userdata;
+    char * buffer = NULL;
+    int buffer_offset = 0;
+	if (nbytes > 0) {
+		dlog_print(DLOG_DEBUG, LOG_TAG, "_audio_io_stream_write_cb is called, nbytes = %d", nbytes);
+
+      // Allocate and reset a local buffer for reading the audio data from the file
+      buffer = malloc(nbytes);
+
+      // copy buffer from the audio received from Matlab server
+      int nbytes_remain = nbytes;
+
+      // copy until the whole buffer is filled
+      while (nbytes_remain > 0) {
+    	  if (_latest_play_buffer_size - _latest_play_buffer_offset >= nbytes_remain) {
+    		  // the bytes in the current play_buf is enough to fill the remain bytes in local buf to play
+    		  memcpy(buffer+buffer_offset, _latest_play_buffer+_latest_play_buffer_offset, nbytes_remain);
+    		  _latest_play_buffer_offset += nbytes_remain;
+    		  nbytes_remain = 0; // break the loop
+
+    		  if (_latest_play_buffer_offset == _latest_play_buffer_size) _latest_play_buffer_offset = 0;
+    	  } else {
+    		  // put part of data into buffer and wait the next round
+    		  int nbytes_tocopy = _latest_play_buffer_size - _latest_play_buffer_offset;
+    		  memcpy(buffer+buffer_offset, _latest_play_buffer+_latest_play_buffer_offset, nbytes_tocopy);
+    		  _latest_play_buffer_offset = 0; // return to the start
+    		  nbytes_remain -= nbytes_tocopy;
+    		  buffer_offset += nbytes_tocopy;
+    	  }
+
+    	  if (_latest_play_buffer == ad->pilot && _latest_play_buffer_offset == 0) { // means the whole play_buffer is pilot and has been finished
+    		  // switch pilot to signal buffer here
+    		  _latest_play_buffer = ad->signal;
+    		  _latest_play_buffer_size = ad->signal_byte_size;
+    		  _latest_play_buffer_offset = 0;
+    	  }
+      }
+
+
+      // Copy the audio data from the local buffer to the internal output buffer (starts playback)
+      int data_size = audio_out_write(handle, buffer, nbytes);
+
+      if (data_size < 0)
+      {
+         dlog_print(DLOG_ERROR, LOG_TAG, "audio_out_write() failed! Error code = %d", data_size);
+      }
+
+      // Release the memory allocated to the local buffer
+      free(buffer);
+   }
+}
+
 
 static void start_audio_playing(appdata_s *ad) {
-	ecore_thread_run(_keep_audio_playing, NULL, NULL, ad);
+	// method 1: play audio by a while loop in another thread -> fails after few seconds
+	// ecore_thread_run(_keep_audio_playing, NULL, NULL, ad);
+
+
+	// method 2: play audio in the callback manner
+	_latest_play_buffer = ad->pilot;
+	_latest_play_buffer_size = ad->pilot_byte_size;
+	_latest_play_buffer_offset = 0;
+	int error_code = audio_out_set_stream_cb(ad->output, _audio_io_stream_write_cb, ad);
+	myassert(error_code, 0, "audio_out_set_stream_cb() fails");
+	error_code = audio_out_prepare(ad->output);
+	myassert(error_code, 0, "audio_out_prepare() fails");
+
+
 
 	// 1. load audio to play
 	/*

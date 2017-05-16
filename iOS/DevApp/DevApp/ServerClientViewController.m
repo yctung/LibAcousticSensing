@@ -10,7 +10,7 @@
 
 
 @implementation ServerClientViewController
-@synthesize startOrStopButton;
+@synthesize startOrStopButton,debugStatus;
 @synthesize asc;
 
 - (void)viewDidLoad {
@@ -18,7 +18,7 @@
     // Do any additional setup after loading the view from its nib.
     isSensing = NO;
     
-    asc = [[AcousticSensingController alloc] init];
+    asc = [[AcousticSensingController alloc] initWithCaller:self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -38,9 +38,25 @@
 }
 */
 
+- (IBAction)connectToServer {
+    [asc createInitModeDialogWithIp:@"192.168.0.108" andPort:50005];
+}
 
 - (IBAction)actionStartOrStopSensing {
-    [asc createInitModeDialogWithIp:@"35.2.195.254" andPort:50005];
+    [asc startSensingNow];
 }
+
+//==================================================================================================
+//	Acoustic sensing controller callbacks
+//==================================================================================================
+- (void)updateDebugStatus: (NSString *) status {
+    NSLog(@"updateDebugStatus: %@", status);
+    [debugStatus setText:status];
+}
+- (void)unexpectedEnd:(int) code withReason: (NSString *) reason {
+    
+}
+
+
 
 @end

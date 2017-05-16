@@ -202,7 +202,7 @@
     
     // NOTE: seems unable to set input gain -> always 1
     NSLog(@"before set -> gain:%f", audioSession.inputGain);
-    if(![audioSession setInputGain:0.5 error:&error]){
+    if(![audioSession setInputGain:0.9 error:&error]){
         NSLog(@"ERROR: set mode:%@ failed",audioSession.mode);
     }
     NSLog(@"before set -> gain:%f", audioSession.inputGain);

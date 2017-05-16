@@ -10,6 +10,7 @@ classdef TraceParser < handle
     properties
         audioSource;
         traceChannelCnt;
+        sensingServer;
         
         % parsing states
         needToSearchPreamble;
@@ -23,9 +24,10 @@ classdef TraceParser < handle
     
     methods
         % constructor
-        function obj = TraceParser(audioSource, traceChannelCnt)
+        function obj = TraceParser(audioSource, traceChannelCnt, sensingServer)
             obj.audioSource = audioSource;
             obj.traceChannelCnt = traceChannelCnt;
+            obj.sensingServer = sensingServer;
             obj.reset();
         end
         
@@ -51,7 +53,15 @@ classdef TraceParser < handle
             % are used seprately
             if obj.needToSearchPreamble && obj.audioBufEnd > obj.AUDIO_SAMPLE_TO_FIND_PREAMBLE,
                 [obj.pilotEndOffsets] = FindPilotAutoSearch(obj.audioBuf(1:obj.AUDIO_SAMPLE_TO_FIND_PREAMBLE,:), obj.audioSource.preambleSource, 1:size(obj.audioBuf,2), 0);
-                assert(obj.pilotEndOffsets(1) > 0, '[ERROR]: unable to find pilot, (AUDIO_SAMPLE_TO_FIND_PREAMBLE is too short?)\n');
+                
+                if obj.pilotEndOffsets(1) < 0,
+                    fprintf(2, '[ERROR]: unable to sync preamble, offsets = %d\n', obj.pilotEndOffsets(1));
+                    obj.sensingServer.preambleDetectResult(0);
+                else
+                    obj.sensingServer.preambleDetectResult(1); % detect correctly
+                end
+                
+                %assert(obj.pilotEndOffsets(1) > 0, '[ERROR]: unable to find pilot, (AUDIO_SAMPLE_TO_FIND_PREAMBLE is too short?)\n');
                 obj.pilotToRemoveLens = obj.pilotEndOffsets(1) + obj.audioSource.preambleSource.preambleEndOffset;
                 obj.needToSearchPreamble = 0;
             end

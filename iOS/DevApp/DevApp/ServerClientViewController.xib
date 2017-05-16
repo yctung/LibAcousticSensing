@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ServerClientViewController">
             <connections>
+                <outlet property="debugStatus" destination="Tlr-GR-gUe" id="ZYj-6z-F9D"/>
                 <outlet property="startOrStopButton" destination="Kcy-3Y-Yhk" id="tWa-ia-DBX"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -17,16 +18,23 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Haa" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tlr-GR-gUe">
-                    <rect key="frame" x="166" y="131" width="31" height="21"/>
+                    <rect key="frame" x="57" y="124" width="422" height="226"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kcy-3Y-Yhk">
-                    <rect key="frame" x="127" y="319" width="34" height="30"/>
-                    <state key="normal" title="Start"/>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gpq-dA-2by">
+                    <rect key="frame" x="116" y="435" width="43" height="30"/>
+                    <state key="normal" title="Sense"/>
                     <connections>
-                        <action selector="actionStartOrStopSensing" destination="-1" eventType="touchUpInside" id="7Hg-xb-tjj"/>
+                        <action selector="actionStartOrStopSensing" destination="-1" eventType="touchUpInside" id="3M2-Bf-QKQ"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kcy-3Y-Yhk">
+                    <rect key="frame" x="108" y="390" width="59" height="30"/>
+                    <state key="normal" title="Connect"/>
+                    <connections>
+                        <action selector="connectToServer" destination="-1" eventType="touchUpInside" id="4st-i6-sTO"/>
                     </connections>
                 </button>
             </subviews>

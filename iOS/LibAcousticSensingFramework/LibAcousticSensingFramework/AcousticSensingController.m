@@ -7,9 +7,12 @@
 //
 
 #import "AcousticSensingController.h"
+#import "AcousticControllerCallerDelegate.h"
 #import "FrameworkCheck.h"
 #import "AcousticController.h"
 #import "NetworkController.h"
+#import "AcousticController.h"
+#import "NetworkControllerCallerDelegate.h"
 
 @interface AcousticSensingController()
 @property (nonatomic) int audioMode;
@@ -18,12 +21,14 @@
 @property (nonatomic) int serverPort;
 @property (nonatomic, retain) NSString* serverIp;
 @property (nonatomic, retain) NetworkController* nc;
+@property (nonatomic, retain) AcousticController* ac;
+@property (nonatomic, retain) id<AcousticControllerCallerDelegate> refCaller;
 @end
 
 
 
 @implementation AcousticSensingController
-@synthesize nc;
+@synthesize nc, ac, refCaller;
 
 // Private constants
 // ref: http://stackoverflow.com/questions/17228334/what-is-the-best-way-to-create-constants-in-objective-c
@@ -33,13 +38,16 @@ static int const PARSE_MODE_DEFAULT=PARSE_MODE_REMOTE;
 
 
 static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
-- (id) init {
+- (id) initWithCaller:(id<AcousticSensingControllerCallerDelegate>) callerIn {
     self = [super init];
     if (self) {
-        //nc = [[NetworkController alloc] init];
-        //FrameworkCheck *temp = [[FrameworkCheck alloc] init];
-        //AcousticController *ac = [[AcousticController alloc] init];
-        nc = [[NetworkController alloc] init];
+        refCaller = callerIn;
+        [self updateDebugStatus:@"initWithCaller"];
+        
+        nc = [[NetworkController alloc] initWithCaller: self];
+        // init my acoustic controller
+        ac = [[AcousticController alloc] initAudioToPlay:[NSString stringWithFormat:@"%@%@%@",C_AUDIO_SOURCE_PREFIX,C_AUDIO_SOURCE,C_AUDIO_SOURCE_SUFFIX ] WithCaller:self withNetworkController:nc];
+        
     }
     return self;
 }
@@ -59,6 +67,10 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
     } else {
         //startSensingNow();
     }
+}
+
+- (void) startSensingNow {
+    [ac startSurvey];
 }
 
 // fucntion to show the customized dialog for initialization
@@ -94,6 +106,57 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
             [self startSensingWhenPossible];
         }
     }
+}
+
+- (void)updateDebugStatus:(NSString*) status {
+    // TODO: fix this werid warning ....
+    [refCaller updateDebugStatus: status];
+}
+
+//==================================================================================================
+//	Netowrk controller callbacks
+//==================================================================================================
+- (void)isConnected:(BOOL)success withResp:(NSString*) resp{
+    if (success) {
+        //[labelStatus setText:@"Connected"];
+        
+        [nc sendSetValueStringAction:@"traceChannelCnt" andStringToSet:@"1"];
+        [nc sendSetStringAction:@"userDevice" andStringToSet:@"iPhone"];
+        //[networkController sendSetValueStringAction:@"isAppleTrace" andStringToSet:@"1"];
+        [nc sendInitAction];
+        
+        // start sensing if need
+        /*
+        if (needToStartSensingAfterNetworkConnected) {
+            [self startSensing];
+            needToStartSensingAfterNetworkConnected = NO;
+        }
+        
+        // start sending check code if need
+        if (needToStartCheckSqueezeAfterNetworkConnected) {
+            [self startCheckSqueezeRightNow];
+            needToStartCheckSqueezeAfterNetworkConnected = NO;
+        }
+        */
+    } else {
+        //[labelStatus setText:[NSString stringWithFormat:@"Fail to connect: %@", resp]];
+        
+    }
+}
+
+- (int)consumeReceivedData:(NSData*) dataReceived{
+    return 0;
+}
+
+
+//=================================================================================================
+//  Audio callbacks
+//=================================================================================================
+- (void)audioRecorded:(UInt32)byteSize audioData:(void *)audioData currentRecordedSampleCnt:(UInt32) currentRecordedSampleCnt {
+    
+}
+- (void)onSurveyEnd {
+    
 }
 
 @end

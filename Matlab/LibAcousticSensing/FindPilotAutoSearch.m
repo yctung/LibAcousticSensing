@@ -32,7 +32,7 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
     
     pilotEndOffsets = zeros(PILOT_SEARCH_CH_CNT, 1);
     pilotDiffers = zeros(PILOT_REPEAT_CNT-1, PILOT_SEARCH_CH_CNT);
-    
+
     for chToSearchIdx = 1:PILOT_SEARCH_CH_CNT,
         chIdx = PILOT_SEARCH_CH_IDXS(chToSearchIdx);
         signal = signalAll(:, chIdx); % fetch just the
@@ -75,12 +75,12 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
         thres = 10; % number of std added
         
         % binary search the matched result
-        MAX_FOR_LOOP_FOR_SEARCH = 50;
+        MAX_FOR_LOOP_FOR_SEARCH = 20;
         
         findMatch = 0;
         for searchIdx = 1:MAX_FOR_LOOP_FOR_SEARCH,
             validPeakIdxs = GetPilotValidPeaks( con, conMean + thres*conStd,  PILOT_SEARCH_PEAK_WINDOW, 0);
-            if length(validPeakIdxs)~=PILOT_REPEAT_CNT,
+            if length(validPeakIdxs) ~= PILOT_REPEAT_CNT,
                 fprintf('[WARN]: pilot repeat cnt not matches at search %d\n', searchIdx);
                 
                 % dump debug figures if necessary
@@ -89,8 +89,6 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
                     conPlot = con;
                     title(sprintf('Pilot search fail %d at ch %d', searchIdx, chIdx)); hold on;
 
-                    
-                    
                     plot(conPlot,'b');
                     plot([0,length(conPlot)], [conMean + thres*conStd, conMean + thres*conStd], '-r', 'linewidth', 2);
                     plot([0,length(conPlot)], [conMean, conMean], '-g', 'linewidth', 2);
@@ -130,7 +128,27 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
             pilotEndOffsets(chToSearchIdx) = validPeakIdxs(end) - floor(length(pilot)/2) + PILOT_REPEAT_DIFF + convAllStart -1;
         else
             fprintf(2,'[ERROR]: unable to find valid pilot at chIdx = %d\n',chIdx);
+            pilotDiffers(:,chToSearchIdx) = -1;
             pilotEndOffsets(chToSearchIdx) = -1;
+            
+            
+            % dump debug figures when detect fails
+            %h_f = figure;
+            %plot(signalAll);
+            %{
+            hold on;
+            conPlot = con;
+            title(sprintf('Pilot search fail %d at ch %d', searchIdx, chIdx)); hold on;
+
+            plot(conPlot,'b');
+            plot([0,length(conPlot)], [conMean + thres*conStd, conMean + thres*conStd], '-r', 'linewidth', 2);
+            plot([0,length(conPlot)], [conMean, conMean], '-g', 'linewidth', 2);
+            plot([0,length(conPlot)], [conMean+conStd, conMean+conStd], '-c', 'linewidth', 2); 
+            plot(validPeakIdxs, conPlot(validPeakIdxs), 'o', 'linewidth', 2);
+            legend('con','thres','mean','mean+std','peaks');
+            %}
+            %hold off;
+            
         end
     end
         

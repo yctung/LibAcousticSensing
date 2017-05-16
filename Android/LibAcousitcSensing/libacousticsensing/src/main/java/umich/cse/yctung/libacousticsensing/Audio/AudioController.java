@@ -67,11 +67,14 @@ public class AudioController {
     public void setAudioSource(AudioSource audioSource) {
         this.audioSource = audioSource;
         int PLAYER_TOTAL_BUFFER_SIZE = 960*4*2; // just for debug, TODO: update to a better value
+
         // TODO: modify the stream type based on audioSource
+
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
 
-        if(audioTrack.getState()==AudioTrack.STATE_UNINITIALIZED){
+        while( audioTrack.getState()==AudioTrack.STATE_UNINITIALIZED ){
             Log.e(LOG_TAG, "audioTrackState cant be initialized -> wait next try!");
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
         }
     }
 
@@ -90,7 +93,14 @@ public class AudioController {
         }
 
         this.audioSetting = recordSetting; // TOOD: move it to a better way
+
+        // *** WARN: uncomment this just for testing AGC ***
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
+        // *** END OF WARN: uncomment this just for testing AGC ***
+
+        //audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
+
+
         if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
             Log.e(LOG_TAG, "Unable to init AudioRecord class (forget to request the permission or using a wrong setting?)");
             return false;
@@ -193,7 +203,7 @@ public class AudioController {
 //  Audio record related
 //=================================================================================================
     private void startRecording() {
-        if(SHOW_DEBUG_INFO_TIME_MESSAGE) Log.d(LOG_TAG, "startRecording() is called" + Utils.getTime());
+        if(SHOW_DEBUG_INFO_TIME_MESSAGE) Log.d(LOG_TAG, "startRecording() is called at: " + Utils.getTime());
         new Thread(new Runnable() {
             @Override
             public void run() {

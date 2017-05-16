@@ -24,7 +24,7 @@ function [] = AppSvmTrainCallback( obj, type, data )
     
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA,
-        LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
+        LINE_CNTS = [2,2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
         %hFig = findobj('Tag',FIG_CON_TAG);
         if obj.userfig == -1, % need to create a new UI window
             detectResultsEnd = 0;
@@ -129,34 +129,76 @@ function createUI(obj, figTag, data, lineCnts)
     isRecording = 0; % false
     isPredicting = 0; % false
     
+    set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
+    %setappdata(0, 'DefaultAxesXLabelFontSize', 16) % fucking matlab stupid bug fuck
+    
     PLOT_AXE_IN_WIDTH = 270;
     PLOT_AXE_OUT_WIDTH = 290;
     PLOT_AXE_CNT = length(lineCnts);
     
-    obj.userfig = figure('Position',[50,50,550+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),330],'Toolbar','none','MenuBar','none','Tag',figTag);
+    PLOT_CONTROL_PANEL_WIDTH = 220;
+    
+    TRAIN_PANEL_WIDTH = 500+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1);
+    
+    obj.userfig = figure('Position',[50,50,50+TRAIN_PANEL_WIDTH+PLOT_CONTROL_PANEL_WIDTH-20,350],'Toolbar','none','MenuBar','none','Tag',figTag);
     set(obj.userfig,'UserData',obj); % attached the obj to fig property for future reference 
     
-    h_panel2 = uipanel(obj.userfig,'Units','pixels','Position',[15,15,520+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),300]);
-    textIntro = uicontrol(h_panel2,'Style','text','Position',[10,255,180,30],'String','Control the sensing response');
+    TEXT_FONT_SIZE = 15;
+    TITLE_FONT_SIZE = 17;
     
-    RANGE_Y = 200;
+    h_panel2 = uipanel(obj.userfig,'Units','pixels','Position',[15,15,TRAIN_PANEL_WIDTH,320]);
+    h_panel3 = uipanel(obj.userfig,'Units','pixels','Position',[15+TRAIN_PANEL_WIDTH,15,PLOT_CONTROL_PANEL_WIDTH,320]);
+    uicontrol(h_panel2,'Style','text','Position',[10,285,180,30],'FontSize',TITLE_FONT_SIZE,'String','Sensing Controls');
+    uicontrol(h_panel3,'Style','text','Position',[10,285,180,30],'FontSize',TITLE_FONT_SIZE,'String','Training Parameters');
+    
+    RANGE_Y = 240;
     RANGE_FONT_SIZE = 15;
-    textRange = uicontrol(h_panel2,'Style','text','Position',[25,RANGE_Y-5,50,30],'String','Range:','FontSize',RANGE_FONT_SIZE);
-    uicontrol(h_panel2, 'Tag','editRangeStart', 'style','edit','units','pixels','position',[80,RANGE_Y,50,30],'String',num2str(svm.featureFreqBinStartIdx),'FontSize',RANGE_FONT_SIZE);
-    uicontrol(h_panel2, 'Tag','editRangeEnd', 'style','edit','units','pixels','position',[130,RANGE_Y,50,30],'String',num2str(svm.featureFreqBinEndIdx),'FontSize',RANGE_FONT_SIZE);
-    buttonApply = uicontrol(h_panel2,'Style','pushbutton','Position',[30,130,110,30],'String','Apply','Callback',@buttonApplyCallback, 'Interruptible', 'on');
     
-    uicontrol(h_panel2,'Style','text','Position',[25,100-5,50,30],'String','Tag:','FontSize',RANGE_FONT_SIZE);
-    uicontrol(h_panel2, 'Tag','menuTag','style','popupmenu','Position',[60,90,110,30], 'String',svm.getTags());
-    uicontrol(h_panel2,'Style','pushbutton','Position',[30,60,60,30],'String','New','Callback',@buttonNewTagCallback);
-    uicontrol(h_panel2,'Style','pushbutton','Position',[110,60,60,30],'String','Delete','Callback',@buttonApplyCallback);
+    % SVM parameters
+    textRange = uicontrol(h_panel3,'Style','text','Position',[25,RANGE_Y-5,50,30],'String','Range:','FontSize',RANGE_FONT_SIZE);
+    uicontrol(h_panel3, 'Tag','editRangeStart', 'style','edit','units','pixels','position',[80,RANGE_Y,50,30],'String',num2str(svm.featureFreqBinStartIdx),'FontSize',RANGE_FONT_SIZE);
+    uicontrol(h_panel3, 'Tag','editRangeEnd', 'style','edit','units','pixels','position',[130,RANGE_Y,50,30],'String',num2str(svm.featureFreqBinEndIdx),'FontSize',RANGE_FONT_SIZE);
+    
+    KERNEL_Y = 200;
+    uicontrol(h_panel3,'Style','text','Position',[15,KERNEL_Y,60,30],'String','Kernel:','FontSize',TEXT_FONT_SIZE);
+    uicontrol(h_panel3, 'Tag','menuKernel','style','popupmenu','Position',[90,KERNEL_Y,110,30],'FontSize',TEXT_FONT_SIZE, 'String',{'Linear','RBF','...'});
+    
+    DEGREE_Y = 170;
+    uicontrol(h_panel3,'Style','text','Position',[15,DEGREE_Y,60,30],'String','Degree:','FontSize',TEXT_FONT_SIZE);
+    uicontrol(h_panel3, 'Tag','menuDegree','style','popupmenu','Position',[90,DEGREE_Y,110,30],'FontSize',TEXT_FONT_SIZE, 'String',{'1','2','...'});
+    
+    COEF_Y = 140;
+    uicontrol(h_panel3,'Style','text','Position',[15,COEF_Y,60,30],'String','Coef:','FontSize',TEXT_FONT_SIZE);
+    uicontrol(h_panel3, 'Tag','menuCoef','style','popupmenu','Position',[90,COEF_Y,110,30],'FontSize',TEXT_FONT_SIZE, 'String',{'1','2','...'});
+    
+    DOWNSAMPLE_Y = 110;
+    uicontrol(h_panel3,'Style','text','Position',[10,DOWNSAMPLE_Y,85,30],'String','Subsample:','FontSize',TEXT_FONT_SIZE);
+    uicontrol(h_panel3, 'Tag','menuDownsample','style','popupmenu','Position',[90,DOWNSAMPLE_Y,110,30],'FontSize',TEXT_FONT_SIZE, 'String',{'2','4','...'});
     
     
-    uicontrol(h_panel2,'Style','pushbutton','Position',[30,30,60,30],'String','Record','Tag','buttonRecordOrStop','Callback',@buttonRecordOrStopCallback);
-    uicontrol(h_panel2,'Style','pushbutton','Position',[110,30,60,30],'String','Train','Callback',@buttonTrainCallback);
     
-    uicontrol(h_panel2,'Style','pushbutton','Position',[30,10,60,30],'String','Predict','Tag','buttonPredictOrStop','Callback',@buttonPredictOrStopCallback);
-    uicontrol(h_panel2,'Style','text','Position',[110,10,60,30],'String','result: ','Tag','textResult');
+    buttonApply = uicontrol(h_panel3,'Style','pushbutton','Position',[60,30,110,30],'FontSize',TEXT_FONT_SIZE,'String','Apply','Callback',@buttonApplyCallback, 'Interruptible', 'on');
+    
+    
+    % Sensing controls
+    TAG_Y = 240-5;
+    uicontrol(h_panel2,'Style','text','Position',[15,TAG_Y,50,30],'String','Tag:','FontSize',TEXT_FONT_SIZE);
+    uicontrol(h_panel2, 'Tag','menuTag','style','popupmenu','Position',[60,TAG_Y,130,30],'FontSize',TEXT_FONT_SIZE,'String',svm.getTags());
+    
+    NEW_Y = 200;
+    uicontrol(h_panel2,'Style','pushbutton','Position',[30,NEW_Y,60,30],'FontSize',TEXT_FONT_SIZE,'String','New','Callback',@buttonNewTagCallback);
+    uicontrol(h_panel2,'Style','pushbutton','Position',[100,NEW_Y,60,30],'FontSize',TEXT_FONT_SIZE,'String','Delete','Callback',@buttonApplyCallback);
+    
+    RECORD_Y = 150;
+    uicontrol(h_panel2,'Style','pushbutton','Position',[30,RECORD_Y,60,30],'FontSize',TEXT_FONT_SIZE,'String','Record','Tag','buttonRecordOrStop','Callback',@buttonRecordOrStopCallback);
+    uicontrol(h_panel2,'Style','pushbutton','Position',[100,RECORD_Y,60,30],'FontSize',TEXT_FONT_SIZE,'String','Train','Callback',@buttonTrainCallback);
+    
+    RESULT_Y = 100;
+    uicontrol(h_panel2,'Style','text','Position',[25,RESULT_Y,140,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Result: ','Tag','textResult');
+    
+    PREDICT_Y = 30;
+    uicontrol(h_panel2,'Style','pushbutton','Position',[40,PREDICT_Y,110,30],'FontSize',TEXT_FONT_SIZE,'String','Predict','Tag','buttonPredictOrStop','Callback',@buttonPredictOrStopCallback);
+    
     
 
     %{
@@ -169,19 +211,26 @@ function createUI(obj, figTag, data, lineCnts)
             %}
             
     
-                
+    
+    
+    ylabels = {'data', 'signature','predicted target'};
+    xlabels = {'time', 'freq','time'};
     for i = 1:PLOT_AXE_CNT,
         uicontrol(h_panel2, 'Style','checkbox','String','update','Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,80,20], 'Tag',sprintf('check%02d',i));
         
-        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),30,270,250]);
+        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),50,240,230]);
         hold on;
         for j = 1:lineCnts(i),
             plot(obj.axe, data(:,1),'Tag',sprintf('line%02d_%02d',i,j),'linewidth',2); % only show the 1st ch
         end
+        xlabel(xlabels{i});
+        ylabel(ylabels{i});
         hold off;
+        
         legend(arrayfun(@(x) sprintf('%d',x), 1:lineCnts(i),'uni',false).');
     end
-        
+
+    
 
     updateUI();
 end
@@ -304,6 +353,7 @@ function buttonRecordOrStopCallback(obj, event)
         recordedDataEnd = 0; % for the data to be initialzed
         updateUI();
 
+        
         %{
         % it is just a fake ui to control the record
         dummyServer.CALLBACK_TYPE_ERROR = SensingServer.CALLBACK_TYPE_ERROR;
@@ -311,7 +361,7 @@ function buttonRecordOrStopCallback(obj, event)
         dummyServer.CALLBACK_TYPE_USER = SensingServer.CALLBACK_TYPE_USER;
         dummyServer.userfig = findobj('Tag',USER_FIG_TAG);
         for i = 1:10,
-            AppSvmTrainCallback(dummyServer, SensingServer.CALLBACK_TYPE_DATA, rand(10,2));
+            AppSvmTrainCallback(dummyServer, SensingServer.CALLBACK_TYPE_DATA, rand(4800,1,1));
             pause(0.1);
         end
         

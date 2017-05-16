@@ -43,7 +43,10 @@ classdef AppSvmTrainHelper < handle
         function addNewTag(obj, tag)
             tagIdx = length(obj.targets)+1;
             obj.targets(tagIdx).tag = tag;
-            obj.targets(tagIdx).fig = figure();
+            FIG_WIDTH = 260;
+            obj.targets(tagIdx).fig = figure('Position',[280+(tagIdx-1)*FIG_WIDTH,450,FIG_WIDTH,230],'Toolbar','none','MenuBar','none');
+            ylabel('signature');
+            xlabel('freq');
             title(sprintf('Tag = %s', tag));
             obj.targets(tagIdx).data = {};
         end
@@ -97,7 +100,8 @@ classdef AppSvmTrainHelper < handle
                 figure(target.fig);
                 plot(mean(target.features,2));
                 xlabel(sprintf('data size = %d', featureCnts(i)));
-                ylabel('mean feature');
+                ylabel('mean(signature)');
+                title(sprintf('Tag = %s', target.tag));
                 
                 targetAll(featureAllEnd+1:featureAllEnd+featureCnts(i)) = i;
                 featureAllEnd = featureAllEnd+featureCnts(i);
@@ -124,7 +128,7 @@ classdef AppSvmTrainHelper < handle
         % prcess data to extract feature for both train/predict
         function features = getFeatureFromData(obj, data)
             debugChIdx = 1; % use only the first channel for now
-            smoothedFactor = 3; % debug only
+            smoothedFactor = 5; % debug only
             features = fftshift(abs(fft(data(:,:,debugChIdx)))); % for now, we just use a single fft as feature
             features = features(ceil(size(features,1)/2):end, :, :); % only keep the positive freq range
             for i = 1:size(features,2)
