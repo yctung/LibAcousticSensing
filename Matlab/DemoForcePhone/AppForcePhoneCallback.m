@@ -49,7 +49,8 @@ function [] = AppForcePhoneCallback( obj, type, data )
             if check2.Value == 1,
                 for chIdx = 1:2,
                     line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    conToPlot = smooth(abs(cons(:,end,chIdx)),100);
+                    %conToPlot = smooth(abs(cons(:,end,chIdx)),100);
+                    conToPlot = abs(cons(:,end,chIdx)); % temporary disable smooth function
                     set(line, 'yData', conToPlot); % only show the 1st ch
                 end
             end
