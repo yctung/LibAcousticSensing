@@ -2,8 +2,15 @@ function [] = AppForcePhoneCallback( obj, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
     global USER_FIG_TAG; USER_FIG_TAG = 'USER_FIG_TAG';
     global PS; % user parse setting
+    global detectResultsAll;
+    global detectResultsAllEnd;
+    global detectResultsAllSqueezeStartIdxs;
+    global detectResultsAllSqueezeEndIdxs;
+    
     global detectResults;
     global detectResultsEnd;
+    global resultIdxSqueezeStart;
+    global resultIdxSqueezeEnd;
     DETECT_RESULT_SIZE = 300; % number of result sample to show
     
     if type == obj.CALLBACK_TYPE_ERROR,
@@ -13,12 +20,21 @@ function [] = AppForcePhoneCallback( obj, type, data )
 
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA,
-        LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
+        LINE_CNTS = [2,2,4]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
         %hFig = findobj('Tag',FIG_CON_TAG);
         if obj.userfig == -1, % need to create a new UI window
             detectResultsEnd = 0;
             detectResults = zeros(DETECT_RESULT_SIZE, 1);
 
+            resultIdxSqueezeStart = 0;
+            resultIdxSqueezeEnd = 0;
+            
+            % very large buffer to save all results
+            detectResultsAll = zeros(20*60*10, 1);
+            detectResultsAllEnd = 0;
+            detectResultsAllSqueezeStartIdxs = [];
+            detectResultsAllSqueezeEndIdxs = [];
+            
             createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
         else
             % process data
@@ -28,6 +44,8 @@ function [] = AppForcePhoneCallback( obj, type, data )
             detectChIdx = 1;
             detectResultNow = squeeze(mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, detectChIdx)),1));
             nowSize = length(detectResultNow);
+            detectResultsAll(detectResultsAllEnd+1:detectResultsAllEnd+nowSize) = detectResultNow;
+            detectResultsAllEnd = detectResultsAllEnd+nowSize;
             
             % return the result if need
             if PS.detectEnabled,
@@ -63,11 +81,24 @@ function [] = AppForcePhoneCallback( obj, type, data )
                     toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
                     detectResults(1:end-toShift) = detectResults(toShift+1:end);
                     detectResultsEnd = detectResultsEnd - nowSize;
+                    resultIdxSqueezeStart = max(0, resultIdxSqueezeStart - toShift);
+                    resultIdxSqueezeEnd = max(0, resultIdxSqueezeEnd - toShift);
                 end
 
                 detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
                 detectResultsEnd = detectResultsEnd+nowSize;
                 set(line, 'yData', detectResults); % only show the 1st ch
+                
+                
+                % plot vertical lines (for squeeze start and end)
+                resultMin = min(detectResults);
+                resultMax = max(detectResults);
+                line = findobj('Tag','line03_03');
+                set(line, 'yData', [resultMin, resultMax]);
+                set(line, 'xData', [resultIdxSqueezeStart, resultIdxSqueezeStart]);
+                line = findobj('Tag','line03_04');
+                set(line, 'yData', [resultMin, resultMax]);
+                set(line, 'xData', [resultIdxSqueezeEnd, resultIdxSqueezeEnd]);
             end
         end
     elseif type == obj.CALLBACK_TYPE_USER,
@@ -76,6 +107,11 @@ function [] = AppForcePhoneCallback( obj, type, data )
         if data.code == 1, % update the vertical line
             PS.detectEnabled = 1;
             refIdx = detectResultsEnd-1;
+            resultIdxSqueezeStart = detectResultsEnd-1;
+            resultIdxSqueezeEnd = 0;
+            
+            detectResultsAllSqueezeStartIdxs = [detectResultsAllSqueezeStartIdxs; max(1, detectResultsAllEnd-1)];
+            
             if refIdx<0
                 refIdx = 1;
             end
@@ -84,6 +120,8 @@ function [] = AppForcePhoneCallback( obj, type, data )
             line = findobj('Tag','line03_02');
             set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
         else
+            resultIdxSqueezeEnd = detectResultsEnd-1;
+            detectResultsAllSqueezeEndIdxs = [detectResultsAllSqueezeEndIdxs; max(1, detectResultsAllEnd-1)];
             PS.detectEnabled = 0;
             PS.detectRef = 1;
         end
@@ -112,20 +150,9 @@ function createUI(obj, figTag, data, lineCnts)
     
     
     buttonApply = uicontrol(h_panel2,'Style','pushbutton','Position',[30,130,110,30],'String','Apply','Callback',@buttonApplyCallback);
-            
-    
 
-    %{
-    buttonStartSensing = uicontrol(h_panel2,'Style','pushbutton',...
-                'Position',[30,200,110,30],...
-                'String','Start Sensing',...
-                'BusyAction','queue',...
-                'TooltipString','BusyAction = queue',...
-                'Callback',@callbackStartSensing);
-            %}
-            
-    
-                
+    uicontrol(h_panel2,'Tag','buttonSqueezeOrStop','Style','pushbutton','Position',[30,90,110,30],'String','Squeeze','Callback',@buttonSqueezeOrStopCallback);
+                    
     for i = 1:PLOT_AXE_CNT,
         uicontrol(h_panel2, 'Style','checkbox','String','update','Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,80,20], 'Tag',sprintf('check%02d',i));
         
@@ -202,4 +229,27 @@ function buttonApplyCallback(obj,event)
         PS.detectRangeStart = rangeStart;
         PS.detectRangeEnd = rangeEnd;
     end
+end
+
+function buttonSqueezeOrStopCallback(obj, event)
+    global ss;
+    buttonSqueezeOrStop = findobj('Tag','buttonSqueezeOrStop');
+    
+    fakeEvent.action = ss.ACTION_USER;
+    if strcmp(buttonSqueezeOrStop.String, 'Squeeze') % going to start squeeze
+        fakeEvent.code = 1;
+        buttonSqueezeOrStop.String = 'Stop';
+    else
+        fakeEvent.code = 0;
+        buttonSqueezeOrStop.String = 'Squeeze';
+    end
+    
+    fakeEvent.time = -1;
+    fakeEvent.stamp = -1;
+    fakeEvent.nameBytes = unicode2native('squeeze');
+    fakeEvent.arg0 = -1;
+    fakeEvent.arg1 = -1;
+    dummyJavahandle = -1;
+    
+    onDataCallback(ss, dummyJavahandle, fakeEvent);
 end

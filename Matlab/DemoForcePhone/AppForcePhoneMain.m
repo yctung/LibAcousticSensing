@@ -55,6 +55,7 @@ as.signal = signal;
 as.repeatCnt = 20*60*4;
 as.signalGain = 0.8;
 
+global ss; % TODO: find a better way instead of using a global variable
 ss = SensingServer(SERVER_PORT, @AppForcePhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
