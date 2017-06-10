@@ -13,6 +13,7 @@
 @implementation AcousticController
 @synthesize refCaller, surveyBaseFolderPath, currentRecordedSampleCnt;
 
+/*
 - (id)initAudioToPlay:(NSString *)audioSourceName WithCaller:(id<AcousticControllerCallerDelegate>) caller withNetworkController:(NetworkController*) networkController{
     self = [super init];
     if (self) {
@@ -63,6 +64,52 @@
     }
     return self;
 }
+*/
+
+- (id)initWithAudioSource:(AudioSource*) audioSource andCaller:(id<AcousticControllerCallerDelegate>) caller{
+    self = [super init];
+    if (self) {
+        // 1. connect refernece
+        refCaller = caller;
+        currentRecordedSampleCnt = 0;
+        
+        // 2. config trace/file directory
+        // TODO: update the save feature
+        [self resetTraceFolder];
+        /* TODO: add this function back for replaying
+        if (C_TRACE_SAVE_TO_FILE) {
+            NSMutableString *matlabSetting = [[NSMutableString alloc] init];
+            [matlabSetting appendFormat:@"%@\n", [audioSourceName stringByDeletingPathExtension]];
+            [matlabSetting appendFormat:@"%d\n", C_RECORDER_CHANNEL];
+            [matlabSetting appendFormat:@"%f\n", C_PLAYER_VOL];
+            [matlabSetting appendFormat:@"%d\n", C_DEVICE_IDX_IPHONE];
+            NSString *matlabFilePath = [surveyBaseFolderPath stringByAppendingPathComponent:@"matlab.txt"];
+            [matlabSetting writeToFile:matlabFilePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        }
+        */
+        
+        // 3. config audio session
+        [self setUpSession];
+        
+        // 4. init audio player
+        audioPlayer = [[AudioPlayer alloc] initWithAudioSource:audioSource];
+        
+        //[audioPlayer setVolume:C_PLAYER_VOL];
+        
+        
+        // 5. init audio recorder
+        audioRecorder = [[[AudioRecorder alloc] initWithCaller:self] retain];
+        
+        // 6. init audio trace saver (optional)
+        if(C_TRACE_SAVE_TO_FILE){
+            NSString *audioTraceFilePath = [surveyBaseFolderPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@audio.txt", C_TRACE_AUDIO_PREFIX] ];
+            audioTraceSaver = [[[TraceSaver alloc] initWithFilePath:audioTraceFilePath] retain];
+        }
+    }
+    return self;
+}
+
+
 - (void)dealloc {
     [audioPlayer release];
     [audioRecorder release];
@@ -111,19 +158,22 @@
 
 
 - (void)startSurvey{
-    if (audioPlayer.isPlaying) {
+    //if (avAudioPlayer.isPlaying) {
+    if (audioPlayer.playState.playing) {
         NSLog(@"[ERROR]: acoustic is triggered when audio is playing!!!");
     } else {
         [audioRecorder startRecording];
-        [audioPlayer play];
+        //[avAudioPlayer play];
+        [audioPlayer startPlaying];
     }
 }
 
 - (void)stopSurvey{
     [audioRecorder stopRecording];
-    //[audioPlayer stop];
-    [audioPlayer pause];
-    audioPlayer.currentTime = 0;
+    //[avAudioPlayer stop];
+    //[avAudioPlayer pause];
+    // avAudioPlayer.currentTime = 0;
+    [audioPlayer stopPlaying];
     
     if (C_TRACE_SAVE_TO_FILE && audioTraceSaver!= nil && [audioTraceSaver getIsOpened]) {
         [audioTraceSaver waitAllDataBeingSavedAndStop];

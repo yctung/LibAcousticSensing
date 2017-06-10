@@ -9,6 +9,7 @@
 #import "AcousticSensingController.h"
 #import "AcousticControllerCallerDelegate.h"
 #import "FrameworkCheck.h"
+#import "AudioSource.h"
 #import "AcousticController.h"
 #import "NetworkController.h"
 #import "AcousticController.h"
@@ -18,6 +19,7 @@
 @property (nonatomic) int audioMode;
 @property (nonatomic) int parseMode;
 @property (nonatomic, retain) NSString *myString;
+@property (nonatomic, retain) AudioSource* audioSource;
 @property (nonatomic) int serverPort;
 @property (nonatomic, retain) NSString* serverIp;
 @property (nonatomic, retain) NetworkController* nc;
@@ -28,7 +30,7 @@
 
 
 @implementation AcousticSensingController
-@synthesize nc, ac, refCaller;
+@synthesize nc, ac, refCaller, audioSource;
 
 // Private constants
 // ref: http://stackoverflow.com/questions/17228334/what-is-the-best-way-to-create-constants-in-objective-c
@@ -38,7 +40,7 @@ static int const PARSE_MODE_DEFAULT=PARSE_MODE_REMOTE;
 
 
 static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
-- (id) initWithCaller:(id<AcousticSensingControllerCallerDelegate>) callerIn {
+- (id) initWithCaller:(id<AcousticControllerCallerDelegate>) callerIn {
     self = [super init];
     if (self) {
         refCaller = callerIn;
@@ -46,7 +48,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         
         nc = [[NetworkController alloc] initWithCaller: self];
         // init my acoustic controller
-        ac = [[AcousticController alloc] initAudioToPlay:[NSString stringWithFormat:@"%@%@%@",C_AUDIO_SOURCE_PREFIX,C_AUDIO_SOURCE,C_AUDIO_SOURCE_SUFFIX ] WithCaller:self withNetworkController:nc];
+        // ac = [[AcousticController alloc] initAudioToPlay:[NSString stringWithFormat:@"%@%@%@",C_AUDIO_SOURCE_PREFIX,C_AUDIO_SOURCE,C_AUDIO_SOURCE_SUFFIX ] WithCaller:self withNetworkController:nc];
         
     }
     return self;
@@ -70,6 +72,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 }
 
 - (void) startSensingNow {
+    ac = [[AcousticController alloc] initWithAudioSource: audioSource andCaller:self];
     [ac startSurvey];
 }
 
@@ -148,6 +151,10 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
     return 0;
 }
 
+- (void)audioReceivedFromServer:(AudioSource *)audioSource {
+    [self setAudioSource:audioSource];
+    [audioSource retain]; // not sure if necessary, but just in case
+}
 
 //=================================================================================================
 //  Audio callbacks

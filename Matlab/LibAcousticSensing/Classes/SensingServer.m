@@ -38,6 +38,9 @@ classdef SensingServer < handle
         DEVICE_AUDIO_MODE_RECORD_ONLY       = 1;
         DEVICE_AUDIO_MODE_PLAY_ONLY         = 2;
         DEVICE_AUDIO_MODE_PLAY_AND_RECORD   = 3;
+        
+        % Save/Load configuration
+        AUDIO_ALL_BUFFER_SIZE = 48000*60; % 60 seconds
     end
     
     properties
@@ -53,8 +56,12 @@ classdef SensingServer < handle
         fig; % figure handler -> there must be a handle because I am reusing the intteruable feature of Matlab UI to build async socket read
         panel;
         buttonStartOrStopSensing;
+        buttonLoad;
+        buttonSave;
+        buttonReplayOrStop;
         textServerInfo;
         textServerStatus;
+        isUIBusy;
         
         userfig;
         axe;
@@ -74,6 +81,11 @@ classdef SensingServer < handle
         
         audioToProcessAll;
         audioToProcessAllEnd;
+        
+        % variable to be saved/loaded
+        needToUpdateAudioAllForSave;
+        audioAll;
+        audioAllEnd;
         
         startSensingAfterConnectionInit; % set this variable to 0 if users want to manually trigger the senisng after the connection is established
         
@@ -98,7 +110,7 @@ classdef SensingServer < handle
             obj.isSensing = 0;
             obj.latestReceivedAction = obj.ACTION_CLOSE;
             obj.isPreambleDetectedCorrectly = -2; % init status meaning wait for result
-            
+            obj.isUIBusy = 0;
             % build a UI sample
             obj.buildUI();
             
@@ -106,6 +118,11 @@ classdef SensingServer < handle
             obj.userfig = -1; % init as a dummy figure handle
             feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, 1:2); 
             % NOTE: the userfig must be initialized in the user-defined
+            
+            obj.audioAll = [];
+            obj.audioAllEnd = 0;
+            obj.needToUpdateAudioAllForSave = 1;
+            
             
             % create java sensing server
             obj.jss = edu.umich.cse.yctung.JavaSensingServer.create(port);
@@ -166,6 +183,9 @@ classdef SensingServer < handle
             obj.isSensing = 0;
             obj.buttonStartOrStopSensing.String = 'Start Sensing';
             obj.updateUI();
+            
+            fprintf('audioAll is going to be updated by the new sensing data\n');
+            obj.needToUpdateAudioAllForSave = 1;
             
             obj.setWaitFlag('ACTION_SENSING_END');
         end
@@ -251,6 +271,19 @@ classdef SensingServer < handle
                 else % stereo-recroding
                     audioNow = [dataTemp(1:2:end), dataTemp(2:2:end)];
                 end
+                
+                % b. buff this audio for future replay if need
+                if obj.needToUpdateAudioAllForSave
+                    if isempty(obj.audioAll) || obj.audioAllEnd == 0 % need to init
+                        obj.audioAll = zeros(obj.AUDIO_ALL_BUFFER_SIZE, obj.traceChannelCnt);
+                        obj.audioAllEnd = 0;
+                    end
+
+                    obj.audioAll(obj.audioAllEnd+1:obj.audioAllEnd+size(audioNow,1), :) = audioNow;
+                    obj.audioAllEnd = obj.audioAllEnd+size(audioNow,1);
+                end
+                
+                %fprintf('    get a audio data with size = %d\n', size(audioNow,1));
                 
                 audioToProcess = obj.traceParser.parse(audioNow);
                 
@@ -400,12 +433,12 @@ classdef SensingServer < handle
             IPaddress = char(address.getHostAddress);
 
             obj.textServerInfo = uicontrol(obj.panel,'Style','text',...
-                        'Position',[20,160,170,40],...
+                        'Position',[20,170,170,40],...
                         'FontSize',TEXT_FONT_SIZE,...
                         'String',sprintf('Server at %s:%d',IPaddress,obj.port));
                     
             obj.textServerStatus = uicontrol(obj.panel,'Style','text',...
-                        'Position',[30,110,120,30],...
+                        'Position',[30,130,150,30],...
                         'FontSize',TEXT_FONT_SIZE,...
                         'String','Server Status');
             
@@ -419,12 +452,36 @@ classdef SensingServer < handle
             %}
             
             obj.buttonStartOrStopSensing = uicontrol(obj.panel,'Style','pushbutton',...
-                        'Position',[30,40,140,30],...
+                        'Position',[30,90,140,30],...
                         'String','Start Sensing',...
                         'TooltipString','Sensing',...
                         'FontSize',TEXT_FONT_SIZE,...
                         'Interruptible','on',...
                         'Callback',@(~,~)obj.buttonStartOrStopSensingCallback);
+                    
+            obj.buttonLoad = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[5,60,90,30],...
+                        'String','Load',...
+                        'TooltipString','Sensing',...
+                        'FontSize',TEXT_FONT_SIZE,...
+                        'Interruptible','on',...
+                        'Callback',@(~,~)obj.buttonLoadCallback);
+            obj.buttonSave = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[5+100,60,90,30],...
+                        'String','Save',...
+                        'TooltipString','Sensing',...
+                        'FontSize',TEXT_FONT_SIZE,...
+                        'Interruptible','on',...
+                        'Callback',@(~,~)obj.buttonSaveCallback);
+                    
+            obj.buttonReplayOrStop = uicontrol(obj.panel,'Style','pushbutton',...
+                        'Position',[5,30,90,30],...
+                        'String','Replay',...
+                        'TooltipString','Sensing',...
+                        'FontSize',TEXT_FONT_SIZE,...
+                        'Interruptible','on',...
+                        'Callback',@(~,~)obj.buttonReplayOrStopCallback);
+                    
                     
             obj.updateUI();
         end
@@ -449,6 +506,17 @@ classdef SensingServer < handle
             end
             
             obj.textServerStatus.String=textConnectionStatus;
+            
+            obj.buttonLoad.Enable = 'on';
+            obj.buttonSave.Enable = 'on';
+            
+            % diable all UI if it is busy
+            if obj.isUIBusy
+                obj.buttonStartOrStopSensing.Enable = 'off';
+                obj.buttonLoad.Enable = 'off';
+                obj.buttonSave.Enable = 'off';
+            end
+            
         end
         
         % callback for the start or stop sensing button
@@ -458,6 +526,89 @@ classdef SensingServer < handle
             else % need to stop sensing
                 obj.stopSensing(); % TODO: implement this part
             end
+        end
+        
+        function buttonSaveCallback(obj)
+            obj.isUIBusy = 1;
+            obj.updateUI();
+            
+            [fileName,fileFolder] = uiputfile(sprintf('%s/Traces/*.mat', pwd()), 'Save to (*.mat)', sprintf('%s/Traces/trace_', pwd()));
+            wantToSave = 1;
+            if fileName == 0
+                wantToSave = 0; % canceled
+            end
+            
+            filePathToSave = strcat(fileFolder, fileName);
+            if exist(filePathToSave, 'file')
+                result = questdlg('Trace file existed (want to overwite it?)','File existed','Yes','No','Yes')
+                if ~strcmp(result, 'Yes')
+                    wantToSave = 0;
+                end
+            end
+            
+            if wantToSave
+                audioAll = obj.audioAll(1:obj.audioAllEnd, :); % save space
+                audioSource = obj.audioSource;
+                save(filePathToSave, 'audioAll', 'audioSource');
+            end
+                
+            obj.isUIBusy = 0;
+            obj.updateUI();
+        end
+        
+        function buttonLoadCallback(obj)
+            obj.isUIBusy = 1;
+            obj.updateUI();
+            
+            [fileName,fileFolder] = uigetfile('./Traces', 'Please select path to load')
+            wantToLoad = 1;
+            if fileName == 0
+                wantToLoad = 0; % canceled
+            end
+            
+            if wantToLoad
+                filePathToLoad = strcat(fileFolder, fileName)
+                load(filePathToLoad);
+                obj.audioAll = audioAll;
+                obj.audioAllEnd = size(audioAll,1);
+                obj.traceChannelCnt = size(audioAll,2);
+                obj.audioSource = audioSource;
+
+                obj.needToUpdateAudioAllForSave = 0; % avoid the loaded being replaced by replaying the data
+            end
+            
+            obj.isUIBusy = 0;
+            obj.updateUI();
+        end
+        
+        function buttonReplayOrStopCallback(obj)
+            if isempty(obj.audioAll)
+                fprintf(2, '[ERROR] nothing to be replayed\n');
+                return;
+            end
+            
+            % reset processing buffers
+            obj.audioToProcessAll = zeros(length(obj.audioSource.signal), obj.audioSource.repeatCnt, obj.traceChannelCnt);
+            obj.audioToProcessAllEnd = 0;
+            
+            % reset a new trace parser
+            obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt,obj);
+            
+            % simulate the loaded data being replayed
+            audioAllShort = int16(obj.audioAll);
+            if obj.traceChannelCnt > 1
+                audioAllTemp = audioAllShort;
+                audioAllShort = zeros(size(obj.audioAll,1)*obj.traceChannelCnt,1);
+                audioAllShort(1:2:end) = audioAllTemp(:,1);
+                audioAllShort(2:2:end) = audioAllTemp(:,2); % separate the chaneel to simulate how the audio is recorded
+                audioAllShort = int16(audioAllShort);
+            end
+            audioAllBytes = typecast(audioAllShort, 'int8');
+            fakeEvent.action = obj.ACTION_DATA;
+            fakeEvent.time = -1;
+            fakeEvent.dataBytes = audioAllBytes;
+            fakeJavaHanlder = -1;
+            obj.onDataCallback(fakeJavaHanlder, fakeEvent);
         end
     end
     

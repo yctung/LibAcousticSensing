@@ -17,8 +17,6 @@
 		13099C071E3009F3006D8A06 /* LibAcousticSensingFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 13099C031E3009E9006D8A06 /* LibAcousticSensingFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
 		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
-		13C919971EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919951EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
-		13C919981EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919961EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
 		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
 		13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */; };
 /* End PBXBuildFile section */
@@ -93,8 +91,6 @@
 		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
 		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
 		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
-		13C919951EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
-		13C919961EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
 		13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToEstimateFreqResp.wav; sourceTree = "<group>"; };
 		13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToCheckAGC.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -203,8 +199,6 @@
 			children = (
 				13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */,
 				13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */,
-				13C919951EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */,
-				13C919961EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */,
 			);
 			name = AudioSource;
 			sourceTree = "<group>";
@@ -338,9 +332,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13C919981EC73B3300A4D1FA /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */,
 				13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */,
-				13C919971EC73B3300A4D1FA /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */,
 				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,

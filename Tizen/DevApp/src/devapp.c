@@ -72,8 +72,10 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 		int temp = htonl(nbytes);
 		char check = -1;
 
-		ad->buffer_size = 0;
 
+		// *** the following code send recorded audio to each packet -> too much overhead ***
+		/*
+		ad->buffer_size = 0;
 		char action = LIBAS_ACTION_DATA;
 		memcpy(ad->buffer, &action, sizeof(char));
 		ad->buffer_size += sizeof(char);
@@ -91,6 +93,42 @@ static void _audio_io_stream_read_cb(audio_in_h handle, size_t nbytes, void *use
 			dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: unable to write socket buffer completely, n = %d and buffer_size = %d", n, ad->buffer_size);
 		}
 		dlog_print(DLOG_DEBUG, LOG_TAG, "write to socket bytes n = %d / %d", n, ad->buffer_size);
+		*/
+
+		// aggregate the audio packets and send them only when its size becomes big enough (e.g., 2400)
+
+		if (ad->buffer_size == 0) { // init a new packet into the buffer
+			char action = LIBAS_ACTION_DATA;
+			memcpy(ad->buffer, &action, sizeof(char));
+			ad->buffer_size += sizeof(char);
+
+			memcpy(ad->buffer+ad->buffer_size, &temp, sizeof(int)); // dummy size for now
+			ad->buffer_size += sizeof(int);
+		}
+
+		memcpy(ad->buffer+ad->buffer_size, buffer, nbytes);
+		ad->buffer_size += nbytes;
+
+
+		if(ad->buffer_size >= 2400) {
+			// update the correct buffer size and add check
+			int data_size = htonl(ad->buffer_size - sizeof(char) - sizeof(int));
+			memcpy(ad->buffer+sizeof(char), &data_size, sizeof(int)); // dummy size for now
+
+			memcpy(ad->buffer+ad->buffer_size, &check, sizeof(char));
+			ad->buffer_size += sizeof(char);
+
+			int n = write(ad->sockfd, ad->buffer, ad->buffer_size);
+
+			if (n < 0) {
+				dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: write to socket fails, n = %d", n);
+			} else if (n < ad->buffer_size) {
+				dlog_print(DLOG_ERROR, LOG_TAG, "[ERROR]: unable to write socket buffer completely, n = %d and buffer_size = %d", n, ad->buffer_size);
+			}
+			if(SHOW_DEBUG_MSG) dlog_print(DLOG_DEBUG, LOG_TAG, "write to socket bytes n = %d / %d", n, ad->buffer_size);
+
+			ad->buffer_size = 0;
+		}
 
 
 		error_code = audio_in_drop(handle); // remove audio data from internal buffer
@@ -146,7 +184,7 @@ void _audio_io_stream_write_cb(audio_out_h handle, size_t nbytes, void *userdata
     char * buffer = NULL;
     int buffer_offset = 0;
 	if (nbytes > 0) {
-		dlog_print(DLOG_DEBUG, LOG_TAG, "_audio_io_stream_write_cb is called, nbytes = %d", nbytes);
+		if(SHOW_DEBUG_MSG) dlog_print(DLOG_DEBUG, LOG_TAG, "_audio_io_stream_write_cb is called, nbytes = %d", nbytes);
 
       // Allocate and reset a local buffer for reading the audio data from the file
       buffer = malloc(nbytes);
@@ -197,10 +235,11 @@ void _audio_io_stream_write_cb(audio_out_h handle, size_t nbytes, void *userdata
 
 static void start_audio_playing(appdata_s *ad) {
 	// method 1: play audio by a while loop in another thread -> fails after few seconds
-	// ecore_thread_run(_keep_audio_playing, NULL, NULL, ad);
+	ecore_thread_run(_keep_audio_playing, NULL, NULL, ad);
 
 
 	// method 2: play audio in the callback manner
+	/*
 	_latest_play_buffer = ad->pilot;
 	_latest_play_buffer_size = ad->pilot_byte_size;
 	_latest_play_buffer_offset = 0;
@@ -208,7 +247,7 @@ static void start_audio_playing(appdata_s *ad) {
 	myassert(error_code, 0, "audio_out_set_stream_cb() fails");
 	error_code = audio_out_prepare(ad->output);
 	myassert(error_code, 0, "audio_out_prepare() fails");
-
+	*/
 
 
 	// 1. load audio to play
@@ -244,6 +283,14 @@ static void start_audio_playing(appdata_s *ad) {
 static void stop_audio_playing(appdata_s *ad) {
 	dlog_print(DLOG_DEBUG, LOG_TAG, "stop_audio_playing is called");
 	_need_to_keep_audio_playing = false; // this flag force the audio playing loop to stop
+
+	int error_code;
+	error_code = audio_out_unprepare(ad->output);
+	myassert(error_code, 0, "unable to unprepare audio input");
+
+	error_code = audio_out_unset_stream_cb(ad->output);
+	myassert(error_code, 0, "audio_in_unset_stream_cb fails");
+
 }
 
 static void start_audio_recording(appdata_s *ad) {
@@ -260,6 +307,7 @@ static void start_audio_recording(appdata_s *ad) {
 	}
 
 	// 2. start async recording
+	ad->buffer_size = 0;
 	int error_code = audio_in_set_stream_cb(ad->input, _audio_io_stream_read_cb, ad);
 	myassert(error_code, 0, "unable to set stream input callback");
 	error_code = audio_in_prepare(ad->input);

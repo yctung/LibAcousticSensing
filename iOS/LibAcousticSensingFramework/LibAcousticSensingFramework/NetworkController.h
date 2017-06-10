@@ -13,6 +13,8 @@
 #ifndef NetworkController_h
 #define NetworkController_h
 
+#define NET_BYTES_TO_INT32(x) ntohl(*((int32_t*)(x)))
+
 // internal constant (unable to be seen outside of this class)
 // ref:http://stackoverflow.com/questions/6188672/where-do-you-declare-a-constant-in-objective-c
 static const char SET_TYPE_STRING = 2;
@@ -24,7 +26,8 @@ static const char SET_TYPE_VALUE_STRING = 5; // sent value by string
     //id<NetworkControllerCallerDelegate> refCaller;
     
     int currentDataToSendOffset;
-
+    NSMutableData *receivedData;
+    
     NSInputStream *inputStream;
     NSOutputStream *outputStream;
     NSMutableArray *dataWaitToSend;

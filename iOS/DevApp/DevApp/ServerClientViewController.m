@@ -39,7 +39,7 @@
 */
 
 - (IBAction)connectToServer {
-    [asc createInitModeDialogWithIp:@"192.168.0.108" andPort:50005];
+    [asc createInitModeDialogWithIp:@"10.0.0.229" andPort:50005];
 }
 
 - (IBAction)actionStartOrStopSensing {

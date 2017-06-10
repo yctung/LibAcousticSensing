@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "NetworkController.h"
+#import "AudioSource.h"
+
+
 
 
 @implementation NetworkController
@@ -208,6 +211,106 @@
     }
 }
 
+// function to parse if the received data (when it is ready, e.g., get enough bytes)
+-(void)parseReceivedData {
+    // Types of receving packets from server
+    const static int REACTION_SET_MEDIA 	= 1;
+    const static int REACTION_ASK_SENSING   = 2;
+    const static int REACTION_SET_RESULT 	= 3;
+    const static int REACTION_STOP_SENSING   = 4;
+    
+    const int OFFSET_INT = 4; // 4 bytes int
+    const int OFFSET_CHECK = 1; // 1 byte check
+    
+    
+    while (1) {
+        const uint8_t* bytes = [receivedData bytes];
+        const int byteLen = (int)[receivedData length];
+        if (byteLen < 1) return; // quick end, no reaction to read
+        
+        const uint8_t action = bytes[0];
+        switch (action) {
+            case REACTION_SET_MEDIA: {
+                const int FS_OFFSET = 1;
+                const int CH_CNT_OFFSET = FS_OFFSET + OFFSET_INT;
+                const int REPEAT_CNT_OFFSET = CH_CNT_OFFSET + OFFSET_INT;
+                const int PREAMBLE_LEN_OFFSET = REPEAT_CNT_OFFSET + OFFSET_INT;
+                
+                if (byteLen < PREAMBLE_LEN_OFFSET + OFFSET_INT) return; // not enough data to parse
+                
+                
+                
+                int preambleShortToRead = NET_BYTES_TO_INT32(bytes+PREAMBLE_LEN_OFFSET);
+                int SIGNAL_LEN_OFFSET = PREAMBLE_LEN_OFFSET + OFFSET_INT + preambleShortToRead*2;
+                int PREAMBLE_OFFSET = PREAMBLE_LEN_OFFSET + OFFSET_INT;
+                
+                if (byteLen < SIGNAL_LEN_OFFSET + OFFSET_INT) return; // not enough data to parse
+                
+                int signalShortToRead = NET_BYTES_TO_INT32(bytes+SIGNAL_LEN_OFFSET);
+                int SIGNAL_OFFSET = SIGNAL_LEN_OFFSET + OFFSET_INT;
+                
+                int CHECK_OFFSET = SIGNAL_LEN_OFFSET + OFFSET_INT + signalShortToRead*2;
+                
+                if (CHECK_OFFSET > byteLen) return; // not enough data to parse
+                
+                // start reading media data
+                int FS = NET_BYTES_TO_INT32(bytes+FS_OFFSET);
+                int chCnt = NET_BYTES_TO_INT32(bytes+CH_CNT_OFFSET);
+                int repeatCnt = NET_BYTES_TO_INT32(bytes+REPEAT_CNT_OFFSET);
+                char check = bytes[CHECK_OFFSET];
+                
+                
+                if (check != -1) {
+                    NSLog(@"[ERROR]: check != -1 (value = %d)", check);
+                }
+                
+                
+                int16_t *preamble = (int16_t *) malloc(sizeof(int16_t)*preambleShortToRead);
+                memcpy(preamble, bytes+PREAMBLE_OFFSET, sizeof(int16_t)*preambleShortToRead);
+                NSLog(@"preamble = (%d, %d, %d)", preamble[0], preamble[1], preamble[2]);
+                NSData* preambleData = [NSData dataWithBytes:preamble length:sizeof(int16_t)*preambleShortToRead];
+                
+                int16_t *signal = (int16_t *) malloc(sizeof(int16_t)*signalShortToRead);
+                memcpy(signal, bytes+SIGNAL_OFFSET, sizeof(int16_t)*signalShortToRead);
+                NSLog(@"signal = (%d, %d, %d)", signal[0], signal[1], signal[2]);
+                NSData* signalData = [NSData dataWithBytes:signal length:sizeof(int16_t)*signalShortToRead];
+                
+                AudioSource* audioSource = [[AudioSource alloc] initWithFS:FS andChCnt:chCnt andRepeatCnt:repeatCnt andPreamble:preambleData andSignal:signalData];
+                [refCaller audioReceivedFromServer:audioSource];
+                /*
+                int debugOffset = 1;
+                NSLog(@"%d, %d, %d, %d", bytes[debugOffset], bytes[debugOffset+1], bytes[debugOffset+2], bytes[debugOffset+3]);
+                */
+                
+                // TODO: read real audio bytes
+                NSRange rangeToRemove = NSMakeRange(0, CHECK_OFFSET+OFFSET_CHECK);
+                [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
+                
+                break;
+            }
+            case REACTION_ASK_SENSING: {
+                
+                NSRange rangeToRemove = NSMakeRange(0, 1);
+                [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
+                break;
+            }
+            case REACTION_STOP_SENSING: {
+                
+                NSRange rangeToRemove = NSMakeRange(0, 1);
+                [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
+                break;
+            }
+            case REACTION_SET_RESULT: {
+                
+                // TODO: handle this
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
+
 // NSStreamDelegate callback functions
 -(void)stream:(NSStream *)theStream handleEvent:(NSStreamEvent)streamEvent {
     NSString *io;
@@ -234,13 +337,20 @@
             event = @"NSStreamEventHasBytesAvailable";
             if (theStream == inputStream)
             {
+                if(!receivedData) {
+                    receivedData = [[NSMutableData data] retain];
+                }
+                
                 uint8_t buffer[1024];
                 NSInteger len = [inputStream read:buffer maxLength:sizeof(buffer)];
                 if (len > 0) {
+                    [receivedData appendBytes:buffer length:len];
+                    [self parseReceivedData];
+                    /*
                     NSData *dataReceived = [[NSData alloc] initWithBytes:buffer length:len];
-                    
                     NSLog(@"socket received data with len = %ld",(long)len);
                     [refCaller consumeReceivedData:dataReceived];
+                    */
                 } else {
                     NSLog(@"[ERROR]: unable to read socket");
                 }

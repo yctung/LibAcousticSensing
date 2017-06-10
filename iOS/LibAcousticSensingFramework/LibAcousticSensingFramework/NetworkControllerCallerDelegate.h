@@ -7,8 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AudioSource.h"
 
 @protocol NetworkControllerCallerDelegate <NSObject>
 - (void)isConnected:(BOOL)success withResp:(NSString*) resp;
 - (int)consumeReceivedData:(NSData*) dataReceived;
+- (void)audioReceivedFromServer:(AudioSource *) audioSource;
 @end

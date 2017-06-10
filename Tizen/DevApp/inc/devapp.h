@@ -14,9 +14,9 @@
 #define RECORDING_SEC 5
 
 //#define SERVER_ADDR "192.168.100.193"
-#define SERVER_ADDR "10.0.0.12"
+#define SERVER_ADDR "10.0.0.229"
 #define SERVER_PORT 50005
-
+#define SHOW_DEBUG_MSG false
 
 // Types of actions (for packets sent from the server)
 #define LIBAS_ACTION_CONNECT 1 	// ACTION_CONNECT format: | ACTION_CONNECT | xxx parater setting
