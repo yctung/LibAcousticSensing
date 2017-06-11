@@ -3,6 +3,8 @@
 %==========================================================================
 SERVER_PORT = 50005; % remember to diable firewall for this port
 close all;
+import edu.umich.cse.yctung.*
+
 JavaSensingServer.closeAll(); % close all previous open socket
 
 % build dummy "audible" audios for knowing the sound is played correctly on device
