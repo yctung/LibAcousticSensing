@@ -8,6 +8,7 @@ function [] = AppForcePhoneCallback( obj, type, data )
     global detectResultsAllSqueezeEndIdxs;
     
     global detectResults;
+    global detectResps; % real result being estimated by squeeze detect
     global detectResultsEnd;
     global resultIdxSqueezeStart;
     global resultIdxSqueezeEnd;
@@ -25,7 +26,8 @@ function [] = AppForcePhoneCallback( obj, type, data )
         if obj.userfig == -1, % need to create a new UI window
             detectResultsEnd = 0;
             detectResults = zeros(DETECT_RESULT_SIZE, 1);
-
+            detectResps = zeros(DETECT_RESULT_SIZE, 1);
+            
             resultIdxSqueezeStart = 0;
             resultIdxSqueezeEnd = 0;
             
@@ -46,11 +48,6 @@ function [] = AppForcePhoneCallback( obj, type, data )
             nowSize = length(detectResultNow);
             detectResultsAll(detectResultsAllEnd+1:detectResultsAllEnd+nowSize) = detectResultNow;
             detectResultsAllEnd = detectResultsAllEnd+nowSize;
-            
-            % return the result if need
-            if PS.detectEnabled,
-                %obj.jss.write()
-            end
             
             % line1: data 
             check1 = findobj('Tag','check01');
@@ -80,19 +77,44 @@ function [] = AppForcePhoneCallback( obj, type, data )
                 if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
                     toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
                     detectResults(1:end-toShift) = detectResults(toShift+1:end);
+                    detectResps(1:end-toShift) = detectResps(toShift+1:end);
+                    
                     detectResultsEnd = detectResultsEnd - nowSize;
                     resultIdxSqueezeStart = max(0, resultIdxSqueezeStart - toShift);
                     resultIdxSqueezeEnd = max(0, resultIdxSqueezeEnd - toShift);
                 end
 
                 detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
+                for endIdx = detectResultsEnd+nowSize:-1:detectResultsEnd+1,
+                    SQUEEZE_DETECT_WIDTH = 40;
+                    startIdx = endIdx - SQUEEZE_DETECT_WIDTH + 1;
+                    if startIdx < 1 % not enough samples to detect squeeze
+                        break;
+                    end
+                    s = detectResults(startIdx:endIdx);
+                    [~, peaks, status] = SqueezeTwiceDetect(s);
+                    detectResps(endIdx) = status;
+                    
+                    % return the result if need
+                    if PS.detectEnabled,
+                        status
+                        obj.sendResult(status, 0.0);
+                    end
+                end
+                
+                
                 detectResultsEnd = detectResultsEnd+nowSize;
                 set(line, 'yData', detectResults); % only show the 1st ch
-                
-                
-                % plot vertical lines (for squeeze start and end)
                 resultMin = min(detectResults);
                 resultMax = max(detectResults);
+                
+                % plot the resps code
+                line = findobj('Tag','line03_02');
+                yData = (detectResps == 3)*resultMax;
+                set(line, 'yData', yData);
+                
+                % plot vertical lines (for squeeze start and end)
+                
                 line = findobj('Tag','line03_03');
                 set(line, 'yData', [resultMin, resultMax]);
                 set(line, 'xData', [resultIdxSqueezeStart, resultIdxSqueezeStart]);
@@ -117,8 +139,8 @@ function [] = AppForcePhoneCallback( obj, type, data )
             end
             PS.detectRef = detectResults(refIdx); % latest detect reuslt is the reference
             
-            line = findobj('Tag','line03_02');
-            set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
+            %line = findobj('Tag','line03_02');
+            %set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
         else
             resultIdxSqueezeEnd = detectResultsEnd-1;
             detectResultsAllSqueezeEndIdxs = [detectResultsAllSqueezeEndIdxs; max(1, detectResultsAllEnd-1)];

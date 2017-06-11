@@ -31,7 +31,7 @@ function [sRatioTo2Ends, peakX, checkStatus ] = SqueezeDetect( s, setting, DEBUG
         DEBUG_SHOW = 1;
     else
         if ~exist('DEBUG_SHOW','var')
-            DEBUG_SHOW = 1;
+            DEBUG_SHOW = 0;
         end
     end
     %DEBUG_SHOW = 1;
@@ -39,7 +39,7 @@ function [sRatioTo2Ends, peakX, checkStatus ] = SqueezeDetect( s, setting, DEBUG
     %s = s/10^5; % *** just for debug ***
     
     
-    if exist('setting','var'),
+    if exist('setting','var') && ~isempty(setting),
         % load setting
         USE_TWO_END_CORRECT         = setting.USE_TWO_END_CORRECT;
         PEAK_WIN                    = setting.PEAK_WIN;
@@ -57,12 +57,21 @@ function [sRatioTo2Ends, peakX, checkStatus ] = SqueezeDetect( s, setting, DEBUG
         %TODO: need to make poper setting latter
         USE_TWO_END_CORRECT = 1; % correct data by two end
         PEAK_WIN = 8;
-        PEAK_HARD_THRES_HIGH = 0.08; % this is the hard threshold must feed    
-        PEAK_HARD_THRES_LOW = 0.04;
+        %PEAK_HARD_THRES_HIGH = 0.08; % this is the hard threshold must feed    
+        %PEAK_HARD_THRES_LOW = 0.04;
+        
+        %{
+        PEAK_HARD_THRES_HIGH = 0.05; % for Nexus 6p
+        PEAK_HARD_THRES_LOW = 0.03;
+        %}
+        
+        PEAK_HARD_THRES_HIGH = 0.1; % for Nexus 6p
+        PEAK_HARD_THRES_LOW = 0.05;
         
         PEAK_SORT_THRES_RATIO_HIGH = 1.5; % multiple of std to achieve for peak
         PEAK_SORT_THRES_RATIO_LOW = 0.5; % multiple of std to achieve for peak
-        PEAK_LOW_WIDTH_MAX = 8; % with constrain of the peak values over low thres
+        %PEAK_LOW_WIDTH_MAX = 8; % with constrain of the peak values over low thres
+        PEAK_LOW_WIDTH_MAX = 10; % with constrain of the peak values over low thres
         PEAK_LOW_WIDTH_MIN = 2;
         CHECK_PEAK_CNT = 2;
         CHECK_PEAK_DIFF_RANGE = [6, 25];

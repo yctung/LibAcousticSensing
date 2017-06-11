@@ -8,4 +8,5 @@ public interface AcousticSensingControllerListener {
     public void showToast(String stringToShow);
     public void sensingEnd();
     public void updateSensingProgress(int percent);
+    public void updateResult(int argInt, float argFloat);
 }

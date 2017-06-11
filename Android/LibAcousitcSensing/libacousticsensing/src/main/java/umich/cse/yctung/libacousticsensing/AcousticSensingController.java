@@ -186,7 +186,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
     @Override
     public void resultReceviedFromServer(int result) {
-
+        listener.updateResult(result, 0.0f);
     }
 
     @Override

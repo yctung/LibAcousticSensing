@@ -260,6 +260,19 @@ public class NetworkController {
 					}
 				} else if (reaction == REACTION_SET_RESULT) {
 					// TODO: update result to user-app callbacks
+					int argInt = dataIn.readInt();
+					// TODO: add write float
+					byte check = dataIn.readByte();
+
+					Log.d(LOG_TAG, "received result = "+argInt+", check = "+check);
+					if(check != -1){
+						Log.e(LOG_TAG, "Check is not -1 -> some packet might be dropped or there is a bug in matlab server");
+						listener.updateDebugStatus("result loaded fails (check != -1)");
+					} else {
+
+						listener.resultReceviedFromServer(argInt);
+					}
+
 				}
 			} catch (IOException e) {
 				Log.w(LOG_TAG, "Read socket data timeout (need more data? or wait a while?)");

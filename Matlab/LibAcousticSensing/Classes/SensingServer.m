@@ -420,6 +420,13 @@ classdef SensingServer < handle
             CHECK = -1;
             obj.jss.writeByte(int8(CHECK));
         end
+        
+        function sendResult(obj, argInt, argFloat)
+            obj.jss.writeByte(int8(obj.REACTION_SET_RESULT));
+            obj.jss.writeInt(int32(argInt));
+            CHECK = -1;
+            obj.jss.writeByte(int8(CHECK));
+        end
 %==========================================================================
 %  Internal UI functions
 %==========================================================================

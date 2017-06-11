@@ -98,4 +98,9 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     public void updateSensingProgress(int percent) {
 
     }
+
+    @Override
+    public void updateResult(int argInt, float argFloat) {
+
+    }
 }

@@ -378,7 +378,6 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
         } else {
             requestRecordAudioPermission();
         }
-
     }
 
     @Override
@@ -596,6 +595,11 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
 
     @Override
     public void updateSensingProgress(int percent) {
+
+    }
+
+    @Override
+    public void updateResult(int argInt, float argFloat) {
 
     }
 
