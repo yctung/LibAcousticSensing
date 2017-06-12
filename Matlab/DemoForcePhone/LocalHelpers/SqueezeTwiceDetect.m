@@ -1,4 +1,4 @@
-function [sRatioTo2Ends, peakX, checkStatus ] = SqueezeDetect( s, setting, DEBUG_SHOW)
+function [sRatioTo2Ends, peakX, checkStatus ] = SqueezeTwiceDetect( s, setting, DEBUG_SHOW)
 % 2015/11/10: analyze if there is a squeeze action
 % 2015/12/02: update new squeeze detection -> solve the "decareed peak"
     CHECK_STATUS_INIT = -1;

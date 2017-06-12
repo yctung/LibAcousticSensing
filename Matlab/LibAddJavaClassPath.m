@@ -6,8 +6,9 @@
 %==========================================================================
 
 pathToAdd = strcat(pwd,'/LibAcousticSensing/3rdLibs/matSock/bin\n')
-
 filePath = strcat(prefdir,'/javaclasspath.txt')
+
+% check matlab version
 
 try
     fid = fopen(filePath, 'wt');

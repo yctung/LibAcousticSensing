@@ -103,6 +103,11 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         }
     }
 
+    private void stopSensingNow() {
+        ac.stopSensing();
+        ac = null; // TODO: keep audio controller alive to save init delay
+    }
+
     // funtion to show the customized dialog for initailzation
     public Dialog createInitModeDialog(Activity activity, String serverIpDefault, int serverPortDefault) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -175,6 +180,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             @Override
             public void run() {
                 startSensingNow();
+            }
+        });
+    }
+
+    @Override
+    public void serverAskStopSensing() {
+        ((Activity)context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stopSensingNow();
             }
         });
     }

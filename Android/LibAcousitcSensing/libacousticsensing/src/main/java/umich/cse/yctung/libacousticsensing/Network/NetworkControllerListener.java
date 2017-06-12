@@ -9,6 +9,7 @@ import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
 public interface NetworkControllerListener {
     void isConnected(boolean success, String resp);
     void serverAskStartSensing();
+    void serverAskStopSensing();
     void audioReceivedFromServer(AudioSource audioSource);
     void resultReceviedFromServer(int result);
     void userStudyEnd();

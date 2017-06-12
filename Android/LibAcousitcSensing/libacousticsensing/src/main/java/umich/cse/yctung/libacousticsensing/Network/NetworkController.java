@@ -49,6 +49,7 @@ public class NetworkController {
 	private final static int REACTION_SET_MEDIA 	= 1;
 	private final static int REACTION_ASK_SENSING   = 2;
 	private final static int REACTION_SET_RESULT 	= 3;
+	private final static int REACTION_STOP_SENSING  = 4;
 
 	// Server statuses
 	private final static int SERVER_STATUS_DISABLED = -1; // default status of server
@@ -179,7 +180,7 @@ public class NetworkController {
 				byte reaction;
 				reaction = dataIn.readByte();
 
-				if(reaction == REACTION_ASK_SENSING){
+				if(reaction == REACTION_ASK_SENSING) {
 					listener.serverAskStartSensing();
 					/*
 					int type = dataIn.readInt();
@@ -211,6 +212,8 @@ public class NetworkController {
 
 					caller.requestReceivedFromServer(latestReceviedUserStudyRequest);
 					*/
+				} else if(reaction == REACTION_STOP_SENSING) {
+					listener.serverAskStopSensing();
 				} else if(reaction == REACTION_SET_MEDIA){ // This reaction sets audio based on the received payload
 					int FS = dataIn.readInt(); // sample rate
 					int chCnt = dataIn.readInt();

@@ -6,7 +6,7 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
     pilot = preambleSource.syncToDetect;
 
     if ~exist('DEBUG_SHOW','var'),
-        DEBUG_SHOW = 0;
+        DEBUG_SHOW = 1;
     end
 
     if exist('serchChIdxs', 'var'),

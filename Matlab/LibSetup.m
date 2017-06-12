@@ -16,3 +16,8 @@ end
 % TODO: add windows support
 
 import edu.umich.cse.yctung.*
+
+check = which('JavaSensingServer');
+if isempty(check)
+    fprintf(2, '[ERROR] JavaSensingServer is not correctlly included (has not executed LibAddJavaClassPath.m?)\n');
+end
