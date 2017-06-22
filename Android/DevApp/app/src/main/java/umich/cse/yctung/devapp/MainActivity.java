@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     // UI elements
     Spinner spinnerMode;
     EditText editTextServerAddr, editTextServerPort;
-    Button buttonStart;
+    Button buttonStart, buttonUserData;
     TextView textViewDebugInfo;
     // Internal status
     boolean isSensing;
@@ -41,6 +41,14 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
         editTextServerPort.setText(String.format("%d",Constant.DEFAULT_SERVER_PORT));
 
+        buttonUserData = (Button)findViewById(R.id.btnUserData);
+        buttonUserData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onUserDataClicked();
+            }
+        });
+
         buttonStart = (Button)findViewById(R.id.btnStart);
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +60,15 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
 
         asc=new AcousticSensingController(this,this);
+    }
+
+    int userDataCodeToSend = 1;
+    void onUserDataClicked() {
+        if (asc.isConnected()) {
+            asc.sendUserData("ukn",userDataCodeToSend, 0.0f, 0.0f);
+            // update next user data to send
+            userDataCodeToSend = userDataCodeToSend == 1 ? 0 : 1;
+        }
     }
 
     void onStartOrStopClicked() {

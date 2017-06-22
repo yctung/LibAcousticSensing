@@ -96,7 +96,14 @@
     </LinearLayout>
 
 
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send User Data"
+        android:id="@+id/btnUserData"
+        android:layout_above="@+id/btnStart"
+        android:layout_marginBottom="40dp"
+        android:layout_centerHorizontal="true"/>
 
 
     <Button

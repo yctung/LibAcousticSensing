@@ -31,6 +31,24 @@ classdef PreambleSource < handle
             
             obj.FS=FS;
         end
+        
+        % Function to write binary file being used by audio tracks
+        function writePreambleToFileAsBinary(obj, filePath)
+            fid = fopen(filePath,'wt');
+            AMP_FROM_FLOAT_TO_SHORT = (2^15)-1; % do some adjustment in java later on
+            pilotToWrite = floor(obj.preambleToAdd.*AMP_FROM_FLOAT_TO_SHORT);
+            fwrite(fid, pilotToWrite, 'int16');
+            fclose(fid);
+        end
+        
+        function writeSyncToFileAsStringArray(obj, filePath, varName)
+            stringToSave = sprintf('AUDIO_PILOT_END_OFFSET = %d;\n', obj.preambleEndOffset);
+            values = ConvertVectorToStringArray(obj.syncToDetect);
+            stringToSave = sprintf('%s%s = %s', stringToSave, varName, values);
+            fid = fopen(filePath,'wt');
+            fprintf(fid, stringToSave);
+            fclose(fid);
+        end
     end
     
 end

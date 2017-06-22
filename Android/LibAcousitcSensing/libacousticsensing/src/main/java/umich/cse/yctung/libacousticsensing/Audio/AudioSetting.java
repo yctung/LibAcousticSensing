@@ -4,6 +4,7 @@ import android.icu.text.AlphabeticIndex;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.media.audiofx.AutomaticGainControl;
 import android.util.Log;
 
 /**
@@ -32,6 +33,16 @@ public class AudioSetting {
     public AudioRecord createNewAudioRecord() {
         // TODO: create recorder based on user's setting
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, RECORDER_TOTAL_BUFFER_SIZE);
+
+        if (AutomaticGainControl.isAvailable()) {
+            AutomaticGainControl agc = AutomaticGainControl.create(audioRecord.getAudioSessionId());
+
+            Log.d("AudioSource","agc before disabled = "+agc.getEnabled());
+            agc.setEnabled(false);
+            Log.d("AudioSource", "agc before disabled = "+agc.getEnabled());
+        }
+
+
         // TODO: ensure this audioRecord is ready to record (usually different device might need different init setting), ref: http://stackoverflow.com/questions/4843739/audiorecord-object-not-initializing
         if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) return audioRecord;
         Log.e(TAG, "Unable to init AudioRecord class (forget to request the permission or using a wrong setting?)");

@@ -2,17 +2,17 @@ function [] = AppForcePhoneCallback( obj, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
     global USER_FIG_TAG; USER_FIG_TAG = 'USER_FIG_TAG';
     global PS; % user parse setting
-    global detectResultsAll;
-    global detectResultsAllEnd;
-    global detectResultsAllSqueezeStartIdxs;
-    global detectResultsAllSqueezeEndIdxs;
-    
-    global detectResults;
-    global detectResps; % real result being estimated by squeeze detect
-    global detectResultsEnd;
-    global resultIdxSqueezeStart;
-    global resultIdxSqueezeEnd;
-    DETECT_RESULT_SIZE = 300; % number of result sample to show
+    global dsDetectsAll;
+    global dsDetectsAllEnd;
+    global tvgSetting;
+    global needToUpdateXLine2;
+    global DOWNSAMPLE_FACTOR;
+    global dsXMeters;
+    global dsSize;
+    global userStarts;
+    global userEnds;
+    global userStartsEnd;
+    global userEndsEnd;
     
     if type == obj.CALLBACK_TYPE_ERROR,
         fprintf(2, '[ERROR]: get the error callback data = %s', data);
@@ -24,30 +24,41 @@ function [] = AppForcePhoneCallback( obj, type, data )
         LINE_CNTS = [2,2,4]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
         %hFig = findobj('Tag',FIG_CON_TAG);
         if obj.userfig == -1, % need to create a new UI window
-            detectResultsEnd = 0;
-            detectResults = zeros(DETECT_RESULT_SIZE, 1);
-            detectResps = zeros(DETECT_RESULT_SIZE, 1);
-            
-            resultIdxSqueezeStart = 0;
-            resultIdxSqueezeEnd = 0;
-            
             % very large buffer to save all results
-            detectResultsAll = zeros(20*60*10, 1);
-            detectResultsAllEnd = 0;
-            detectResultsAllSqueezeStartIdxs = [];
-            detectResultsAllSqueezeEndIdxs = [];
             
+            DOWNSAMPLE_FACTOR = 4;
+            tvgSetting.SOUND_SPEED = 340;
+            tvgSetting.TVG_ALPHA = 0.65 % for note 4
+            tvgSetting.TVG_BETA = 0;
+            tvgSetting.FS = PS.FS/DOWNSAMPLE_FACTOR;
+            
+            oriSize = PS.detectRangeEnd - PS.detectRangeStart + 1;
+            dsSize = floor(oriSize/DOWNSAMPLE_FACTOR);
+            
+            dsXMeters = LibSamplesToMeters(1:dsSize, 340, PS.FS/DOWNSAMPLE_FACTOR);
+            
+            dsDetectsAll = zeros(dsSize, 20*60*10, 2);
+            dsDetectsAllEnd = 0;
+            userStarts = zeros(500, 1);
+            userEnds = zeros(500, 1);
+            userStartsEnd = 0;
+            userEndsEnd = 0;
+            
+            
+            needToUpdateXLine2 = 1;
             createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
         else
-            % process data
-            
             % convlution of all data
             cons = convn(data, PS.signalToCorrelate,'same');
-            detectChIdx = 1;
-            detectResultNow = squeeze(mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, detectChIdx)),1));
-            nowSize = length(detectResultNow);
-            detectResultsAll(detectResultsAllEnd+1:detectResultsAllEnd+nowSize) = detectResultNow;
-            detectResultsAllEnd = detectResultsAllEnd+nowSize;
+            detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
+            traceCnt = size(detects, 2);
+            chCnt = size(detects, 3);
+            dsDetects = zeros(dsSize, traceCnt, chCnt);
+            for chIdx = 1:chCnt
+                dsDetects(:,:,chIdx) = imresize(detects(:,:,chIdx), [dsSize, traceCnt], 'Bilinear'); % subsampled results
+            end
+            dsDetectsAll(:, dsDetectsAllEnd+1:dsDetectsAllEnd+traceCnt, 1:chCnt) = dsDetects;
+            dsDetectsAllEnd = dsDetectsAllEnd + traceCnt;
             
             % line1: data 
             check1 = findobj('Tag','check01');
@@ -64,11 +75,14 @@ function [] = AppForcePhoneCallback( obj, type, data )
             if check2.Value == 1,
                 for chIdx = 1:2,
                     line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    %conToPlot = smooth(abs(cons(:,end,chIdx)),100);
-                    conToPlot = abs(cons(:,end,chIdx)); % temporary disable smooth function
-                    [~, temp] = max(conToPlot);
-                    fprintf('peak idx = %d\n', temp);
-                    set(line, 'yData', conToPlot); % only show the 1st ch
+                    dataToPlot = LibTimeVaryingGainCorrect(dsDetects(:,end, chIdx), tvgSetting);
+                    set(line, 'yData', dataToPlot); % only show the 1st ch
+                    if needToUpdateXLine2
+                        set(line, 'xData', dsXMeters);
+                        if chIdx == 2
+                            needToUpdateXLine2 = 0;
+                        end
+                    end
                 end
             end
 
@@ -76,78 +90,18 @@ function [] = AppForcePhoneCallback( obj, type, data )
             check3 = findobj('Tag','check03');
             if check3.Value == 1,
                 line = findobj('Tag','line03_01');
-                if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
-                    toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
-                    detectResults(1:end-toShift) = detectResults(toShift+1:end);
-                    detectResps(1:end-toShift) = detectResps(toShift+1:end);
-                    
-                    detectResultsEnd = detectResultsEnd - nowSize;
-                    resultIdxSqueezeStart = max(0, resultIdxSqueezeStart - toShift);
-                    resultIdxSqueezeEnd = max(0, resultIdxSqueezeEnd - toShift);
-                end
-
-                detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
-                for endIdx = detectResultsEnd+nowSize:-1:detectResultsEnd+1,
-                    SQUEEZE_DETECT_WIDTH = 40;
-                    startIdx = endIdx - SQUEEZE_DETECT_WIDTH + 1;
-                    if startIdx < 1 % not enough samples to detect squeeze
-                        break;
-                    end
-                    s = detectResults(startIdx:endIdx);
-                    [~, peaks, status] = SqueezeTwiceDetect(s);
-                    detectResps(endIdx) = status;
-                    
-                    % return the result if need
-                    if PS.detectEnabled,
-                        status
-                        obj.sendResult(status, 0.0);
-                    end
-                end
-                
-                
-                detectResultsEnd = detectResultsEnd+nowSize;
-                set(line, 'yData', detectResults); % only show the 1st ch
-                resultMin = min(detectResults);
-                resultMax = max(detectResults);
-                
-                % plot the resps code
-                line = findobj('Tag','line03_02');
-                yData = (detectResps == 3)*resultMax;
-                set(line, 'yData', yData);
-                
-                % plot vertical lines (for squeeze start and end)
-                
-                line = findobj('Tag','line03_03');
-                set(line, 'yData', [resultMin, resultMax]);
-                set(line, 'xData', [resultIdxSqueezeStart, resultIdxSqueezeStart]);
-                line = findobj('Tag','line03_04');
-                set(line, 'yData', [resultMin, resultMax]);
-                set(line, 'xData', [resultIdxSqueezeEnd, resultIdxSqueezeEnd]);
             end
         end
     elseif type == obj.CALLBACK_TYPE_USER,
+        data.code
         % parse user data
         % must be 'pse' in this app
         if data.code == 1, % update the vertical line
-            PS.detectEnabled = 1;
-            refIdx = detectResultsEnd-1;
-            resultIdxSqueezeStart = detectResultsEnd-1;
-            resultIdxSqueezeEnd = 0;
-            
-            detectResultsAllSqueezeStartIdxs = [detectResultsAllSqueezeStartIdxs; max(1, detectResultsAllEnd-1)];
-            
-            if refIdx<0
-                refIdx = 1;
-            end
-            PS.detectRef = detectResults(refIdx); % latest detect reuslt is the reference
-            
-            %line = findobj('Tag','line03_02');
-            %set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
+            userStarts(userStartsEnd+1) = dsDetectsAllEnd-1;
+            userStartsEnd = userStartsEnd+1;
         else
-            resultIdxSqueezeEnd = detectResultsEnd-1;
-            detectResultsAllSqueezeEndIdxs = [detectResultsAllSqueezeEndIdxs; max(1, detectResultsAllEnd-1)];
-            PS.detectEnabled = 0;
-            PS.detectRef = 1;
+            userEnds(userEndsEnd+1) = dsDetectsAllEnd-1;
+            userEndsEnd = userEndsEnd+1;
         end
     end
 end
