@@ -267,12 +267,12 @@
                 
                 int16_t *preamble = (int16_t *) malloc(sizeof(int16_t)*preambleShortToRead);
                 memcpy(preamble, bytes+PREAMBLE_OFFSET, sizeof(int16_t)*preambleShortToRead);
-                NSLog(@"preamble = (%d, %d, %d)", preamble[0], preamble[1], preamble[2]);
+                NSLog(@"preamble = (%d, %d, %d), short len = %d", preamble[0], preamble[1], preamble[2],preambleShortToRead);
                 NSData* preambleData = [NSData dataWithBytes:preamble length:sizeof(int16_t)*preambleShortToRead];
                 
                 int16_t *signal = (int16_t *) malloc(sizeof(int16_t)*signalShortToRead);
                 memcpy(signal, bytes+SIGNAL_OFFSET, sizeof(int16_t)*signalShortToRead);
-                NSLog(@"signal = (%d, %d, %d)", signal[0], signal[1], signal[2]);
+                NSLog(@"signal = (%d, %d, %d), short len = %d", signal[0], signal[1], signal[2],signalShortToRead);
                 NSData* signalData = [NSData dataWithBytes:signal length:sizeof(int16_t)*signalShortToRead];
                 
                 AudioSource* audioSource = [[AudioSource alloc] initWithFS:FS andChCnt:chCnt andRepeatCnt:repeatCnt andPreamble:preambleData andSignal:signalData];

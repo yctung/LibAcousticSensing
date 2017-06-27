@@ -14,7 +14,7 @@
 		13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BFA1E300947006D8A06 /* FrameworkCheck.m */; };
 		134F9F991EDE86AC003B382B /* AudioSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 134F9F971EDE86AC003B382B /* AudioSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		134F9F9A1EDE86AC003B382B /* AudioSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 134F9F981EDE86AC003B382B /* AudioSource.m */; };
-		1367D8C41EDD268B00C89823 /* AudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1367D8C21EDD268B00C89823 /* AudioPlayer.h */; };
+		1367D8C41EDD268B00C89823 /* AudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1367D8C21EDD268B00C89823 /* AudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1367D8C51EDD268B00C89823 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1367D8C31EDD268B00C89823 /* AudioPlayer.m */; };
 		13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18D91E48F400008CB0AE /* NetworkController.h */; };
 		13BF18DC1E48F400008CB0AE /* NetworkControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18DA1E48F400008CB0AE /* NetworkControllerCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -37,6 +37,8 @@
 		13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF19031E48FAAF008CB0AE /* TraceSaver.m */; };
 		13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */; };
 		13C919931EC710C900A4D1FA /* AcousticSensingControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		13E0F23A1F0053B0000B5E34 /* TestAudioPlayerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E0F2381F0053B0000B5E34 /* TestAudioPlayerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		13E0F23B1F0053B0000B5E34 /* TestAudioPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0F2391F0053B0000B5E34 /* TestAudioPlayerController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +85,8 @@
 		13BF19031E48FAAF008CB0AE /* TraceSaver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TraceSaver.m; sourceTree = "<group>"; };
 		13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TraceSaverCallerDelegate.h; sourceTree = "<group>"; };
 		13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AcousticSensingControllerCallerDelegate.h; sourceTree = "<group>"; };
+		13E0F2381F0053B0000B5E34 /* TestAudioPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestAudioPlayerController.h; sourceTree = "<group>"; };
+		13E0F2391F0053B0000B5E34 /* TestAudioPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAudioPlayerController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +129,7 @@
 		13099BA21E3008D5006D8A06 /* LibAcousticSensingFramework */ = {
 			isa = PBXGroup;
 			children = (
+				13E0F2371F00537E000B5E34 /* Test */,
 				13BF18FD1E48FA96008CB0AE /* Other */,
 				13BF18F41E48F914008CB0AE /* AudioSource */,
 				13BF18DD1E48F413008CB0AE /* Audio */,
@@ -199,6 +204,15 @@
 			name = Other;
 			sourceTree = "<group>";
 		};
+		13E0F2371F00537E000B5E34 /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				13E0F2381F0053B0000B5E34 /* TestAudioPlayerController.h */,
+				13E0F2391F0053B0000B5E34 /* TestAudioPlayerController.m */,
+			);
+			name = Test;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -210,6 +224,7 @@
 				13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */,
 				13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */,
 				13BF18E61E48F48D008CB0AE /* AcousticController.h in Headers */,
+				13E0F23A1F0053B0000B5E34 /* TestAudioPlayerController.h in Headers */,
 				13BF18DC1E48F400008CB0AE /* NetworkControllerCallerDelegate.h in Headers */,
 				134F9F991EDE86AC003B382B /* AudioSource.h in Headers */,
 				13BF18E91E48F48D008CB0AE /* AudioRecorderCallerDelegate.h in Headers */,
@@ -329,6 +344,7 @@
 				13BF18F21E48F54B008CB0AE /* Constant.m in Sources */,
 				13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */,
 				13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */,
+				13E0F23B1F0053B0000B5E34 /* TestAudioPlayerController.m in Sources */,
 				134F9F9A1EDE86AC003B382B /* AudioSource.m in Sources */,
 				13BF18EB1E48F49F008CB0AE /* AcousticController.m in Sources */,
 				13BF18EF1E48F4B3008CB0AE /* NetworkController.m in Sources */,

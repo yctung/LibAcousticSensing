@@ -21,23 +21,19 @@ void AudioOutputCallback(void* inUserData, AudioQueueRef outAQ, AudioQueueBuffer
         return;
     }
     
-    NSLog(@"Queuing buffer %lld for playback\n", playState->currentPacket);
+    NSLog(@"AudioOutputCallback: packet %lld for playback\n", playState->currentPacket);
     
-    AudioStreamPacketDescription* packetDescs;
-    
-    UInt32 bytesRead;
-    UInt32 numPackets = bytesRead;
-    
+    AudioStreamPacketDescription* packetDescs = NULL;
     
     OSStatus status;
     
     AudioPlayer *aps = (AudioPlayer *) audioPlayerSelf;
     
     
-    // TODO: put data into outBuffer
-    //memcpy(outBuffer->mAudioData, pilot, pilotSize);
+    
     
     void* buffer = outBuffer->mAudioData;
+    
     int bufferOffset = 0;
     int nbytesRemain = AUDIO_PLAYER_BUFFER_SIZE;
     
@@ -48,6 +44,7 @@ void AudioOutputCallback(void* inUserData, AudioQueueRef outAQ, AudioQueueBuffer
             memcpy(buffer+bufferOffset, aps.latestPlayBuffer+aps.latestPlayBufferOffset, nbytesRemain);
             
             aps.latestPlayBufferOffset += nbytesRemain;
+            bufferOffset += nbytesRemain;
             nbytesRemain = 0; // break the loop
             
             if (aps.latestPlayBufferOffset == aps.latestPlayBufferSize) aps.latestPlayBufferOffset = 0;
@@ -68,11 +65,17 @@ void AudioOutputCallback(void* inUserData, AudioQueueRef outAQ, AudioQueueBuffer
         }
     }
     
+    outBuffer->mAudioDataByteSize = bufferOffset;
     
-    outBuffer->mAudioDataByteSize = bytesRead;
-    status = AudioQueueEnqueueBuffer(playState->queue, outBuffer, 0, packetDescs);
-    playState->currentPacket += numPackets;
     
+    /*
+    void *ptr = [aps.audioSource.preamble bytes];
+    NSLog(@"preamble len = %d", [aps.audioSource.preamble length]);
+    memcpy(buffer, aps.latestPlayBuffer, AUDIO_PLAYER_BUFFER_SIZE);
+    outBuffer->mAudioDataByteSize = AUDIO_PLAYER_BUFFER_SIZE;
+    */
+     
+    status = AudioQueueEnqueueBuffer(outAQ, outBuffer, 0, packetDescs);
     
     if (status != 0) {
         NSLog(@"AudioPlayer: AudioQueueEnqueueBuffer fails, status = %d", (int)status);
@@ -136,6 +139,8 @@ void AudioOutputCallback(void* inUserData, AudioQueueRef outAQ, AudioQueueBuffer
             }
         }
         
+        AudioQueueSetParameter(playState.queue, kAudioQueueParam_Volume, 1.0);
+        
         if(playState.playing)
         {
             status = AudioQueueStart(playState.queue, NULL);
@@ -143,10 +148,12 @@ void AudioOutputCallback(void* inUserData, AudioQueueRef outAQ, AudioQueueBuffer
             {
                 NSLog(@"AudioPlayer: startPlaying succ");
                 
+            } else {
+                NSLog(@"[ERROR] AudioPlayer: AudioQueueStart fails");
             }
         }
     } else {
-        NSLog(@"AudioPlayer: startPlaying fails");
+        NSLog(@"ERROR] AudioPlayer: AudioQueueNewOutput fails");
     }
 }
 

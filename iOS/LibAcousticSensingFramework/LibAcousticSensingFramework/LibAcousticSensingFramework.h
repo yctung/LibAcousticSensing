@@ -19,3 +19,4 @@ FOUNDATION_EXPORT const unsigned char LibAcousticSensingFrameworkVersionString[]
 #include "FrameworkCheck.h"
 #include "AcousticSensingController.h"
 #include "AcousticSensingControllerCallerDelegate.h"
+#include "TestAudioPlayerController.h"

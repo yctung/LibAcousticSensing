@@ -1,4 +1,4 @@
-function [ meanRatio, meanRatioDb ] = CalDiffAmp( targetTracePath, refTracePath, rangeMeters)
+function [ meanRatio, meanRatioDb ] = CalDiffAmp( targetTracePath, refTracePath, rangeMeters, chIdxs)
 % Function to estiamte amp difference between two traces
     if ~exist('targetTracePath', 'var')
         targetTracePath = 'Traces/6p_mic_3m_2.mat'
@@ -13,6 +13,11 @@ function [ meanRatio, meanRatioDb ] = CalDiffAmp( targetTracePath, refTracePath,
     
     
     meanRatio = mean(targetPeakAmps)./mean(refPeakAmps);
-    meanRatioDb = 20*log10(meanRatio)
+    meanRatioDb = 20*log10(meanRatio);
+    
+    if exist('chIdxs', 'var')
+        meanRatio = meanRatio(chIdxs);
+        meanRatioDb = meanRatioDb(chIdxs);
+    end
 end
 

@@ -14,6 +14,7 @@
 #import "NetworkController.h"
 #import "AcousticController.h"
 #import "NetworkControllerCallerDelegate.h"
+#import "TestAudioPlayerController.h"
 
 @interface AcousticSensingController()
 @property (nonatomic) int audioMode;
@@ -74,6 +75,9 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 - (void) startSensingNow {
     ac = [[AcousticController alloc] initWithAudioSource: audioSource andCaller:self];
     [ac startSurvey];
+    // *** just for debug ***
+    //TestAudioPlayerController *tapc = [[TestAudioPlayerController alloc] init];
+    //[tapc start];
 }
 
 // fucntion to show the customized dialog for initialization
