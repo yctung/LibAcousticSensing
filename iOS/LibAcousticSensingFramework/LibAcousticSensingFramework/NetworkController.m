@@ -212,7 +212,7 @@
 }
 
 // function to parse if the received data (when it is ready, e.g., get enough bytes)
--(void)parseReceivedData {
+- (void)parseReceivedData {
     // Types of receving packets from server
     const static int REACTION_SET_MEDIA 	= 1;
     const static int REACTION_ASK_SENSING   = 2;
@@ -289,19 +289,18 @@
                 break;
             }
             case REACTION_ASK_SENSING: {
-                
                 NSRange rangeToRemove = NSMakeRange(0, 1);
                 [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
+                [refCaller serverAskStartSensing];
                 break;
             }
             case REACTION_STOP_SENSING: {
-                
                 NSRange rangeToRemove = NSMakeRange(0, 1);
                 [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
+                [refCaller serverAskStartStoping];
                 break;
             }
             case REACTION_SET_RESULT: {
-                
                 // TODO: handle this
                 break;
             }

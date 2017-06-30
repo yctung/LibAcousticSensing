@@ -39,11 +39,16 @@
 */
 
 - (IBAction)connectToServer {
-    [asc createInitModeDialogWithIp:@"10.0.0.229" andPort:50005];
+    //[asc createInitModeDialogWithIp:@"10.0.0.229" andPort:50005];
+    [asc createInitModeDialogWithIp:@"172.20.10.2" andPort:50005];
 }
 
 - (IBAction)actionStartOrStopSensing {
-    [asc startSensingNow];
+    if ([asc isSensing]) {
+        [asc stopSensingNow];
+    } else {
+        [asc startSensingNow];
+    }
 }
 
 //==================================================================================================

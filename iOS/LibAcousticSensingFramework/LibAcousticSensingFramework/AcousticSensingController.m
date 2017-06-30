@@ -75,9 +75,21 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 - (void) startSensingNow {
     ac = [[AcousticController alloc] initWithAudioSource: audioSource andCaller:self];
     [ac startSurvey];
-    // *** just for debug ***
-    //TestAudioPlayerController *tapc = [[TestAudioPlayerController alloc] init];
-    //[tapc start];
+}
+
+- (void) stopSensingNow {
+    if (ac != NULL) {
+        [ac stopSurvey];
+        [ac release];
+        ac = NULL;
+    }
+}
+
+- (BOOL) isSensing {
+    if (ac != NULL && [ac isSensing]) {
+        return YES;
+    }
+    return NO;
 }
 
 // fucntion to show the customized dialog for initialization
@@ -160,11 +172,25 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
     [audioSource retain]; // not sure if necessary, but just in case
 }
 
+- (void)serverAskStartSensing {
+    if(![self isSensing]) {
+        [self startSensingNow];
+    }
+}
+
+- (void)serverAskStopSensing {
+    if([self isSensing]) {
+        [self stopSensingNow];
+    }
+}
+
 //=================================================================================================
 //  Audio callbacks
 //=================================================================================================
 - (void)audioRecorded:(UInt32)byteSize audioData:(void *)audioData currentRecordedSampleCnt:(UInt32) currentRecordedSampleCnt {
-    
+    if (nc != NULL && [nc getIsConnected]) {
+        [nc sendData:byteSize audioData:audioData];
+    }
 }
 - (void)onSurveyEnd {
     

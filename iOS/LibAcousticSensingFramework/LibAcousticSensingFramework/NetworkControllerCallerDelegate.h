@@ -13,4 +13,6 @@
 - (void)isConnected:(BOOL)success withResp:(NSString*) resp;
 - (int)consumeReceivedData:(NSData*) dataReceived;
 - (void)audioReceivedFromServer:(AudioSource *) audioSource;
+- (void)serverAskStartSensing;
+- (void)serverAskStartStoping;
 @end

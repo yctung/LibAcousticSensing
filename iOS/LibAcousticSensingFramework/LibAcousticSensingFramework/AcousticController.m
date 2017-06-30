@@ -185,6 +185,12 @@
     // TODO: pop out some UI options
 }
 
+- (BOOL)isSensing {
+    if(audioPlayer != NULL && audioPlayer.playState.playing) {
+        return YES;
+    }
+    return NO;
+}
 
 //====================================================================================================
 // Start of callback functions
@@ -322,14 +328,11 @@
             NSLog(@"setup speaker failed");
         }
     }
-
     
     // NOTE: this part should be set after all session setting are ALL DONE
     if(![audioSession setActive:YES error:&error]){
         NSLog(@"setActive failed");
     }
-    
-    
 }
 
 

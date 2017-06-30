@@ -34,6 +34,7 @@
 - (void)startSurveyButDontPlaySound;
 - (void)startSurvey;
 - (void)stopSurvey; // force to stop survey
+- (BOOL)isSensing;
 - (void)finalizeSurvey; // finalize the acoustic controller
 
 @end

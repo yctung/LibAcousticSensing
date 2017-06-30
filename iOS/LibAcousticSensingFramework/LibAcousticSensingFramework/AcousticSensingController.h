@@ -22,7 +22,8 @@
 - (id)initWithCaller: (id<AcousticSensingControllerCallerDelegate>) callerIn;
 - (void) createInitModeDialogWithIp: (NSString*) serverIpDefault andPort: (int) serverPortDefault;
 - (void) startSensingNow;
-
+- (void) stopSensingNow;
+- (BOOL) isSensing;
 @end
 
 #endif /* AcousticSensingController_h */

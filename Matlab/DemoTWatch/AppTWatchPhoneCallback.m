@@ -1,107 +1,71 @@
-function [] = AppForcePhoneCallback( obj, type, data )
+function [] = AppTWatchPhoneCallback( obj, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
-    global USER_FIG_TAG; USER_FIG_TAG = 'USER_FIG_TAG';
+    global USER_FIG_TAG;
+    USER_FIG_TAG = 'USER_FIG_TAG';
     global PS; % user parse setting
-    global dsDetectsAll;
-    global dsDetectsAllEnd;
-    global tvgSetting;
-    global needToUpdateXLine2;
-    global DOWNSAMPLE_FACTOR;
-    global dsXMeters;
-    global dsSize;
-    global userStarts;
-    global userEnds;
-    global userStartsEnd;
-    global userEndsEnd;
     
     if type == obj.CALLBACK_TYPE_ERROR,
         fprintf(2, '[ERROR]: get the error callback data = %s', data);
         return;
     end
 
+    CH_CNT_TO_SHOW = 1; % TOOD: set it based on device settings
+    
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA,
-        LINE_CNTS = [2,2,4]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-        %hFig = findobj('Tag',FIG_CON_TAG);
+        LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
         if obj.userfig == -1, % need to create a new UI window
-            % very large buffer to save all results
-            
-            DOWNSAMPLE_FACTOR = 4;
-            tvgSetting.SOUND_SPEED = 340;
-            tvgSetting.TVG_ALPHA = 0.65 % for note 4
-            tvgSetting.TVG_BETA = 0;
-            tvgSetting.FS = PS.FS/DOWNSAMPLE_FACTOR;
-            
-            oriSize = PS.detectRangeEnd - PS.detectRangeStart + 1;
-            dsSize = floor(oriSize/DOWNSAMPLE_FACTOR);
-            
-            dsXMeters = LibSamplesToMeters(1:dsSize, 340, PS.FS/DOWNSAMPLE_FACTOR);
-            
-            dsDetectsAll = zeros(dsSize, 20*60*10, 2);
-            dsDetectsAllEnd = 0;
-            userStarts = zeros(500, 1);
-            userEnds = zeros(500, 1);
-            userStartsEnd = 0;
-            userEndsEnd = 0;
-            
-            
-            needToUpdateXLine2 = 1;
             createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
         else
-            % convlution of all data
-            cons = convn(data, PS.signalToCorrelate,'same');
-            detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
-            traceCnt = size(detects, 2);
-            chCnt = size(detects, 3);
-            dsDetects = zeros(dsSize, traceCnt, chCnt);
-            for chIdx = 1:chCnt
-                dsDetects(:,:,chIdx) = imresize(detects(:,:,chIdx), [dsSize, traceCnt], 'Bilinear'); % subsampled results
-            end
-            dsDetectsAll(:, dsDetectsAllEnd+1:dsDetectsAllEnd+traceCnt, 1:chCnt) = dsDetects;
-            dsDetectsAllEnd = dsDetectsAllEnd + traceCnt;
+            % process data
+            upcons = abs(convn(data, PS.upsignalToCorrelate,'same'));
+            downcons = abs(convn(data, PS.downsignalToCorrelate,'same'));
             
             % line1: data 
             check1 = findobj('Tag','check01');
             if check1.Value == 1,
-                for chIdx = 1:2,
+                for chIdx = 1:CH_CNT_TO_SHOW,
                     line = findobj('Tag',sprintf('line01_%02d',chIdx));
                     dataToPlot = data(:,end,chIdx);
                     set(line, 'yData', dataToPlot); % only show the 1st ch
                 end
             end
 
-            % line2: con 
+            % line2: freq
             check2 = findobj('Tag','check02');
             if check2.Value == 1,
-                for chIdx = 1:1, % TODO: based on channel
-                    line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    dataToPlot = LibTimeVaryingGainCorrect(dsDetects(:,end, chIdx), tvgSetting);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
-                    if needToUpdateXLine2
-                        set(line, 'xData', dsXMeters);
-                        if chIdx == 2
-                            needToUpdateXLine2 = 0;
-                        end
-                    end
-                end
+                line = findobj('Tag','line02_01');
+                dataToPlot = upcons(:, end, 1);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+                
+                line = findobj('Tag','line02_02');
+                dataToPlot = downcons(:, end, 1);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
             end
 
             % line3: detect result
             check3 = findobj('Tag','check03');
             if check3.Value == 1,
                 line = findobj('Tag','line03_01');
+                set(line, 'yData', peakBuf); % only show the 1st ch
             end
         end
     elseif type == obj.CALLBACK_TYPE_USER,
-        data.code
         % parse user data
         % must be 'pse' in this app
         if data.code == 1, % update the vertical line
-            userStarts(userStartsEnd+1) = dsDetectsAllEnd-1;
-            userStartsEnd = userStartsEnd+1;
+            PS.detectEnabled = 1;
+            refIdx = detectResultsEnd-1;
+            if refIdx<0
+                refIdx = 1;
+            end
+            PS.detectRef = detectResults(refIdx); % latest detect reuslt is the reference
+            
+            line = findobj('Tag','line03_02');
+            set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
         else
-            userEnds(userEndsEnd+1) = dsDetectsAllEnd-1;
-            userEndsEnd = userEndsEnd+1;
+            PS.detectEnabled = 0;
+            PS.detectRef = 1;
         end
     end
 end
@@ -109,6 +73,10 @@ end
 function createUI(obj, figTag, data, lineCnts)
     % lineCnts is the number of lines per figure
     global PS;
+    
+    TITLE_FONT_SIZE = 17;
+    TEXT_FONT_SIZE = 15;
+    set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
     
     PLOT_AXE_IN_WIDTH = 270;
     PLOT_AXE_OUT_WIDTH = 290;
@@ -118,29 +86,53 @@ function createUI(obj, figTag, data, lineCnts)
     set(obj.userfig,'UserData',obj); % attached the obj to fig property for future reference 
     
     h_panel2 = uipanel(obj.userfig,'Units','pixels','Position',[15,15,520+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),300]);
-    textIntro = uicontrol(h_panel2,'Style','text','Position',[10,255,180,30],'String','Control the sensing response');
+    textIntro = uicontrol(h_panel2,'Style','text','Position',[10,255,180,30],'FontSize',TITLE_FONT_SIZE,'String','Sensing Controls');
     
     RANGE_Y = 200;
     RANGE_FONT_SIZE = 15;
     textRange = uicontrol(h_panel2,'Style','text','Position',[25,RANGE_Y-5,50,30],'String','Range:','FontSize',RANGE_FONT_SIZE);
     uicontrol(h_panel2, 'Tag','editRangeStart', 'style','edit','units','pixels','position',[80,RANGE_Y,50,30],'String',num2str(PS.detectRangeStart),'FontSize',RANGE_FONT_SIZE);
     uicontrol(h_panel2, 'Tag','editRangeEnd', 'style','edit','units','pixels','position',[130,RANGE_Y,50,30],'String',num2str(PS.detectRangeEnd),'FontSize',RANGE_FONT_SIZE);
+    buttonApply = uicontrol(h_panel2,'Style','pushbutton','Position',[40,160,110,30],'FontSize',TEXT_FONT_SIZE,'String','Apply','Callback',@buttonApplyCallback);
     
     
-    buttonApply = uicontrol(h_panel2,'Style','pushbutton','Position',[30,130,110,30],'String','Apply','Callback',@buttonApplyCallback);
+    uicontrol(h_panel2,'Style','text','Position',[5,120,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Freq: ','Tag','textResultFreq');
+    uicontrol(h_panel2,'Style','text','Position',[5,90,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Velocity: ','Tag','textResultVel');
+    uicontrol(h_panel2,'Style','text','Position',[5,60,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Distance: ','Tag','textResultDist');
+    uicontrol(h_panel2,'Style','pushbutton','Position',[40,20,110,30],'FontSize',TEXT_FONT_SIZE,'String','Reset','Callback',@buttonLockCallback);
+    
+    
+            
+    
 
-    uicontrol(h_panel2,'Tag','buttonSqueezeOrStop','Style','pushbutton','Position',[30,90,110,30],'String','Squeeze','Callback',@buttonSqueezeOrStopCallback);
-                    
+    %{
+    buttonStartSensing = uicontrol(h_panel2,'Style','pushbutton',...
+                'Position',[30,200,110,30],...
+                'String','Start Sensing',...
+                'BusyAction','queue',...
+                'TooltipString','BusyAction = queue',...
+                'Callback',@callbackStartSensing);
+            %}
+            
+    
+    ylabels = {'data', 'energy','result'};
+    xlabels = {'time', 'freq', 'time'};
     for i = 1:PLOT_AXE_CNT,
         uicontrol(h_panel2, 'Style','checkbox','String','update','Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,80,20], 'Tag',sprintf('check%02d',i));
         
-        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),30,270,250]);
+        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),50,240,230]);
         hold on;
         for j = 1:lineCnts(i),
             plot(obj.axe, data(:,1),'Tag',sprintf('line%02d_%02d',i,j),'linewidth',2); % only show the 1st ch
         end
+        xlabel(xlabels{i});
+        ylabel(ylabels{i});
         hold off;
-        legend(arrayfun(@(x) sprintf('%d',x), 1:lineCnts(i),'uni',false).');
+        if i < 3
+            legend(arrayfun(@(x) sprintf('%d',x), 1:lineCnts(i),'uni',false).');
+        else
+            legend('peak (index)', 'velocity (cm/s)', 'distance (cm)','Location','southwest');
+        end
     end
         
 
@@ -191,6 +183,24 @@ function recordButtonCallback(obj, event)
     end
 end
 
+function [diffFreqs, diffVels, accDists] = getResultBasedOnFreqDiffIdx(diffBinIdxs)
+    global DF;
+    global PS;
+    diffFreqs = DF*diffBinIdxs/PS.downsampleFactor;
+    diffVels = diffFreqs*(34000)/PS.SIGNAL_FREQ;
+    accDists = cumsum(diffVels*(PS.PERIOD/PS.FS));
+end
+
+
+
+function buttonLockCallback(obj,event)
+    global peakBuf;
+    global peakRef;
+    peakRef = peakBuf(end);
+    peakBuf(:) = peakRef;
+end
+
+
 
 % apply ui control to parse value
 function buttonApplyCallback(obj,event)
@@ -207,27 +217,4 @@ function buttonApplyCallback(obj,event)
         PS.detectRangeStart = rangeStart;
         PS.detectRangeEnd = rangeEnd;
     end
-end
-
-function buttonSqueezeOrStopCallback(obj, event)
-    global ss;
-    buttonSqueezeOrStop = findobj('Tag','buttonSqueezeOrStop');
-    
-    fakeEvent.action = ss.ACTION_USER;
-    if strcmp(buttonSqueezeOrStop.String, 'Squeeze') % going to start squeeze
-        fakeEvent.code = 1;
-        buttonSqueezeOrStop.String = 'Stop';
-    else
-        fakeEvent.code = 0;
-        buttonSqueezeOrStop.String = 'Squeeze';
-    end
-    
-    fakeEvent.time = -1;
-    fakeEvent.stamp = -1;
-    fakeEvent.nameBytes = unicode2native('squeeze');
-    fakeEvent.arg0 = -1;
-    fakeEvent.arg1 = -1;
-    dummyJavahandle = -1;
-    
-    onDataCallback(ss, dummyJavahandle, fakeEvent);
 end
