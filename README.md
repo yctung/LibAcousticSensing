@@ -16,12 +16,32 @@ First, you need to clone this repo:
 cd YOUR_SOURCE_FOLDER
 git clone https://github.com/yctung/LibAcousticSensing
 ```
-There are two usage of this sensing library. 
-You can choose to use the remote sensing mode which only require you to install the pre-build app in your mobile devices and then control them by a remote Matlab server. 
-For beginners using this toolkit in the first time, we suggest you try this remote mode because it will let you know how to do acoustic sensing with minimal overhead.
+There are two ways of using this sensing library. 
+You can choose to use the **remote mode** that only requires users to install the pre-build apps in devices and then controls them by a remote Matlab server. 
+We suggest people first try this remote mode because it saves lots of time wasting on device-specific issues and process signals on low-level language, like C. 
+For each sensing app, this mode only needs users to define (1) what is the sensing signal (2) how to process each reception of the sensing signals.
 
-For people knows how the acoustic sensing goes and already know how LibAS works, they can include LibAS as a library into their projects. 
-The benefit of this mode is they don't need to remote server and networking connection anymore and can ship their app as a standalone app. Please follow the **Standalone Mode** section for using this mode.
+For people already knows how the acoustic sensing and LibAS work, they can choose to include LibAS as a library into their projects. 
+The benefit of this mode is people can ship their app as a standalone app without networking connections. Please follow the "Standalone Mode" section for this usage.
+
+Followings describe the folder structure of LibAS
+```
+|- Android (Android implementations)
+|    |- LibAcousticSensing : core library for Android
+|    |- DevApp             : pre-built app for remote sensing
+|    \- DemoXXXX           : example of standalone app using LibAS
+|- iOS (iOS implementation)
+|    \- ...                : having the same structure as Android
+|- Tizen
+|    \- ...
+|- Java (Linux implementation)
+|    \- ...
+\- Matlab (Remote sensing server)
+     |- LibAcousticSensing : core sensing library functions
+     |- DemoAAA
+     |- DemoBBB
+     \- .....   
+```
 
 # Remote Mode (need Matlab)
 
