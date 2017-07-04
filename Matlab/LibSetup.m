@@ -14,8 +14,15 @@ else
 end
 % TODO: add windows support
 
+% set up java static path if need
 import edu.umich.cse.yctung.*
 check = which('JavaSensingServer');
 if isempty(check)
-    fprintf(2, '[ERROR] JavaSensingServer is not correctlly included (has not executed LibAddJavaClassPath.m?)\n');
+    fprintf(1, '[WARNING]: JavaSensingServer class path is not added yet\n');
+    
+end
+
+[check, err] = LibCheckSetup();
+if ~check
+    fprintf(2, '[ERROR]: fails to setup LibAcousticSensing,\nerr = %s\n', err);
 end

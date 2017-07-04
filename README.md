@@ -44,7 +44,11 @@ Followings describe the folder structure of LibAS
 ```
 
 # Remote Mode (need Matlab)
-
+(TODO): add figures
+The above figure shows the idea of LibAS Remote Mode. 
+In this mode, users install the pre-built DevApp into their devices and connect to a Matlab sensing server by Internet.
+Sensing (sound) signals are prepared and processed in Matlab, and then returned to the DevApp to make proper responses.
+Refer [How to Use Remote Mode](Matlab/CONTRIBUTING.md) for the detailed guide.
 
 # Standalone Mode (need to know Phone programing)
 
@@ -52,11 +56,11 @@ Followings describe the folder structure of LibAS
 In theory, LibAS should be compatible to all Android/Tizen/iOS/Linux devices with microphone/speaker installed.
 However, it might need to customized settings for certain devices. 
 Followings include the devices we have used and tested in LibAS:
-## Android
+- Android
 > Samsung Galaxy S4/5/6/7/8, Note 4, Nexus 6P, Nexus 5X, HTC One, ASUS Zen Watch 3
-## iOS
+- iOS
 > iPhone 5c, iPhone 6s
-## Tizen
+- Tizen
 > Samsung Gear S3
 
 
