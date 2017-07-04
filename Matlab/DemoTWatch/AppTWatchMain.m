@@ -33,6 +33,10 @@ downsignal = zeros(PERIOD, 1);
 time = (0:CHIRP_LEN-1)./FS; 
 upsignal(1:CHIRP_LEN) = chirp(time, CHIRP_FREQ_START, time(end), CHIRP_FREQ_END);
 downsignal(1:CHIRP_LEN) = chirp(time, CHIRP_FREQ_END, time(end), CHIRP_FREQ_START);
+
+%downsignal = upsignal;
+
+
 % add hamming window
 if APPLY_FADING_TO_SIGNAL == 1,
     FADDING_WIN_SIZE = floor(CHIRP_LEN*FADING_RATIO);
@@ -73,8 +77,7 @@ upas.signalGain = 0.8;
 downas.signal = downsignal;
 downas.repeatCnt = 20*60*4;
 downas.signalGain = 0.8;
-%downas.preambleGain = 0; % slave device should not play preamble to avoid confusion of the algorithm
-
+downas.preambleGain = 0; % slave device should not play preamble to avoid confusion of the algorithm
 
 % NOTE: DummyCallback is used so no signal received at tx will be parsed
 pss = SensingServer(PHONE_SERVER_PORT, @AppTWatchPhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
@@ -82,7 +85,8 @@ pss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 pause(1.0); % wait some time before building the next server
 
 % NOTE: dummyas is used for simplifying the implementaion (so rx knows how to parse the signal)
-wss = SensingServer(WATCH_SERVER_PORT, @DummyCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);
+wss = SensingServer(WATCH_SERVER_PORT, @AppTWatchWatchCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);
 wss.startSensingAfterConnectionInit = 0;
 
-%pss.addSlaveServer(wss); % means when phone start sensing, watch will also start sensing
+% pss.addSlaveServer(wss); % means when phone start sensing, watch will also start sensing
+wss.addSlaveServer(pss); % means when phone start sensing, watch will also start sensing

@@ -87,6 +87,7 @@ classdef SensingServer < handle
         audioAll;
         audioAllEnd;
         
+        
         startSensingAfterConnectionInit; % set this variable to 0 if users want to manually trigger the senisng after the connection is established
         
         keepReading;
@@ -171,6 +172,8 @@ classdef SensingServer < handle
                 
             obj.startSensingSelf();
             % start all slave server if existed
+            fprintf('Wait before playing the slave server\n');
+            pause(0.100);
             for i = 1:length(obj.slaveServers)
                 obj.slaveServers(i).startSensingSelf(); % TODO: add some delay before triggering the slave server
             end
@@ -204,6 +207,7 @@ classdef SensingServer < handle
             if result == 1, % preamble is detected correctly
                 % do nothing now
             else % preamble is not detected
+                fprintf(2, '[ERROR]: going to stop sensing because preamble is not detected\n');
                 obj.stopSensing();
             end
         end

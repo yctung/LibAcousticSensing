@@ -1,7 +1,7 @@
-function [] = AppTWatchPhoneCallback( obj, type, data )
+function [] = AppTWatchWatchCallback( obj, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
-    global USER_FIG_PHONE_TAG;
-    USER_FIG_PHONE_TAG = 'USER_FIG_PHONE_TAG';
+    global USER_FIG_WATCH_TAG;
+    USER_FIG_WATCH_TAG = 'USER_WATCH_FIG_TAG';
     global PS; % user parse setting
     
     if type == obj.CALLBACK_TYPE_ERROR,
@@ -15,38 +15,38 @@ function [] = AppTWatchPhoneCallback( obj, type, data )
     if type == obj.CALLBACK_TYPE_DATA,
         LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
         if obj.userfig == -1, % need to create a new UI window
-            createUI(obj, USER_FIG_PHONE_TAG, data, LINE_CNTS);
+            createUI(obj, USER_FIG_WATCH_TAG, data, LINE_CNTS);
         else
             % process data
             upcons = abs(convn(data, PS.upsignalToCorrelate,'same'));
             downcons = abs(convn(data, PS.downsignalToCorrelate,'same'));
             
             % line1: data 
-            check1 = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'check01'));
+            check1 = findobj('Tag',strcat(USER_FIG_WATCH_TAG, 'check01'));
             if check1.Value == 1,
                 for chIdx = 1:CH_CNT_TO_SHOW,
-                    line = findobj('Tag',sprintf('%sline01_%02d',USER_FIG_PHONE_TAG,chIdx));
+                    line = findobj('Tag',sprintf('%sline01_%02d',USER_FIG_WATCH_TAG,chIdx));
                     dataToPlot = data(:,end,chIdx);
                     set(line, 'yData', dataToPlot); % only show the 1st ch
                 end
             end
 
             % line2: freq
-            check2 = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'check02'));
+            check2 = findobj('Tag',strcat(USER_FIG_WATCH_TAG, 'check02'));
             if check2.Value == 1,
-                line = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'line02_01'));
+                line = findobj('Tag',strcat(USER_FIG_WATCH_TAG, 'line02_01'));
                 dataToPlot = upcons(:, end, 1);
                 set(line, 'yData', dataToPlot); % only show the 1st ch
                 
-                line = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'line02_02'));
+                line = findobj('Tag',strcat(USER_FIG_WATCH_TAG, 'line02_02'));
                 dataToPlot = downcons(:, end, 1);
                 set(line, 'yData', dataToPlot); % only show the 1st ch
             end
 
             % line3: detect result
-            check3 = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'check03'));
+            check3 = findobj('Tag',strcat(USER_FIG_WATCH_TAG, 'check03'));
             if check3.Value == 1,
-                line = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'line03_01'));
+                line = findobj('Tag',strcat(USER_FIG_WATCH_TAG, 'line03_01'));
                 set(line, 'yData', peakBuf); % only show the 1st ch
             end
         end
@@ -73,7 +73,7 @@ end
 function createUI(obj, figTag, data, lineCnts)
     % lineCnts is the number of lines per figure
     global PS;
-    global USER_FIG_PHONE_TAG;
+    global USER_FIG_WATCH_TAG;
     
     TITLE_FONT_SIZE = 17;
     TEXT_FONT_SIZE = 15;
@@ -102,10 +102,6 @@ function createUI(obj, figTag, data, lineCnts)
     uicontrol(h_panel2,'Style','text','Position',[5,60,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Distance: ','Tag','textResultDist');
     uicontrol(h_panel2,'Style','pushbutton','Position',[40,20,110,30],'FontSize',TEXT_FONT_SIZE,'String','Reset','Callback',@buttonLockCallback);
     
-    
-            
-    
-
     %{
     buttonStartSensing = uicontrol(h_panel2,'Style','pushbutton',...
                 'Position',[30,200,110,30],...
@@ -115,16 +111,15 @@ function createUI(obj, figTag, data, lineCnts)
                 'Callback',@callbackStartSensing);
             %}
             
-    
     ylabels = {'data', 'energy','result'};
     xlabels = {'time', 'freq', 'time'};
     for i = 1:PLOT_AXE_CNT,
-        uicontrol(h_panel2, 'Style','checkbox','String','update','Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,80,20], 'Tag',sprintf('%scheck%02d',USER_FIG_PHONE_TAG,i));
+        uicontrol(h_panel2, 'Style','checkbox','String','update','Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,80,20], 'Tag',sprintf('%scheck%02d',USER_FIG_WATCH_TAG,i));
         
         obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),50,240,230]);
         hold on;
         for j = 1:lineCnts(i),
-            plot(obj.axe, data(:,1),'Tag',sprintf('%sline%02d_%02d',USER_FIG_PHONE_TAG,i,j),'linewidth',2); % only show the 1st ch
+            plot(obj.axe, data(:,1),'Tag',sprintf('%sline%02d_%02d',USER_FIG_WATCH_TAG,i,j),'linewidth',2); % only show the 1st ch
         end
         xlabel(xlabels{i});
         ylabel(ylabels{i});
@@ -154,8 +149,8 @@ end
 
 function callbackStartSensing(obj, event)
     fprintf('    callbackStartSensing is called\n');
-    global USER_FIG_PHONE_TAG;
-    userfig = findobj('Tag', USER_FIG_PHONE_TAG);
+    global USER_FIG_WATCH_TAG;
+    userfig = findobj('Tag', USER_FIG_WATCH_TAG);
     ss = userfig.UserData;
     while ss.latestReceivedAction ~= ss.ACTION_INIT,
         fprintf('    wait socket is connected\n');

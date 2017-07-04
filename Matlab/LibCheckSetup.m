@@ -14,7 +14,7 @@ function [ ret, err ] = LibCheckSetup()
     end
     
     try
-        JavaSensingServer.closeAll1();
+        JavaSensingServer.closeAll();
     catch exception
         err = 'JavaSensingServer is not correctly loaded (built by the wrong jdk version?)';
         err = sprintf('%s\n%s', err, exception.message)
