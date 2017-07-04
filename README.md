@@ -48,3 +48,17 @@ Followings describe the folder structure of LibAS
 
 # Standalone Mode (need to know Phone programing)
 
+# Compatible devices
+In theory, LibAS should be compatible to all Android/Tizen/iOS/Linux devices with microphone/speaker installed.
+However, it might need to customized settings for certain devices. 
+Followings include the devices we have used and tested in LibAS:
+## Android
+> Samsung Galaxy S4/5/6/7/8, Note 4, Nexus 6P, Nexus 5X, HTC One, ASUS Zen Watch 3
+## iOS
+> iPhone 5c, iPhone 6s
+## Tizen
+> Samsung Gear S3
+
+
+# License
+
