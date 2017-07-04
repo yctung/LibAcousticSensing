@@ -48,7 +48,7 @@ Followings describe the folder structure of LibAS
 The above figure shows the idea of LibAS Remote Mode. 
 In this mode, users install the pre-built DevApp into their devices and connect to a Matlab sensing server by Internet.
 Sensing (sound) signals are prepared and processed in Matlab, and then returned to the DevApp to make proper responses.
-Refer [How to Use Remote Mode](Matlab/CONTRIBUTING.md) for the detailed guide.
+Refer [How to Use Remote Mode](Matlab/README.md) for the detailed guide.
 
 # Standalone Mode (need to know Phone programing)
 
