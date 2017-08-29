@@ -1,8 +1,13 @@
 package umich.cse.yctung.devapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,8 +17,15 @@ import android.widget.TextView;
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
 
+import static umich.cse.yctung.devapp.Constant.SERVER_ADDR_KEY;
+import static umich.cse.yctung.devapp.Constant.SERVER_PORT_KEY;
+import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_ADDR;
+import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_PORT;
+
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
     AcousticSensingController asc;
+    SharedPreferences sharedPref;
+    final String TAG = "MainActivity";
 
     // UI elements
     Spinner spinnerMode;
@@ -26,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+
         // Init internal status
         isSensing = false;
 
@@ -37,9 +51,38 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         spinnerMode.setSelection(0);
 
         editTextServerAddr = (EditText)findViewById(R.id.editTextServerAddr);
-        editTextServerAddr.setText(Constant.DEFAULT_SERVER_ADDR);
+        editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
         editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
-        editTextServerPort.setText(String.format("%d",Constant.DEFAULT_SERVER_PORT));
+        editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+
+
+
+        // Commit the changes back into the shared preferences
+        editTextServerAddr.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_NULL) {
+                    sharedPref.edit().putString(
+                            SERVER_ADDR_KEY,
+                            textView.getText().toString()
+                    ).commit();
+                }
+                return false;
+            }
+        });
+
+        editTextServerPort.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_NULL) {
+                    sharedPref.edit().putInt(
+                            SERVER_PORT_KEY,
+                            Integer.parseInt(textView.getText().toString())
+                    ).commit();
+                }
+                return false;
+            }
+        });
 
         buttonUserData = (Button)findViewById(R.id.btnUserData);
         buttonUserData.setOnClickListener(new View.OnClickListener() {

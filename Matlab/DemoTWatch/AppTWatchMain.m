@@ -4,6 +4,8 @@
 %           played signal at rx is 0 while the received signal at tx is not
 %           saved/parsed
 %==========================================================================
+import edu.umich.cse.yctung.*;
+
 PHONE_SERVER_PORT = 50005; % remember to diable firewall for this port
 WATCH_SERVER_PORT = 50006; % remember to diable firewall for this port
 
@@ -14,8 +16,8 @@ pause(1.0);
 FS = 48000;
 PERIOD = 2400;
 CHIRP_LEN = 1200;
-%CHIRP_FREQ_START = 18000;
-CHIRP_FREQ_START = 10000;
+CHIRP_FREQ_START = 18000;
+%CHIRP_FREQ_START = 10000;
 CHIRP_FREQ_END = 24000;
 APPLY_FADING_TO_SIGNAL = 1;
 FADING_RATIO = 0.5;

@@ -102,9 +102,6 @@ function createUI(obj, figTag, data, lineCnts)
     uicontrol(h_panel2,'Style','text','Position',[5,60,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Distance: ','Tag','textResultDist');
     uicontrol(h_panel2,'Style','pushbutton','Position',[40,20,110,30],'FontSize',TEXT_FONT_SIZE,'String','Reset','Callback',@buttonLockCallback);
     
-    
-            
-    
 
     %{
     buttonStartSensing = uicontrol(h_panel2,'Style','pushbutton',...

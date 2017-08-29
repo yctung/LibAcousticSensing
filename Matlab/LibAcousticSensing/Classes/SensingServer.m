@@ -440,8 +440,8 @@ classdef SensingServer < handle
             obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
             
             % ref: https://www.mathworks.com/matlabcentral/newsreader/view_thread/292100
-            address = java.net.InetAddress.getLocalHost ;
-            IPaddress = char(address.getHostAddress);
+            % address = java.net.InetAddress.getLocalHost;
+            IPaddress = ''; %35.3.119.219'; %char(address.getHostAddress);
 
             obj.textServerInfo = uicontrol(obj.panel,'Style','text',...
                         'Position',[20,170,170,40],...
