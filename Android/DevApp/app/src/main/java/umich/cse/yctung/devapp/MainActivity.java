@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         editTextServerAddr.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_NULL) {
+                Log.v(TAG, "We should be editing the IP now... " + i);
+                if (i == EditorInfo.IME_NULL || i == EditorInfo.IME_ACTION_DONE) {
                     sharedPref.edit().putString(
                             SERVER_ADDR_KEY,
                             textView.getText().toString()
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         editTextServerPort.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_NULL) {
+                if (i == EditorInfo.IME_NULL || i == EditorInfo.IME_ACTION_DONE) {
                     sharedPref.edit().putInt(
                             SERVER_PORT_KEY,
                             Integer.parseInt(textView.getText().toString())
