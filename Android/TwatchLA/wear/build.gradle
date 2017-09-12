@@ -2,11 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
-
+    buildToolsVersion "26.0.1"
     defaultConfig {
-        applicationId "umich.cse.yctung.devapp"
-        minSdkVersion 16
+        applicationId "com.rtcl.twatchla"
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -20,8 +19,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.google.android.support:wearable:2.0.0-alpha2'
+    compile 'com.google.android.gms:play-services-wearable:9.2.1'
     compile project(':libacousticsensing')
 }

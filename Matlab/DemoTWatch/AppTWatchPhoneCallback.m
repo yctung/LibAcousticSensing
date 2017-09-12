@@ -39,7 +39,20 @@ function [] = AppTWatchPhoneCallback( obj, type, data )
                 set(line, 'yData', dataToPlot); % only show the 1st ch
                 
                 % Find peaks
-                pks = findpeaks(dataToPlot);
+                % We want to find peaks in both the upchirp and downchirp
+                % We can do this by using different ranges to play the
+                % chirps and applying a band-pass filter to clear out the
+                % other sound. Otherwise, it might be very quiet and hard
+                % to find.
+                
+                % Naïve peak detection fails because we have multiple peaks
+                % right next to each other. We can solve this by first
+                % finding the peaks 
+                
+                % All this has to happen very efficiently. There is a
+                % strict deadline we should try to meet.
+                %pks = findpeaks(dataToPlot);
+                
                                
                 
                 
@@ -73,7 +86,7 @@ function [] = AppTWatchPhoneCallback( obj, type, data )
             PS.detectRef = 1;
         end
     end
-end
+end 
 
 function createUI(obj, figTag, data, lineCnts)
     % lineCnts is the number of lines per figure
