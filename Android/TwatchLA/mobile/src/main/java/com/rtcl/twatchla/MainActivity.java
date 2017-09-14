@@ -2,11 +2,14 @@ package com.rtcl.twatchla;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sharedPref = getPreferences(Context.MODE_PRIVATE);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         // Init internal status
         isSensing = false;
@@ -55,8 +59,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
         editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
 
-
-
         // Commit the changes back into the shared preferences
         editTextServerAddr.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                 return false;
             }
         });
+
 
         editTextServerPort.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -104,6 +107,15 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
 
         asc=new AcousticSensingController(this,this);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
 
     int userDataCodeToSend = 1;

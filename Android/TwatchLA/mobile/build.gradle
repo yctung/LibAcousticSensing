@@ -23,10 +23,14 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:design:26.+'
     compile project(':libacousticsensing')
 
     wearApp project(':wear')
     compile 'com.google.android.gms:play-services-wearable:11.0.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile project(':libacousticsensing')
+
+
+
 }

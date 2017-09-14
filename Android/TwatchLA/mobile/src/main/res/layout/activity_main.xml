@@ -8,7 +8,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="umich.cse.yctung.devapp.MainActivity">
+    android:background="@drawable/wallpaper"
+    tools:context="com.rtcl.twatchla.MainActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <TextView
         android:layout_width="wrap_content"
@@ -113,8 +116,4 @@
         android:id="@+id/btnStart"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
-
-
-
-
 </RelativeLayout>
