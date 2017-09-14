@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.SyncStateContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +34,9 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     // XXX Who turns this on?
     boolean isSensing;
 
+    final Handler handler = new Handler();
 
-    enum Status { STOPPED, CONNECTING, RUNNING, ERROR };
+    enum Status { STOPPED, CONNECTING, WAITING, ERROR, SENSING };
 
 
     @Override
@@ -45,9 +48,8 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         fixBackgroundRepeat(findViewById(R.id.wrapperLayout));
 
-
         isSensing = false;
-        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
 
         // Wire settings button
@@ -77,10 +79,11 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
-        //textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
+        //s = (TextView)findViewById(R.id.textDebugInfo);
 
         asc=new AcousticSensingController(this,this);
         updateStatus(Status.STOPPED);
+        restartIfAutostart();
     }
 
 
@@ -107,20 +110,51 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             if (mode.equals(modeEntries[0])) { // Server-client mode
                 boolean result = asc.initAsSlaveMode(serverAddr, Integer.parseInt(serverPort));
                 if (!result) {
-                    textViewDebugInfo.setText("Init fails");
+                    //textViewDebugInfo.setText("Init fails");
                     updateStatus(Status.ERROR);
+                    restartIfAutostart();
                 }
-                else asc.startSensingWhenPossible();
+                else {
+                    asc.startSensingWhenPossible();
+                    updateStatus(Status.CONNECTING);
+                    isSensing = true;
+                }
             } else { // real-time mode
                 // Real-time mode is disabled for now.
                 updateStatus(Status.STOPPED);
             }
 
-            updateStatus(Status.RUNNING);
             //buttonStart.setText("Stop");
         } else { // need to stop sensing
             //buttonStart.setText("Start");
-            updateStatus(Status.STOPPED);
+            turnOffConnection();
+        }
+    }
+
+    public void turnOffConnection () {
+        updateStatus(Status.STOPPED);
+        isSensing = false;
+        restartIfAutostart();
+    }
+
+
+    /**
+     * If autostart is enabled, we will re-call the start/stop function.
+     * This should be called every time we end execution somehow.
+     * Either from error or from turning off the connection.
+     */
+    private void restartIfAutostart () {
+        // If auto start, then call the click function again after some time
+        Boolean autostart = sharedPref.getBoolean(SettingsActivity.KEY_PREF_AUTO, false);
+        if (autostart) {
+            Log.v(TAG, "Attempting to auto start.");
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onStartOrStopClicked();
+                }
+            }, Constant.RETRY_EVERY);
         }
     }
 
@@ -149,11 +183,14 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         else if (status == Status.CONNECTING)
             buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.connecting));
 
-        else if (status == Status.RUNNING)
+        else if (status == Status.SENSING)
             buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.running));
 
         else if (status == Status.ERROR)
             buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.error));
+
+        else if (status == Status.WAITING)
+            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.waiting));
     }
 
 
@@ -161,32 +198,53 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     //  Acoustic sensing callbacks
     //=================================================================================================
     @Override
-    public void updateDebugStatus(final String stringToShow) {
+    public void updateDebugStatus(final boolean status, final String stringToShow) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                textViewDebugInfo.setText(stringToShow);
+                //textViewDebugInfo.setText(stringToShow);
+                Log.e(TAG, stringToShow);
+                //updateStatus(Status.WAITING);
+                // This could be caused by error.
+                if (!status) turnOffConnection();
+                else {
+                    updateStatus(Status.WAITING);
+                }
             }
         });
     }
 
     @Override
     public void showToast(String stringToShow) {
+        Log.e(TAG, "Show toast: " + stringToShow);
+    }
 
+    @Override
+    public void sensingStarted () {
+        Log.e(TAG, "Sensing started.");
+        updateStatus(Status.SENSING);
     }
 
     @Override
     public void sensingEnd() {
+        Log.e(TAG, "Sensing end");
+        updateStatus(Status.WAITING);
+    }
+
+    @Override
+    public void serverClosed () {
+        Log.e(TAG, "Server is resetting.");
+        turnOffConnection();
 
     }
 
     @Override
     public void updateSensingProgress(int percent) {
-
+        Log.e(TAG, "Sensing update: " + percent);
     }
 
     @Override
     public void updateResult(int argInt, float argFloat) {
-
+        Log.e(TAG, "Update result");
     }
 }

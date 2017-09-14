@@ -15,11 +15,12 @@ classdef SensingServer < handle
         ACTION_SENSING_END      = 5;
         ACTION_USER             = 6;
         
-        % Types of sending packets to deivce
+        % Types of sending packets to device
         REACTION_SET_MEDIA      = 1;
         REACTION_ASK_SENSING    = 2;
         REACTION_SET_RESULT 	= 3;
         REACTION_STOP_SENSING   = 4;
+        REACTION_SERVER_CLOSED  = 5;
         
         % Supported type for ACTION_SET
         SET_TYPE_BYTE_ARRAY = 1;
@@ -196,7 +197,7 @@ classdef SensingServer < handle
         % stop server waiting
         function close(obj)
             obj.isConnected = 0;
-            close(obj.fig); % close the UI control in case the users will trigger the button when the server stops
+            if ishandle(obj.fig), close(obj.fig); end % close the UI control in case the users will trigger the button when the server stops
             obj.jss.close();
             clear obj.object;
         end
@@ -434,9 +435,22 @@ classdef SensingServer < handle
 %==========================================================================
 %  Internal UI functions
 %==========================================================================
+
+        function destroyFnc (obj, ~, ~)
+            [h, figure] = gcbo;
+            fprintf('    Destroying figure. Should tell client to disconnect\n');
+            obj.jss.writeByte(int8(obj.REACTION_SERVER_CLOSED));
+            closereq;
+        end
+
+        
         function buildUI(obj)
             TEXT_FONT_SIZE = 15;
-            obj.fig = figure('Position',[50,450,230,230],'Toolbar','none','MenuBar','none');
+            obj.fig = figure(...
+                'Position',[50,450,230,230],...
+                'Toolbar','none',...
+                'MenuBar','none',...
+                'DeleteFcn', @obj.destroyFnc);
             obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
             
             % ref: https://www.mathworks.com/matlabcentral/newsreader/view_thread/292100
@@ -496,6 +510,8 @@ classdef SensingServer < handle
                     
             obj.updateUI();
         end
+        
+        
         
         % update UI based on server status
         function updateUI(obj)

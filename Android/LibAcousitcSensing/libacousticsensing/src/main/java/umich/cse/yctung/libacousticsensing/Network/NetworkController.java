@@ -50,11 +50,14 @@ public class NetworkController {
 	private final static int REACTION_ASK_SENSING   = 2;
 	private final static int REACTION_SET_RESULT 	= 3;
 	private final static int REACTION_STOP_SENSING  = 4;
+	private final static int REACTION_SERVER_CLOSED  = 5;
 
 	// Server statuses
 	private final static int SERVER_STATUS_DISABLED = -1; // default status of server
 	private final static int SERVER_STATUS_ENABLED 	= 1;
 	private final static int SERVER_STATUS_CONNECTED = 2;
+
+
 
 	// Other control flags
 	private final static boolean SAVE_LATEST_LOADED_AUDIO_TO_FILE = false;
@@ -212,6 +215,8 @@ public class NetworkController {
 
 					caller.requestReceivedFromServer(latestReceviedUserStudyRequest);
 					*/
+				} else if (reaction == REACTION_SERVER_CLOSED) {
+					listener.serverClosed();
 				} else if(reaction == REACTION_STOP_SENSING) {
 					listener.serverAskStopSensing();
 				} else if(reaction == REACTION_SET_MEDIA){ // This reaction sets audio based on the received payload
@@ -246,7 +251,7 @@ public class NetworkController {
 					byte check = dataIn.readByte();
 					if(check != -1){
 						Log.e(LOG_TAG, "Check is not -1 -> some packet might be dropped or there is a bug in matlab server");
-						listener.updateDebugStatus("signal loaded fails");
+						listener.updateDebugStatus(false, "signal loaded fails");
 					}
 
 					AudioSource audioSource = new AudioSource(pilot,signal,FS,chCnt,repeatCnt);
@@ -270,7 +275,7 @@ public class NetworkController {
 					Log.d(LOG_TAG, "received result = "+argInt+", check = "+check);
 					if(check != -1){
 						Log.e(LOG_TAG, "Check is not -1 -> some packet might be dropped or there is a bug in matlab server");
-						listener.updateDebugStatus("result loaded fails (check != -1)");
+						listener.updateDebugStatus(false, "result loaded fails (check != -1)");
 					} else {
 
 						listener.resultReceviedFromServer(argInt);

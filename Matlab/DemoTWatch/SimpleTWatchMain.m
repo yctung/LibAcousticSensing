@@ -39,10 +39,10 @@ function [signal] = CreateSignal
     import edu.umich.cse.yctung.*;
     
     FS = 48000;
-    PERIOD = 4800; %2400;
-    CHIRP_LEN = 1200;
-    CHIRP_FREQ_START = 18000;
-    CHIRP_FREQ_END = 24000;
+    PERIOD = 48000; %2400;
+    CHIRP_LEN = 12000;%1200;
+    CHIRP_FREQ_START = 200;%18000;
+    CHIRP_FREQ_END = 1200;%24000;
     FADING_RATIO = 0.5;
     
     global PS; PS = struct(); % parse setting, easy for the callback to get
