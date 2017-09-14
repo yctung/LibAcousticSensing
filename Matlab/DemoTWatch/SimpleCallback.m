@@ -1,36 +1,35 @@
-function [] = SimpleCallback( obj, type, data )
-    global USER_FIG_PHONE_TAG;
-    USER_FIG_PHONE_TAG = 'USER_FIG_PHONE_TAG';
+function [] =  SimpleCallback ( obj, type, data )
     SAVE_FOLDER = 'saved';
     global PS; % user parse setting
-    
+    FIGTAG = "TAG";
+
     if type == obj.CALLBACK_TYPE_ERROR
         fprintf(2, '[ERROR]: get the error callback data = %s', data);
         return;
     end
-    
+
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA
         if obj.userfig == -1 % need to create a new UI window
-            createUI(obj, USER_FIG_PHONE_TAG, data);
+            createUI(obj, FIGTAG, data);
         else
             % Plot a simplified version of the data
-            line = findobj('Tag', sprintf('%sline',USER_FIG_PHONE_TAG));
+            line = findobj('Tag', sprintf('%sline',FIGTAG));
             %upcons = abs(convn(data, PS.upsignalToCorrelate,'same'));
             %set(convPlot, 'yData', upcons(:, end, 1));
             downsampled = downsample(data, 50);
             dataToPlot = downsampled;
             set(line, 'yData', dataToPlot (:, end, 1));
-            
+
             % Save it if the toggle button is pressed
-            toggleButton = findobj('Tag', 'recordToggleButton');
+            toggleButton = findobj('Tag', sprintf('%srecordToggleButton', FIGTAG));
             if (toggleButton.Value)
                 % Save it
                 savename = sprintf('%s/%s', SAVE_FOLDER, datestr(now, 'MM-SS-FFF'));
                 save(savename, 'data');
                 %save('saved/', 'data');
             end
-                
+
         end
     elseif type == obj.CALLBACK_TYPE_USER
         % parse user data
@@ -42,7 +41,7 @@ function [] = SimpleCallback( obj, type, data )
                 refIdx = 1;
             end
             PS.detectRef = detectResults(refIdx); % latest detect reuslt is the reference
-            
+
             line = findobj('Tag','line03_02');
             set(line, 'yData', zeros(DETECT_RESULT_SIZE,1)+ PS.detectRef); % only show the 1st ch
         else
@@ -54,7 +53,6 @@ end
 
 function createUI(obj, figTag, data)
     % lineCnts is the number of lines per figure
-    global USER_FIG_PHONE_TAG;
     PADDING = 50;
     WIDTH = 250;
     BUTTON_HEIGHT = 50;
@@ -68,14 +66,14 @@ function createUI(obj, figTag, data)
     PlotPos = [PADDING, PADDING*2 + BUTTON_HEIGHT, WIDTH, WIDTH];
     obj.axe = axes('Units','pixels','Position',PlotPos);
     plot(obj.axe, data(:,1), ...
-        'Tag', sprintf('%sline',USER_FIG_PHONE_TAG),...
+        'Tag', sprintf('%sline',figTag),...
         'linewidth',2); % only show the 1st ch
     %set(findobj(gcf, 'type','axes'), 'Visible','off')
     set(gca,'xtick',[],'ytick',[]);
 
     ButPos = [PADDING, PADDING, WIDTH, BUTTON_HEIGHT];
     uicontrol(...
-                'Tag', 'recordToggleButton', ...
+                'Tag', sprintf('%srecordToggleButton', figTag), ...
                 'style', 'togglebutton', ...
                 'position', ButPos, ...
                 'String', 'Record', ...
