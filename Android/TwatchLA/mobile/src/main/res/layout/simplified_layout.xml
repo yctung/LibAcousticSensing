@@ -5,8 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.rtcl.twatchla.MainActivity"
-    android:background="@drawable/wallpaper">
 
+    android:id="@+id/wrapperLayout"
+    android:background="@drawable/food"
+    android:tileMode="repeat"
+
+    >
+
+
+    <!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -15,6 +22,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@android:color/background_light"
         app:srcCompat="@drawable/gear" />
+    -->
 
     <include layout="@layout/content_main" />
 

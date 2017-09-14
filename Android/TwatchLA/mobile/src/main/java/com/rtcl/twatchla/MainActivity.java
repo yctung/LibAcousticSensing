@@ -1,29 +1,23 @@
 package com.rtcl.twatchla;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
 
-import static com.rtcl.twatchla.Constant.SERVER_ADDR_KEY;
-import static com.rtcl.twatchla.Constant.SERVER_PORT_KEY;
-import static com.rtcl.twatchla.Constant.DEFAULT_SERVER_ADDR;
-import static com.rtcl.twatchla.Constant.DEFAULT_SERVER_PORT;
 
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
     AcousticSensingController asc;
@@ -31,72 +25,51 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     final String TAG = "MainActivity";
 
     // UI elements
-    Spinner spinnerMode;
-    EditText editTextServerAddr, editTextServerPort;
-    Button buttonStart, buttonUserData;
+    ImageButton buttonStart;
     TextView textViewDebugInfo;
+
     // Internal status
+    // XXX Who turns this on?
     boolean isSensing;
+
+
+    enum Status { STOPPED, CONNECTING, RUNNING, ERROR };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        sharedPref = getPreferences(Context.MODE_PRIVATE);
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.simplified_layout);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        fixBackgroundRepeat(findViewById(R.id.wrapperLayout));
 
-        // Init internal status
+
         isSensing = false;
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
 
-        // Link UI elements
-        spinnerMode = (Spinner)findViewById(R.id.spinnerMode);
-        String[] modes = new String[]{"Server-client Mode","Real-time Mode"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, modes);
-        spinnerMode.setAdapter(adapter);
-        spinnerMode.setSelection(0);
 
-        editTextServerAddr = (EditText)findViewById(R.id.editTextServerAddr);
-        editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
-        editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
-        editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
-
-        // Commit the changes back into the shared preferences
-        editTextServerAddr.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        // Wire settings button
+        findViewById(R.id.settings).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                Log.v(TAG, "We should be editing the IP now... " + i);
-                if (i == EditorInfo.IME_NULL || i == EditorInfo.IME_ACTION_DONE) {
-                    sharedPref.edit().putString(
-                            SERVER_ADDR_KEY,
-                            textView.getText().toString()
-                    ).commit();
-                }
-                return false;
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             }
         });
 
 
-        editTextServerPort.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_NULL || i == EditorInfo.IME_ACTION_DONE) {
-                    sharedPref.edit().putInt(
-                            SERVER_PORT_KEY,
-                            Integer.parseInt(textView.getText().toString())
-                    ).commit();
-                }
-                return false;
-            }
-        });
-
-        buttonUserData = (Button)findViewById(R.id.btnUserData);
-        buttonUserData.setOnClickListener(new View.OnClickListener() {
+        // Wire user data upload button
+        findViewById(R.id.mail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onUserDataClicked();
             }
         });
 
-        buttonStart = (Button)findViewById(R.id.btnStart);
+
+        // Wire start-stop button
+        buttonStart = (ImageButton)findViewById(R.id.status);
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,19 +77,13 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
-        textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
+        //textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
 
         asc=new AcousticSensingController(this,this);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        updateStatus(Status.STOPPED);
     }
+
+
 
     int userDataCodeToSend = 1;
     void onUserDataClicked() {
@@ -128,25 +95,71 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     void onStartOrStopClicked() {
+        Log.v(TAG, "Clicked!");
         if (!isSensing) { // need to start sensing
-            if (spinnerMode.getSelectedItemPosition()==0) { // server-client mode
-                boolean result = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
-                if (!result) textViewDebugInfo.setText("Init fails");
-                else {
-                    asc.startSensingWhenPossible();
-                }
-            } else { // real-time mode
+            updateStatus(Status.CONNECTING);
+            String mode = sharedPref.getString(SettingsActivity.KEY_PREF_MODE, "");
+            String[] modeEntries = getResources().getStringArray(R.array.mode_entries);
+            String serverAddr = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER, "");
+            String serverPort = sharedPref.getString(SettingsActivity.KEY_PREF_PORT, "");
 
+
+            if (mode.equals(modeEntries[0])) { // Server-client mode
+                boolean result = asc.initAsSlaveMode(serverAddr, Integer.parseInt(serverPort));
+                if (!result) {
+                    textViewDebugInfo.setText("Init fails");
+                    updateStatus(Status.ERROR);
+                }
+                else asc.startSensingWhenPossible();
+            } else { // real-time mode
+                // Real-time mode is disabled for now.
+                updateStatus(Status.STOPPED);
             }
-            buttonStart.setText("Stop");
+
+            updateStatus(Status.RUNNING);
+            //buttonStart.setText("Stop");
         } else { // need to stop sensing
-            buttonStart.setText("Start");
+            //buttonStart.setText("Start");
+            updateStatus(Status.STOPPED);
         }
     }
 
+
+    // https://stackoverflow.com/questions/4336286/tiled-drawable-sometimes-stretches
+    public static void fixBackgroundRepeat(View view) {
+        Drawable bg = view.getBackground();
+        if (bg != null) {
+            if (bg instanceof BitmapDrawable) {
+                BitmapDrawable bmp = (BitmapDrawable) bg;
+                bmp.mutate(); // make sure that we aren't sharing state anymore
+                bmp.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            }
+        }
+    }
+
+
+    /**
+     * Update the status message. Pass in the enum and update the image of the image button.
+     * @param status
+     */
+    public void updateStatus (Status status) {
+        if (status == Status.STOPPED)
+            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.stopped));
+
+        else if (status == Status.CONNECTING)
+            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.connecting));
+
+        else if (status == Status.RUNNING)
+            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.running));
+
+        else if (status == Status.ERROR)
+            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.error));
+    }
+
+
     //=================================================================================================
-//  Acoustic sensing callbacks
-//=================================================================================================
+    //  Acoustic sensing callbacks
+    //=================================================================================================
     @Override
     public void updateDebugStatus(final String stringToShow) {
         runOnUiThread(new Runnable() {
