@@ -14,6 +14,7 @@ public interface NetworkControllerListener {
     void resultReceviedFromServer(int result);
     void userStudyEnd();
     int consumeReceivedData(double dataReceived);
-    void updateDebugStatus(String stringToShow);
+    void updateDebugStatus(boolean status, String stringToShow);
     void error(String message);
+    void serverClosed ();
 }
