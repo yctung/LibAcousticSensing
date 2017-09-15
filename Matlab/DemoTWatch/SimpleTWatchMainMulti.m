@@ -3,9 +3,19 @@
 % anything.
 %==========================================================================
 Setup
+
+global PS;
+PS = struct(); % parse setting, easy for the callback to get
+
 [upChirp, upSignal] = CreateSignal('up');
 [downChirp, downSignal] = CreateSignal('down');
 save('chirps', 'upChirp', 'downChirp');
+
+PS.upchirp_data = upChirp;
+PS.downchirp_data = downChirp;
+PS.detectEnabled = 0;
+PS.detectRef = 0;
+
 upas = SetupAudioSource(upSignal);
 downas = SetupAudioSource(downSignal);
 upas.signalGain = 0.8;%8;
@@ -33,7 +43,8 @@ function StartSensingServer (upas, downas)
     pause(1.0);
 
     % NOTE: DummyCallback is used so no signal received at tx will be parsed
-    phoneCallback = SimpleCallbackFactory('phone');
+    %phoneCallback = SimpleCallbackFactory('phone');
+    phoneCallback = @PeakCallback;
     watchCallback = @DummyCallback;
     
     pss = SensingServer(SERVER_1, watchCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
@@ -60,12 +71,7 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     CHIRP_FREQ_END = 24000; %24000;
     FADING_RATIO = 0.5;
     
-    PS = struct(); % parse setting, easy for the callback to get
-    PS.FS = FS;
-    PS.detectRangeStart = 580;
-    PS.detectRangeEnd = 600;
-    PS.detectEnabled = 0;
-    PS.detectRef = 0;
+
     
     time = (0:CHIRP_LEN-1)./FS; 
     

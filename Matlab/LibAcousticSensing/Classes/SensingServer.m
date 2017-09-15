@@ -209,7 +209,7 @@ classdef SensingServer < handle
                 obj.slaveServers(i).isConnected = 0;
                 if ishandle(obj.slaveServers(i).fig), close(obj.slaveServers(i).fig); end
                 obj.slaveServers(i).jss.close();
-                clear(obj.slaveServers(i).object);
+                %clear(obj.slaveServers(i).object);
             end
             
             clear obj.object;
