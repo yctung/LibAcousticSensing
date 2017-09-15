@@ -106,7 +106,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     private void stopSensingNow() {
-        ac.stopSensing();
+        if (ac != null) ac.stopSensing();
         listener.sensingEnd();
         ac = null; // TODO: keep audio controller alive to save init delay
     }

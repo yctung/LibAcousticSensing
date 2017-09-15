@@ -187,9 +187,13 @@ classdef SensingServer < handle
             obj.isSensing = 0;
             obj.buttonStartOrStopSensing.String = 'Start Sensing';
             obj.updateUI();
-            
             fprintf('audioAll is going to be updated by the new sensing data\n');
             obj.needToUpdateAudioAllForSave = 1;
+            
+            % Tell all slave servers to shut down too
+            for i=1:length(obj.slaveServers)
+                obj.slaveServers(i).stopSensing();
+            end
             
             obj.setWaitFlag('ACTION_SENSING_END');
         end
@@ -199,6 +203,15 @@ classdef SensingServer < handle
             obj.isConnected = 0;
             if ishandle(obj.fig), close(obj.fig); end % close the UI control in case the users will trigger the button when the server stops
             obj.jss.close();
+            
+            % Close all slaves too
+            for i=1:length(obj.slaveServers)
+                obj.slaveServers(i).isConnected = 0;
+                if ishandle(obj.slaveServers(i).fig), close(obj.slaveServers(i).fig); end
+                obj.slaveServers(i).jss.close();
+                clear(obj.slaveServers(i).object);
+            end
+            
             clear obj.object;
         end
         
@@ -439,7 +452,15 @@ classdef SensingServer < handle
         function destroyFnc (obj, ~, ~)
             [h, figure] = gcbo;
             fprintf('    Destroying figure. Should tell client to disconnect\n');
-            obj.jss.writeByte(int8(obj.REACTION_SERVER_CLOSED));
+            
+            if (obj.isConnected)
+                obj.jss.writeByte(int8(obj.REACTION_SERVER_CLOSED));
+            end        
+            
+            for i = 1:length(obj.slaveServers)
+                delete(obj.slaveServers(i).fig);
+            end
+                
             closereq;
         end
 
@@ -512,7 +533,11 @@ classdef SensingServer < handle
         end
         
         
+        function dummyCloseReq (~, ~, ~, ~)
+            
+        end
         
+
         % update UI based on server status
         function updateUI(obj)
             % determine the sensing status string
@@ -530,6 +555,9 @@ classdef SensingServer < handle
             if ~isempty(obj.masterServer),
                 obj.buttonStartOrStopSensing.Enable = 'off';
                 obj.buttonStartOrStopSensing.String = 'Slave Mode';
+                
+                % Disable closing the slave window
+                set(obj.fig, 'CloseRequestFcn', @obj.dummyCloseReq);
             end
             
             obj.textServerStatus.String=textConnectionStatus;

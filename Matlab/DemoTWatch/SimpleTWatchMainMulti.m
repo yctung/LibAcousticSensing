@@ -9,7 +9,7 @@ save('chirps', 'upChirp', 'downChirp');
 upas = SetupAudioSource(upSignal);
 downas = SetupAudioSource(downSignal);
 upas.signalGain = 0.8;%8;
-downas.signalGain = 0.8;
+downas.signalGain = 0.2;
 downas.preambleGain = 0;
 StartSensingServer(upas, downas);
 
@@ -34,13 +34,15 @@ function StartSensingServer (upas, downas)
 
     % NOTE: DummyCallback is used so no signal received at tx will be parsed
     phoneCallback = SimpleCallbackFactory('phone');
-    pss = SensingServer(SERVER_1, phoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
+    watchCallback = @DummyCallback;
+    
+    pss = SensingServer(SERVER_1, watchCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
     pss.startSensingAfterConnectionInit = 0; % avoid auto sensing
     pause(1.0); % wait some time before building the next server
     
     %watchCallback = SimpleCallbackFactory('watch');
-    watchCallback = @DummyCallback;
-    wss = SensingServer(SERVER_2, watchCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);
+    
+    wss = SensingServer(SERVER_2, phoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);
     wss.startSensingAfterConnectionInit = 0;
     wss.addSlaveServer(pss);
 end
@@ -52,10 +54,10 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     import edu.umich.cse.yctung.*;
     
     FS = 48000;
-    PERIOD = 48000; %2400;
+    PERIOD = 2400; %2400;
     CHIRP_LEN = 1200;%1200;
-    CHIRP_FREQ_START = 100; %18000;
-    CHIRP_FREQ_END = 400; %24000;
+    CHIRP_FREQ_START = 18000; %18000;
+    CHIRP_FREQ_END = 24000; %24000;
     FADING_RATIO = 0.5;
     
     PS = struct(); % parse setting, easy for the callback to get
