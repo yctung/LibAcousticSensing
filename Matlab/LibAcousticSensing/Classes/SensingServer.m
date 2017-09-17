@@ -179,8 +179,6 @@ classdef SensingServer < handle
             end
         end
         
-        
-        
         function stopSensing(obj)
             obj.jss.writeByte(int8(obj.REACTION_STOP_SENSING));
             obj.isSensing = 0;
@@ -191,6 +189,10 @@ classdef SensingServer < handle
             obj.needToUpdateAudioAllForSave = 1;
             
             obj.setWaitFlag('ACTION_SENSING_END');
+        end
+        
+        function ret = getResponse(obj)
+            ret = obj.audioToProcessAll(:, 1:obj.audioToProcessAllEnd, :);
         end
         
         % stop server waiting
@@ -440,8 +442,20 @@ classdef SensingServer < handle
             obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
             
             % ref: https://www.mathworks.com/matlabcentral/newsreader/view_thread/292100
-            address = java.net.InetAddress.getLocalHost ;
-            IPaddress = char(address.getHostAddress);
+            % issue: not able to get ipaddress form the "getLocalHost" in new MAC
+            % address = java.net.InetAddress.getLocalHost;
+            % IPaddress = char(address.getHostAddress);
+            IPaddress = 'Undefined';
+            if strcmp(computer,'GLNXA64')
+                IPaddress = '(not implemented)';
+            elseif strcmp(computer,'MACI64')
+                IPaddress = system('ifconfig en0 inet | awk ''{print $2}''');
+            %elseif strcmp() % TODO: add windows
+            else
+                IPaddress = 'Unknown IP';
+            end
+                
+            
 
             obj.textServerInfo = uicontrol(obj.panel,'Style','text',...
                         'Position',[20,170,170,40],...

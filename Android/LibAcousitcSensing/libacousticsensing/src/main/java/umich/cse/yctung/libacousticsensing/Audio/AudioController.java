@@ -7,6 +7,7 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.media.audiofx.AutomaticGainControl;
+import android.media.audiofx.NoiseSuppressor;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
@@ -98,6 +99,15 @@ public class AudioController {
         // *** WARN: uncomment this just for testing AGC ***
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
         //audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
+
+        // check noise supressor if need
+        if (NoiseSuppressor.isAvailable()) {
+            NoiseSuppressor nc = NoiseSuppressor.create(audioRecord.getAudioSessionId());
+            Log.d(LOG_TAG,"nc before enable = "+nc.getEnabled());
+            //nc.setEnabled(true);
+            //Log.d(LOG_TAG, "nc before enable = "+nc.getEnabled());
+        }
+
         if (AutomaticGainControl.isAvailable()) {
             AutomaticGainControl agc = AutomaticGainControl.create(audioRecord.getAudioSessionId());
             Log.d(LOG_TAG,"agc before disabled = "+agc.getEnabled());

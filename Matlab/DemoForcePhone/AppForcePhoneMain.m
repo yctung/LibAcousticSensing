@@ -14,7 +14,8 @@ as = AudioSource(); % default audio source
 FS = 48000;
 PERIOD = 2400;
 CHIRP_LEN = 1200;
-CHIRP_FREQ_START = 18000;
+%CHIRP_FREQ_START = 18000;
+CHIRP_FREQ_START = 11000;
 CHIRP_FREQ_END = 24000;
 APPLY_FADING_TO_SIGNAL = 1;
 FADING_RATIO = 0.5;
@@ -58,12 +59,13 @@ as.repeatCnt = 20*60*4;
 as.signalGain = 0.8;
 
 % modify preamble
+%{
 fprintf(2, '[WARN]: using inaudible preamble\n');
 ps = PreambleBuilder('CHIRP', [22000, 18000], [500, 1000], 48000, 10, 4800, 4800, 0.1);
 ps.writePreambleToFileAsBinary('preamble.dat'); % dump for Android to import
 ps.writeSyncToFileAsStringArray('sync.cpp', 'AUDIO_PILOT_TO_FILTER'); % dump for Android to import
 as.preambleSource = ps;
-
+%}
 
 global ss; % TODO: find a better way instead of using a global variable
 ss = SensingServer(SERVER_PORT, @AppForcePhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
