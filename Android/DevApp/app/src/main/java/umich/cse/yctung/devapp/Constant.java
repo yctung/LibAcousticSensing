@@ -10,7 +10,12 @@ public class Constant {
     //public static String DEFAULT_SERVER_ADDR = "105.160.33.211"; // Taiwan
     //public static String DEFAULT_SERVER_ADDR = "10.0.0.229"; // Oakwood 447
 
-    public static String DEFAULT_SERVER_ADDR = "10.1.10.29"; // Tera wifi
-    //public static String DEFAULT_SERVER_ADDR = "172.20.10.2"; // iphone hotspot
-    public static int DEFAULT_SERVER_PORT = 50005;
+    //public static String DEFAULT_SERVER_ADDR = "10.1.10.196"; // Tera wifi
+
+
+    public static String SERVER_ADDR_KEY = "SERVER_ADDR";
+    public static String SERVER_PORT_KEY = "SERVER_PORT";
+
+    public static String DEFAULT_SERVER_ADDR = "172.20.10.2"; // iphone hotspot
+    public static int DEFAULT_SERVER_PORT = 50006;
 }

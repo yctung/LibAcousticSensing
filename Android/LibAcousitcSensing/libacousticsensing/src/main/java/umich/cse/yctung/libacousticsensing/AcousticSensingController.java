@@ -90,6 +90,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             nc.connectToServer(serverIp, serverPort);
         } else {
             startSensingNow();
+            listener.sensingStarted();
         }
     }
 
@@ -98,13 +99,15 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         ac = new AudioController(context, this, audioSource, recordSetting);
         if (ac.init(audioSource, recordSetting)) {
             ac.startSensing();
+            listener.sensingStarted();
         } else {
             Log.e(LOG_TAG, "Fail to init the AudioController");
         }
     }
 
     private void stopSensingNow() {
-        ac.stopSensing();
+        if (ac != null) ac.stopSensing();
+        listener.sensingEnd();
         ac = null; // TODO: keep audio controller alive to save init delay
     }
 
@@ -133,7 +136,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
                     public void onClick(DialogInterface dialog, int id) {
                         AcousticSensingController asc = AcousticSensingController.this;
                         boolean result = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
-                        if (!result) asc.updateDebugStatus("Init fails");
+                        if (!result) asc.updateDebugStatus(false, "Init fails");
                         else {
                             asc.startSensingWhenPossible();
                         }
@@ -163,14 +166,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 //=================================================================================================
     @Override
     public void isConnected(boolean success, String resp) {
-        if (!success) listener.updateDebugStatus("Server connect fails, "+resp);
+        if (!success) {
+            listener.updateDebugStatus(false, "Server connect fails, "+resp);
+        }
         else {
             // send init vars (let the server know the config of the device used for sensing)
             nc.sendSetAction(NetworkController.SET_TYPE_VALUE_STRING, "traceChannelCnt", "2".getBytes()); // TODO: modify it based on device
             nc.sendSetAction(NetworkController.SET_TYPE_STRING, "userDevice", Utils.getDeviceName().getBytes());
             // TODO: update other device property
             nc.sendInitAction(); // tell server that it is ready to start
-            listener.updateDebugStatus("Server is connected, now wait server to send audio");
+            listener.updateDebugStatus(true, "Server is connected, now wait server to send audio");
         }
     }
 
@@ -205,6 +210,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     @Override
+    /**
+     * Called when the server shuts down. This is not just stopping the sensing. It actually
+     * shuts down the network socket connection.
+     */
+    public void serverClosed () {
+        nc.closeServerIfServerIsAlive();
+        listener.serverClosed();
+    }
+
+    @Override
     public void userStudyEnd() {
 
     }
@@ -215,7 +230,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     @Override
-    public void updateDebugStatus(String stringToShow) {
+    public void updateDebugStatus(boolean status, String stringToShow) {
 
     }
 

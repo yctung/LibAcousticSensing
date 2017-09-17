@@ -6,3 +6,5 @@ Tizen/**/.rds_delta
 Tizen/**/.sdk_delta.info
 Tizen/**/.sign
 Tizen/**/crash-info
+*preamble.dat
+*sync.cpp

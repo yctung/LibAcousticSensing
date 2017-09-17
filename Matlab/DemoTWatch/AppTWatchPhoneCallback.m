@@ -38,6 +38,24 @@ function [] = AppTWatchPhoneCallback( obj, type, data )
                 dataToPlot = upcons(:, end, 1);
                 set(line, 'yData', dataToPlot); % only show the 1st ch
                 
+                % Find peaks
+                % We want to find peaks in both the upchirp and downchirp
+                % We can do this by using different ranges to play the
+                % chirps and applying a band-pass filter to clear out the
+                % other sound. Otherwise, it might be very quiet and hard
+                % to find.
+                
+                % Naïve peak detection fails because we have multiple peaks
+                % right next to each other. We can solve this by first
+                % finding the peaks 
+                
+                % All this has to happen very efficiently. There is a
+                % strict deadline we should try to meet.
+                %pks = findpeaks(dataToPlot);
+                
+                               
+                
+                
                 line = findobj('Tag',strcat(USER_FIG_PHONE_TAG, 'line02_02'));
                 dataToPlot = downcons(:, end, 1);
                 set(line, 'yData', dataToPlot); % only show the 1st ch
@@ -68,7 +86,7 @@ function [] = AppTWatchPhoneCallback( obj, type, data )
             PS.detectRef = 1;
         end
     end
-end
+end 
 
 function createUI(obj, figTag, data, lineCnts)
     % lineCnts is the number of lines per figure
@@ -101,10 +119,6 @@ function createUI(obj, figTag, data, lineCnts)
     uicontrol(h_panel2,'Style','text','Position',[5,90,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Velocity: ','Tag','textResultVel');
     uicontrol(h_panel2,'Style','text','Position',[5,60,180,30],'FontSize',20,'ForegroundColor',[1,0,0],'HorizontalAlignment','left','String','Distance: ','Tag','textResultDist');
     uicontrol(h_panel2,'Style','pushbutton','Position',[40,20,110,30],'FontSize',TEXT_FONT_SIZE,'String','Reset','Callback',@buttonLockCallback);
-    
-    
-            
-    
 
     %{
     buttonStartSensing = uicontrol(h_panel2,'Style','pushbutton',...
@@ -115,7 +129,6 @@ function createUI(obj, figTag, data, lineCnts)
                 'Callback',@callbackStartSensing);
             %}
             
-    
     ylabels = {'data', 'energy','result'};
     xlabels = {'time', 'freq', 'time'};
     for i = 1:PLOT_AXE_CNT,
