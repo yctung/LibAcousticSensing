@@ -42,8 +42,8 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     FS = 48000;
     PERIOD = 2400; %2400;
     CHIRP_LEN = 1200;%1200;
-    CHIRP_FREQ_START = 18000;
-    CHIRP_FREQ_END = 24000;
+    CHIRP_FREQ_START = 1400;%18000;
+    CHIRP_FREQ_END = 1800; %24000;
     FADING_RATIO = 0.5;
     
     PS = struct(); % parse setting, easy for the callback to get
