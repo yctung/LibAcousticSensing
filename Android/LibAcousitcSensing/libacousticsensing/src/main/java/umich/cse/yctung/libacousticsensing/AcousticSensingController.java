@@ -21,6 +21,7 @@ import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
 import umich.cse.yctung.libacousticsensing.Audio.AudioSetting;
 import umich.cse.yctung.libacousticsensing.Network.NetworkController;
 import umich.cse.yctung.libacousticsensing.Network.NetworkControllerListener;
+import umich.cse.yctung.libacousticsensing.Standalone.JNIController;
 
 /**
  * Created by Yu-Chih Tung on 1/22/17.
@@ -50,15 +51,18 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     private String serverIp;
     private int playCnt=-1; // -1 means to play the audio infinitely
     private NetworkController nc;
+    private JNIController jc;
     private AudioController ac;
     private AudioSource audioSource;
     private AudioSetting recordSetting;
     private AcousticSensingControllerListener listener;
     private Context context;
     public AcousticSensingController(AcousticSensingControllerListener listener, Context context) {
-        this.listener=listener;
-        this.context=context;
-        nc=new NetworkController(this);
+        this.listener = listener;
+        this.context = context;
+        nc = new NetworkController(this);
+        jc = new JNIController("test");
+        jc.testNDK();
     }
 
     /**
@@ -81,7 +85,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         return true;
     }
 
-    public boolean initAsRealtimeMode() {
+    public boolean initAsStandaloneMode() {
         return true;
     }
 
