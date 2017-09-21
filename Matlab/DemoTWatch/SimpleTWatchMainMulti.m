@@ -19,7 +19,7 @@ PS.detectRef = 0;
 upas = SetupAudioSource(upSignal);
 downas = SetupAudioSource(downSignal);
 upas.signalGain = 0.8;%8;
-downas.signalGain = 0.2;
+downas.signalGain = 0.8;
 downas.preambleGain = 0;
 StartSensingServer(upas, downas);
 
@@ -64,12 +64,16 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     
     import edu.umich.cse.yctung.*;
     
+    
     FS = 48000;
     PERIOD = 2400; %2400;
     CHIRP_LEN = 1200;%1200;
     CHIRP_FREQ_START = 18000; %18000;
     CHIRP_FREQ_END = 24000; %24000;
     FADING_RATIO = 0.5;
+    
+    PS.FS = FS;
+    PS.PERIOD = PERIOD;
     
 
     

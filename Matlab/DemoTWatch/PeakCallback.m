@@ -1,46 +1,48 @@
 function [] =  PeakCallback ( obj, type, recorded_data )
     global PS; % user parse setting
+    global CallbackCounter;
+    global StartTime;
+    
+    
+    %MaxTimePerCallback = duration(0, 0, PS.PERIOD / PS.FS);
+    SecondsPerChirp = seconds(duration(0, 0, PS.PERIOD / PS.FS));
+    
     FIGTAG = "TAG";
-
+    
     if type == obj.CALLBACK_TYPE_ERROR
         fprintf(2, '[ERROR]: get the error callback data = %s', recorded_data);
         return;
     end
-
+    
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA
         if obj.userfig == -1 % need to create a new UI window
-            createUI(obj, FIGTAG, recorded_data);
+            createUI(obj, FIGTAG);
+            CallbackCounter = -1;
+            StartTime = -1;
         else
-            onechannel = recorded_data(:,end,1);
-            upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
-            downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
-           
-            line = findobj('tag', sprintf('%s-upcorr-line', FIGTAG));
-            sctplt = findobj('tag',  sprintf('%s-upcorr-scatter', FIGTAG));
-            maxpk = findobj('tag', sprintf('%s-upcorr-maxpeak', FIGTAG));
+            % If this is the first callback, assume it is on time
+            if CallbackCounter == -1
+                CallbackCounter = 0;
+                StartTime = datetime;
+            else
+                CallbackCounter = CallbackCounter + size(recorded_data, 2);
+            end
             
-            set(line, 'yData', upcorr(:,end,1));
-            [pks, locs] = findpeaks(upcorr);
-            set(sctplt, 'xData', locs);
-            set(sctplt, 'yData', pks);
-            [maxPk, maxInd] = max(pks);
-            set(maxpk, 'xData', locs(maxInd));
-            set(maxpk, 'yData', maxPk);
+            NowTime = datetime;
+            elapsedInSeconds = seconds(NowTime - StartTime);
+            numChirps = floor(elapsedInSeconds / SecondsPerChirp);
             
-            line = findobj('tag', sprintf('%s-downcorr-line', FIGTAG));
-            sctplt = findobj('tag',  sprintf('%s-downcorr-scatter', FIGTAG));
-            maxpk = findobj('tag', sprintf('%s-downcorr-maxpeak', FIGTAG));
+            %sprintf('Number of chirps we probably have played %d', numChirps)
+            [ CallbackCounter numChirps ]
+            %sprintf('%d/%d', CallbackCounter, numChirps)
             
-            set(line, 'yData', downcorr(:,end,1));
-            [pks, locs] = findpeaks(downcorr);
-            set(sctplt, 'xData', locs);
-            set(sctplt, 'yData', pks);
-            [maxPk, maxInd] = max(pks);
-            set(maxpk, 'xData', locs(maxInd));
-            set(maxpk, 'yData', maxPk);
+            % Only process this window if we're not lagging too much
+            %if numChirps - CallbackCounter < 20
+            drawChannel(1, recorded_data(:,end,1), FIGTAG);
+            drawChannel(2, recorded_data(:,end,2), FIGTAG);
+            %end
             
-            ylim([0 max(pks) + max(pks)*0.1]);
         end
     elseif type == obj.CALLBACK_TYPE_USER
         % parse user data
@@ -62,31 +64,87 @@ function [] =  PeakCallback ( obj, type, recorded_data )
     end
 end 
 
-function createUI(obj, figTag, recorded_data)
+function drawChannel (channelIdx, onechannel, FIGTAG)
+    global PS; % user parse setting
+    upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
+    downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
+
+    line = findobj('tag', sprintf('%d-%s-upcorr-line', channelIdx, FIGTAG));
+    sctplt = findobj('tag',  sprintf('%d-%s-upcorr-scatter', channelIdx, FIGTAG));
+    maxpk = findobj('tag', sprintf('%d-%s-upcorr-maxpeak', channelIdx, FIGTAG));
+
+    
+    DOWNFACTOR = 10;
+    ONLYTOP = 10;
+    
+    
+    newx = downsample(1:size(upcorr(:,end,1)), DOWNFACTOR);
+    set(line, 'xData', newx);
+    set(line, 'yData', downsample(upcorr(:,end,1), DOWNFACTOR));
+    [pks, locs] = findpeaks(upcorr);
+    [topPks, topPksIdx] = sort(pks, 'descend');
+    set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
+    set(sctplt, 'yData', topPks(1:ONLYTOP));
+    [maxPk, maxInd] = max(pks);
+    set(maxpk, 'xData', locs(maxInd));
+    set(maxpk, 'yData', maxPk);
+
+    line = findobj('tag', sprintf('%d-%s-downcorr-line', channelIdx, FIGTAG));
+    sctplt = findobj('tag',  sprintf('%d-%s-downcorr-scatter', channelIdx, FIGTAG));
+    maxpk = findobj('tag', sprintf('%d-%s-downcorr-maxpeak', channelIdx, FIGTAG));
+
+    set(line, 'xData', newx);
+    set(line, 'yData', downsample(downcorr(:,end,1), DOWNFACTOR));
+    [pks, locs] = findpeaks(downcorr);
+    [topPks, topPksIdx] = sort(pks, 'descend');
+    set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
+    set(sctplt, 'yData', topPks(1:ONLYTOP));
+    %set(sctplt, 'xData', locs);
+    %set(sctplt, 'yData', pks);
+    [maxPk, maxInd] = max(pks);
+    set(maxpk, 'xData', locs(maxInd));
+    set(maxpk, 'yData', maxPk);
+
+    ylim([0 max(pks) + max(pks)*0.1]);
+end
+
+function createUI(obj, figTag)
     % lineCnts is the number of lines per figure
-    global PS;
+    global channel1Ax;
+    global channel2Ax;
     
     PADDING = 50;
     WIDTH = 250;
-    BUTTON_HEIGHT = 50;
-
+    
     set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
-    FigPos = [50,50,3*WIDTH+2*PADDING,PADDING*3+WIDTH+BUTTON_HEIGHT];
+    FigPos = [50,50,3*WIDTH+2*PADDING,PADDING*3+WIDTH*2];
     obj.userfig = figure('Position', FigPos,'Toolbar','none','MenuBar','none','Tag',figTag);
     set(obj.userfig,'UserData',obj); % attached the obj to fig property for future reference 
     
     
-    %upcorr = abs(convn(recorded_data, PS.upchirp_data, 'same'));
-    %downcorr = abs(convn(recorded_data, PS.downchirp_data, 'same'));
-    
+    channel1Ax = subplot(2,1,1);
     hold on;
-    plot([1], 'r', 'Tag', sprintf('%s-upcorr-line', figTag));
-    scatter([0], [0], 50, 'r', 'tag', sprintf('%s-upcorr-scatter', figTag));
-    scatter([0], [0], 250, 'r', 'filled', 'tag', sprintf('%s-upcorr-maxpeak', figTag));
+    plot(1, 'r', 'Tag', sprintf('1-%s-upcorr-line', figTag));
+    scatter(0, 0, 50, 'r', 'tag', sprintf('1-%s-upcorr-scatter', figTag));
+    scatter(0, 0, 250, 'r', 'filled', 'tag', sprintf('1-%s-upcorr-maxpeak', figTag));
     
-    plot([1], 'g', 'Tag', sprintf('%s-downcorr-line', figTag));
-    scatter([0], [0], 50, 'g', 'tag', sprintf('%s-downcorr-scatter', figTag));
-    scatter([0], [0], 250, 'g', 'filled', 'tag', sprintf('%s-downcorr-maxpeak', figTag));
+    plot(1, 'g', 'Tag', sprintf('1-%s-downcorr-line', figTag));
+    scatter(0, 0, 50, 'g', 'tag', sprintf('1-%s-downcorr-scatter', figTag));
+    scatter(0, 0, 250, 'g', 'filled', 'tag', sprintf('1-%s-downcorr-maxpeak', figTag));
+    hold off;
+    
+    
+    channel2Ax = subplot(2,1,2);
+    hold on;
+    plot(1, 'r', 'Tag', sprintf('2-%s-upcorr-line', figTag));
+    scatter(0, 0, 50, 'r', 'tag', sprintf('2-%s-upcorr-scatter', figTag));
+    scatter(0, 0, 250, 'r', 'filled', 'tag', sprintf('2-%s-upcorr-maxpeak', figTag));
+    
+    plot(1, 'g', 'Tag', sprintf('2-%s-downcorr-line', figTag));
+    scatter(0, 0, 50, 'g', 'tag', sprintf('2-%s-downcorr-scatter', figTag));
+    scatter(0, 0, 250, 'g', 'filled', 'tag', sprintf('2-%s-downcorr-maxpeak', figTag));
+    hold off;
+    
     
     %legend(arrayfun(@(x) sprintf('%d',x), 1:lineCnts(i),'uni',false).');
 end
