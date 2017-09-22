@@ -39,10 +39,10 @@ int AUDIO_CH_CNT = 2; // make it to varaible to cope with different amount of de
 
 // Optimized data processing setting -> only process the necessary data now
 // NOTE only this antennal will be processed to data
-//#define DETECT_CH_IDX (1) 
+//#define DETECT_CH_IDX (1)
 int DETECT_CH_IDX = 1;
 
-//#define DETECT_RANGE_START (600-1) 
+//#define DETECT_RANGE_START (600-1)
 // NOTE the begin index must be minused by 1 because C++ starts from 0
 //#define DETECT_RANGE_END (620)
 
@@ -86,7 +86,7 @@ float gDataBuf[AUDIO_REPEAT_CNT][DETECT_RANGE_SIZE];
 float gDataSumBuf[AUDIO_REPEAT_CNT];
 float gReplyBuf[AUDIO_REPEAT_CNT];
 // !!! WARN: everything fetches the above buffer with the AUDIO_REPEAT_CNT dimension should use RING_IDX to protect the index being in range !!!
-// !!!       Moreover, the AUDIO_REPEAT_CNT should be set larger than the buffer queued length caused by any operation !!! 
+// !!!       Moreover, the AUDIO_REPEAT_CNT should be set larger than the buffer queued length caused by any operation !!!
 
 
 int gReplyProcessIdx; // indicate the end of gReplyBuf
@@ -203,18 +203,18 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(JNI_FUNC_PARAM jbyteArray audio
 #else
 JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audioToAddByteSize){
 #endif
-    
+
     // *** just for debug ***
     /*
     uint8_t* temp = (uint8_t*) audioToAddBytes;
     for(int i=0;i<10;i++){
-        
+
         debug("NDK-temp = %d", temp[i]);
     }
      */
-    
+
 	int audioToAddSampleCnt	= audioToAddByteSize/(AUDIO_CH_CNT*AUDIO_SAMPLE_BYTE_CNT);
-	debug("audioToAddByteSize = %d, audioToAddSampleCnt = %d",audioToAddByteSize, audioToAddSampleCnt);	
+	debug("audioToAddByteSize = %d, audioToAddSampleCnt = %d",audioToAddByteSize, audioToAddSampleCnt);
 	debug("before add audio, gAudioBufEnd = %d", gAudioBufEnd);
 
 	// 1. parse byte arry into global audio buffers
@@ -225,7 +225,7 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
 		float floatValue = (float)shortValue;
 
 		// b. assign value to right position
-		gAudioBufs[chIdx][gAudioBufEnd] = floatValue;	
+		gAudioBufs[chIdx][gAudioBufEnd] = floatValue;
 
 		// c. update indexs
         if(DETECT_CH_IDX>=0){ // DETECT_CH_IDX = -1 menas parsing the single channle audio
@@ -241,11 +241,11 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
 	debug("first few added element is: (%f,%f), (%f,%f)", gAudioBufs[0][0], gAudioBufs[0][1], gAudioBufs[1][0], gAudioBufs[1][1]);
 	// release byte array
 #ifdef DEV_NDK
-	env->ReleaseByteArrayElements(audioToAdd, audioToAddBytes,0);	
+	env->ReleaseByteArrayElements(audioToAdd, audioToAddBytes,0);
 #endif
 
 	// 2. search pilot if need in the first packet
-	if (NEED_TO_SEARCH_PILOT && gAudioBufEnd >= AUDIO_SAMPLE_TO_FIND_PILOT){	
+	if (NEED_TO_SEARCH_PILOT && gAudioBufEnd >= AUDIO_SAMPLE_TO_FIND_PILOT){
 		int pilotEndOffset = LibFindPilot();
 		debug("pilotEndOffset = %d", pilotEndOffset);
 		if(pilotEndOffset <0 ){
@@ -294,24 +294,24 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
 				if(chIdx == DETECT_CH_IDX){
 					float *audioToProcess = &gAudioBufs[chIdx][repeatIdx*AUDIO_SINGLE_REPEAT_LEN];
 
-					char debugFileName[100]; 
-					sprintf(debugFileName,"audio_%d_%d",gAudioProcessIdx,chIdx); 
+					char debugFileName[100];
+					sprintf(debugFileName,"audio_%d_%d",gAudioProcessIdx,chIdx);
 					debugToMatlabFile1D(audioToProcess, AUDIO_SINGLE_REPEAT_LEN, debugFileName, gLogFolderPath);
 
-					// filter data if need	
+					// filter data if need
 					if (AUDIO_PRE_FILTER_ENABLED){
 						makeFilter(AUDIO_PRE_FILTER_B, AUDIO_PRE_FILTER_LEN, AUDIO_PRE_FILTER_A, AUDIO_PRE_FILTER_LEN, audioToProcess, AUDIO_SINGLE_REPEAT_LEN, audioTemp);
-						sprintf(debugFileName,"audio_filtered_%d_%d",gAudioProcessIdx,chIdx); 
+						sprintf(debugFileName,"audio_filtered_%d_%d",gAudioProcessIdx,chIdx);
 						debugToMatlabFile1D(audioTemp, AUDIO_SINGLE_REPEAT_LEN, debugFileName, gLogFolderPath);
 						// redirect audioToProcess to the filtered array
 						audioToProcess = audioTemp;
 					}
-					
+
 					// build match filtered result
 					// only do it when debugging -> too costly!!!
 					#ifdef DEBUG_DUMP_CON
-					makeConvolveInDestSize(audioToProcess, AUDIO_SINGLE_REPEAT_LEN, AUDIO_PULSE_USED_TO_FILTER, AUDIO_PULSE_USED_LEN, &gConBufs[chIdx][RING_IDX(gAudioProcessIdx)][0], PULSE_DETECTION_MAX_RANGE_SAMPLES, true);	
-					sprintf(debugFileName,"con_%d_%d",gAudioProcessIdx,chIdx); 
+					makeConvolveInDestSize(audioToProcess, AUDIO_SINGLE_REPEAT_LEN, AUDIO_PULSE_USED_TO_FILTER, AUDIO_PULSE_USED_LEN, &gConBufs[chIdx][RING_IDX(gAudioProcessIdx)][0], PULSE_DETECTION_MAX_RANGE_SAMPLES, true);
+					sprintf(debugFileName,"con_%d_%d",gAudioProcessIdx,chIdx);
 					debugToMatlabFile1D(&gConBufs[chIdx][RING_IDX(gAudioProcessIdx)][0], PULSE_DETECTION_MAX_RANGE_SAMPLES, debugFileName, gLogFolderPath);
 					#endif
 
@@ -327,8 +327,8 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
 					if(gAudioProcessIdx >= AUDIO_REPEAT_CNT){
 						//error("[ERROR]: gAudioProcessIdx >= AUDIO_REPEAT_CNT (conBufs size is too small?)");
 						debug("gAudioProcessIdx >= AUDIO_REPEAT_CNT, but it is ok now with RING_IDX, gAudioProcessIdx = %d",gAudioProcessIdx);
-					} 
-				}	
+					}
+				}
 			}
 
 			// make reply processing if need
@@ -424,9 +424,9 @@ void LibUpdatePseResultToReplyBuf(){
 
 	for(int audioProcessIdxNow = gReplyStartRefAudioIdx+gReplyProcessIdx; audioProcessIdxNow<gAudioProcessIdx; audioProcessIdxNow++ ){
 		// use dataSum as reference data for pse detections
-		float dataNow = gDataSumBuf[RING_IDX(audioProcessIdxNow)];	
+		float dataNow = gDataSumBuf[RING_IDX(audioProcessIdxNow)];
 		float dataRef = gDataSumBuf[RING_IDX(gReplyStartRefAudioIdx)];
-	
+
 		float result = myAbs((dataNow-dataRef)/dataRef);
 
 		// *** start of Nexus6p setting ***
@@ -446,10 +446,10 @@ void LibUpdatePseResultToReplyBuf(){
 	// use preloaed data now
 	/*
 	for(int audioProcessIdxNow = gReplyStartRefAudioIdx+gReplyProcessIdx; audioProcessIdxNow<gAudioProcessIdx; audioProcessIdxNow++ ){
-		debug("audioProcessIdxNow = %d", audioProcessIdxNow);	
+		debug("audioProcessIdxNow = %d", audioProcessIdxNow);
 		for(int i=pseRange[0];i<pseRange[1];i++){
 			dataNow += gConBufs[pseChIdx][RING_IDX(audioProcessIdxNow)][i];
-			dataRef += gConBufs[pseChIdx][RING_IDX(gReplyStartRefAudioIdx)][i]; 
+			dataRef += gConBufs[pseChIdx][RING_IDX(gReplyStartRefAudioIdx)][i];
 		}
 		float result = myAbs((dataNow-dataRef)/dataRef);
 
@@ -465,7 +465,7 @@ void LibUpdateSseResultToReplyBuf(){
 
 	for(int audioProcessIdxNow = gReplyStartRefAudioIdx+gReplyProcessIdx; audioProcessIdxNow<gAudioProcessIdx; audioProcessIdxNow++ ){
 		float result = -1; // not ready
-		float dataNow = gDataSumBuf[RING_IDX(audioProcessIdxNow)];	
+		float dataNow = gDataSumBuf[RING_IDX(audioProcessIdxNow)];
 		result = dataNow;
 
 
@@ -497,7 +497,7 @@ int LibFindPilot(){
 
 	// 1. make convolvution of audio and show results
 	float *signal = &gAudioBufs[AUDIO_CH_IDX_TO_FIND_PILOT][0];
-	int signalLen = AUDIO_SAMPLE_TO_FIND_PILOT; 
+	int signalLen = AUDIO_SAMPLE_TO_FIND_PILOT;
 
 	debug("signal = (%f,%f,%f,%f)", signal[0], signal[1], signal[2], signal[3]);
 
@@ -509,7 +509,7 @@ int LibFindPilot(){
 
 	// NOTE: this convolve is "same" version and it only estimate convolve according the dest size
 	makeConvolveInDestSize(signal, signalLen, AUDIO_PILOT_TO_FILTER, AUDIO_PILOT_LEN, con, conValidSize, true);
-	
+
 	debugToMatlabFile1D(con, conValidSize, (char*)"pilot_con", gLogFolderPath);
 
 	float conMean, conStd;
@@ -518,7 +518,7 @@ int LibFindPilot(){
 
 	float thres = conMean + AUDIO_PILOT_SEARCH_THRES_FACTOR*conStd;
 
-	int window = AUDIO_PILOT_SEARCH_PEAK_WINDOW; 
+	int window = AUDIO_PILOT_SEARCH_PEAK_WINDOW;
 
 	int peakCntMax = 100;
 	int *peakIdxs = (int*)malloc(sizeof(int)*peakCntMax);
@@ -560,9 +560,9 @@ int LibFindPilot(){
 	if(peakCnt==AUDIO_PILOT_REPEAT_CNT || peakCnt==AUDIO_PILOT_REPEAT_CNT-1 ){ //TODO: update it, currently we allow one peak missing for samsung
 		int pilotEndOffset = peakIdxs[peakCnt-1] - AUDIO_PILOT_LEN/2 + AUDIO_PILOT_REPEAT_DIFF;
 		pilotEndOffset += 1; // NOTE: c++ index compensition -> remove one additional sample -> just heuristics
-		return pilotEndOffset; 
-	}	
-	return -1;	
+		return pilotEndOffset;
+	}
+	return -1;
 }
 
 // squeeze setting
@@ -579,7 +579,7 @@ float PEAK_SORT_THRES_RATIO_LOW		= 0.1; // multiple of std to achieve for peak;
 int PEAK_LOW_WIDTH_MAX				= 9; // with constrain of the peak values over low thres
 int PEAK_LOW_WIDTH_MIN				= 2;
 int CHECK_PEAK_CNT					= 2;
-int CHECK_PEAK_DIFF_RANGE_MIN		= 6-1; // maltab index starts from 1 -> -1 to correct 
+int CHECK_PEAK_DIFF_RANGE_MIN		= 6-1; // maltab index starts from 1 -> -1 to correct
 int CHECK_PEAK_DIFF_RANGE_MAX		= 25-1;
 int CHECK_PEAK_OFFSET_START_RANGE_MIN = 0;
 int CHECK_PEAK_OFFSET_START_RANGE_MAX = 40;
@@ -595,9 +595,9 @@ int LibSqueezeDetect(float *s){
     const int CHECK_STATUS_PASS_PEAK_X_OFFSET_DIFF = 1;
     const int CHECK_STATUS_PASS_PEAK_X_OFFSET_START = 2;
     const int CHECK_STATIS_PASS_PEAK_RATIO_MIN = 3;
- 
+
 	int X_CNT = SQUEEZE_LEN_TO_CHECK;
-        
+
     //----------------------------------------------------------------------
     // 1. convert to force ratio based on the first or two ends signals
     //----------------------------------------------------------------------
@@ -610,23 +610,23 @@ int LibSqueezeDetect(float *s){
 			sRatioTo2Ends[xNow] = fabs(sRatioTo2Ends[xNow]);
 		}
 	 }
-    
+
 	float *sCorrected = sRatioTo2Ends; // always assume it uses the 2 end normalziation
-   
+
 	//dump(sCorrected, X_CNT, (char*)"sCorrectedJNI");
- 
+
     //----------------------------------------------------------------------
     // 2. get thre based on mean, std, and hard thres
 	// NOTE: use HARD threshold now -> no need to estimate std
 	//----------------------------------------------------------------------
     //float sCorrectedMean, sCorrectedStd;
     //estimateMeanAndStd(sCorrected, X_CNT, sCorrectedMean, sCorrectedStd);
-	
+
     float PEAK_THRES_HIGH = PEAK_HARD_THRES_HIGH;
     float PEAK_THRES_LOW = PEAK_HARD_THRES_LOW;
-    
+
     //assert(PEAK_THRES_HIGH>PEAK_THRES_LOW,'[ERROR]: PEAK_THRES_HIGH<PEAK_THRES_LOW');
-    
+
     //----------------------------------------------------------------------
     // 3. find peaks based on my ad-hoc way
     //    : based on skip peak-width of data once the peak is found
@@ -640,14 +640,14 @@ int LibSqueezeDetect(float *s){
     int valleyXRight[SQUEEZE_LEN_TO_CHECK];
     float peakR[SQUEEZE_LEN_TO_CHECK];
     int peakXIdx = 0;
-    
+
     // new peak detection, considering the "concaved peak"
     int xNow = 0;
     while(xNow < X_CNT){
         // find the start of data bigger than high thres
         if(sToFindPeak[xNow] >= PEAK_THRES_HIGH){
             // search the end of left/right low peak reference
-            int lowPeakLeftNow = xNow; 
+            int lowPeakLeftNow = xNow;
 			for(int xRef=xNow-1; xRef>=0; xRef++){
                 if (sToFindPeak[xRef] > PEAK_THRES_LOW){
                     lowPeakLeftNow = xRef;
@@ -667,7 +667,7 @@ int LibSqueezeDetect(float *s){
 
             int lowPeakWidth = lowPeakRightNow - lowPeakLeftNow + 1;
             int peakXNow = (int)round(((float)lowPeakRightNow + (float)lowPeakLeftNow)/2);
-            
+
 			bool isPeak = false;
             if(peakXNow-PEAK_WIN_SIDE>=0 && peakXNow+PEAK_WIN_SIDE<X_CNT && lowPeakWidth >= PEAK_LOW_WIDTH_MIN && lowPeakWidth <= PEAK_LOW_WIDTH_MAX){
                 isPeak = true; // only consider peak with proper peak width and peakX
@@ -683,7 +683,7 @@ int LibSqueezeDetect(float *s){
                 peakY(peakXIdx) = mean(yInLowRange(yInLowRange>PEAK_THRES_HIGH));
                 peakYNow = peakY(peakXIdx);
 				*/
-				
+
 
 				float peakYSum = 0, peakYNow;
 				float sumCnt = 0;
@@ -697,16 +697,16 @@ int LibSqueezeDetect(float *s){
 					peakYNow = peakYSum/sumCnt;//use the mean of signals over peak as the peakY
 				}
 				peakY[peakXIdx] = peakYNow;
-               
-				// search the low value in two side as the vally value 
+
+				// search the low value in two side as the vally value
 				/*
                 [~,valleyXLeft(peakXIdx)] = min(sToFindPeak(peakXNow-PEAK_WIN_SIDE:peakXNow));
                 valleyXLeft(peakXIdx) = valleyXLeft(peakXIdx) + peakXNow-PEAK_WIN_SIDE-1;
                 [~,valleyXRight(peakXIdx)] = min(sToFindPeak(peakXNow:peakXNow+PEAK_WIN_SIDE));
                 valleyXRight(peakXIdx) = valleyXRight(peakXIdx) + peakXNow - 1;
 				*/
-			
-				float minValueLeft = sToFindPeak[peakXNow];	
+
+				float minValueLeft = sToFindPeak[peakXNow];
 				valleyXLeft[peakXIdx] = peakXIdx; // init by the peak value
 				for(int i=peakXNow-PEAK_WIN_SIDE;i<=peakXNow;i++){
 					if(sToFindPeak[i]<minValueLeft){ // search the min value
@@ -734,26 +734,26 @@ int LibSqueezeDetect(float *s){
             xNow = xNow+1;
         }
     }
-    
+
     // resize peakX vector -> no need in c++
 	int peakCnt = peakXIdx; // just need to remember the end of peaks
-    
+
     //----------------------------------------------------------------------
     // 4. check peak statistics
     //    : need to pass each "test" before the next test
     //----------------------------------------------------------------------
     int checkStatus = CHECK_STATUS_INIT;
-    
+
     // a. check peak cnt
     if(peakCnt == CHECK_PEAK_CNT){
         checkStatus = CHECK_STATUS_PASS_PEAK_CNT;
     }
-    
+
     // b. check peak offset/diff
     if(checkStatus == CHECK_STATUS_PASS_PEAK_CNT){
 		bool passAllPeakDiffTest = true;
 
-		// NOTE: need at least 
+		// NOTE: need at least
 		for(int peakIdxToCheck = 1; peakIdxToCheck<peakCnt; peakIdxToCheck++){
 			int peakDiff = peakX[peakIdxToCheck]-peakX[peakIdxToCheck-1];
 			if (peakDiff >= CHECK_PEAK_DIFF_RANGE_MIN && peakDiff <= CHECK_PEAK_DIFF_RANGE_MAX){
@@ -768,7 +768,7 @@ int LibSqueezeDetect(float *s){
 			checkStatus = CHECK_STATUS_PASS_PEAK_X_OFFSET_DIFF;
 		}
     }
-    
+
     // c. check peak offset/start and end
 	// NOTE: this is not used anymore
     if(checkStatus == CHECK_STATUS_PASS_PEAK_X_OFFSET_DIFF){
@@ -776,7 +776,7 @@ int LibSqueezeDetect(float *s){
             checkStatus = CHECK_STATUS_PASS_PEAK_X_OFFSET_START;
         }
     }
-    
+
     // d. check peak ratios
     if(checkStatus == CHECK_STATUS_PASS_PEAK_X_OFFSET_START){
 		bool passAllPeakRatioTest = true;

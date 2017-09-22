@@ -23,6 +23,40 @@ import java.util.Random;
  */
 public class Utils {
 
+    public static short[] loadAudioFromAssetAsShort(Context context, String assetName) {
+        short[] shorts = null;
+        try {
+            InputStream is = context.getAssets().open(assetName);
+            byte[] bytes = new byte[is.available()];
+            is.read(bytes);
+            is.close();
+            shorts = new short[bytes.length / 2];
+            ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(Constant.LOG_TAG, "Failed to find/load assets, name = " + assetName);
+            return null;
+        }
+        return shorts;
+    }
+
+    public static String loadJSONFromAsset(Context context, String assetName) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open(assetName);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            Log.e(Constant.LOG_TAG, "Failed to find/load assets, name = " + assetName);
+            return null;
+        }
+        return json;
+    }
+
     static SimpleDateFormat dateFormat;
     public static String getTime(){
         if (dateFormat==null) dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");

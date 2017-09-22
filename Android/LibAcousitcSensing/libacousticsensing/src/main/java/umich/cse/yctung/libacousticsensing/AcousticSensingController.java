@@ -15,6 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
 import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
@@ -85,7 +90,20 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         return true;
     }
 
-    public boolean initAsStandaloneMode() {
+    // This mode connect the JNI code in LibAcousticSensing, so no need matlab
+    public boolean initAsStandaloneMode(String audioSourceSettingAsset, String signalAsset, String preambleToAddAsset, String preambleSyncAsset) {
+        short[] signal = Utils.loadAudioFromAssetAsShort(context, signalAsset);
+        short[] preamble = Utils.loadAudioFromAssetAsShort(context, preambleToAddAsset);
+        short[] sync = Utils.loadAudioFromAssetAsShort(context, preambleSyncAsset);
+        String json = Utils.loadJSONFromAsset(context, audioSourceSettingAsset);
+        if (signal == null || preamble == null || sync == null || json == null) return false;
+
+        Gson gson = new Gson();
+        audioSource  = gson.fromJson(json, AudioSource.class);
+        audioSource.signal = signal;
+        audioSource.preamble = preamble;
+        audioSource.sync = sync;
+
         return true;
     }
 

@@ -72,11 +72,11 @@ public class AudioController {
 
         // TODO: modify the stream type based on audioSource
 
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
 
         while( audioTrack.getState()==AudioTrack.STATE_UNINITIALIZED ){
             Log.e(LOG_TAG, "audioTrackState cant be initialized -> wait next try!");
-            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
         }
     }
 
@@ -202,8 +202,8 @@ public class AudioController {
     private void keepAudioPlaying() {
         // NOTE the write is a block call, ref: http://stackoverflow.com/questions/38291469/android-audiotrack-write-blocks-for-the-whole-period-of-playback
         int writeCnt;
-        writeCnt = audioTrack.write(audioSource.pilot, 0, audioSource.pilot.length);
-        if (writeCnt!=audioSource.pilot.length) Log.e(LOG_TAG,"[ERROR]: wrong size of pilot is played by audioTrack, writeCnt="+writeCnt);
+        writeCnt = audioTrack.write(audioSource.preamble, 0, audioSource.preamble.length);
+        if (writeCnt!=audioSource.preamble.length) Log.e(LOG_TAG,"[ERROR]: wrong size of preamble is played by audioTrack, writeCnt="+writeCnt);
         // TODO: check if there will be a delay between several audioTrack write executions
         int playCnt=0;
         while (keepSensing) {
