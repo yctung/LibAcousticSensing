@@ -32,16 +32,12 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     EditText editTextServerAddr, editTextServerPort;
     Button buttonStart, buttonUserData;
     TextView textViewDebugInfo;
-    // Internal status
-    boolean isSensing;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sharedPref = getPreferences(Context.MODE_PRIVATE);
-
-        // Init internal status
-        isSensing = false;
 
         // Link UI elements
         spinnerMode = (Spinner)findViewById(R.id.spinnerMode);
@@ -108,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     int userDataCodeToSend = 1;
     void onUserDataClicked() {
-        if (asc.isConnected()) {
+        if (asc != null && asc.isReadyToSense()) {
             asc.sendUserData("ukn",userDataCodeToSend, 0.0f, 0.0f);
             // update next user data to send
             userDataCodeToSend = userDataCodeToSend == 1 ? 0 : 1;
@@ -116,12 +112,12 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     void onStartOrStopClicked() {
-        if (!isSensing) { // need to start sensing
+        if (asc == null || !asc.isReadyToSense()) { // need to start sensing
             boolean initResult = false;
             if (spinnerMode.getSelectedItemPosition()==0) { // remote mode
                 initResult = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
             } else { // standalone mode
-                initResult = asc.initAsStandaloneMode("audio_source.json", "signal.dat", "preamble_to_add.dat", "preamble_sync.dat");
+                initResult = asc.initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
             }
 
             if (!initResult) {
@@ -132,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             asc.startSensingWhenPossible();
             buttonStart.setText("Stop");
         } else { // need to stop sensing
+            asc.stopSensingNow();
             buttonStart.setText("Start");
         }
     }

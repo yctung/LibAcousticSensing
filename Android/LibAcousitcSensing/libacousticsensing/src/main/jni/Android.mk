@@ -17,6 +17,7 @@ LOCAL_MODULE	:= standalone
 LOCAL_CFLAGS    := -DDEV_NDK=1
 #LOCAL_SRC_FILES := common.cpp acoustic_detection.cpp
 LOCAL_SRC_FILES := \
+	libas_core.cpp \
 	libas_utils.cpp \
 	libas_test.cpp \
 	kissfft/kiss_fft.c \

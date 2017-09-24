@@ -1,8 +1,6 @@
 //=========================================================================================================
 //         !!! NOTE !!! It is a shared preference -> modify it will affect both iOS and Android code
 //=========================================================================================================
-#define DEV_NDK
-
 
 #ifdef DEV_NDK
 #include <jni.h>
@@ -30,7 +28,7 @@
 
 // global control variables
 #define SHOW_DEBUG_MESSAGE true
-#define SAVE_DEBUG_FILE false
+#define SAVE_DEBUG_FILE true
 
 //using namespace std;
 #ifdef DEV_NDK
@@ -63,6 +61,8 @@ void estimateMeanAndStd(float *s, int len, float *mean, float *std);
 int estimateBinFreqs(float *&freqs, int &binStartFreqIdx, int &binEndFreqIdx, int sCol, int FS, float BIN_START, float BIN_END);
 void makeFFTBins(float **s2D, float **&fftBins, int sCol, int sRow, int binStartFreqIdx, int binEndFreqIdx, int binCnt, const char *logFolderPath);
 */
+void convertShortArrayToFloatArray(float *f, short *s, int size, bool needToReverse);
+
 void makeConvolveInDestSize(float*, int, float *, int , float *, int , bool);
 void makeFilter(float *, int , float *, int , float *, int , float *);
 float makeAbsConvInRange(float *source, int sourceSize, float *pulse, int pulseSize, float *dest, int destSize, int rangeStart, int rangeEnd);
@@ -72,4 +72,3 @@ void debugToMatlabFile1D(float *data, int col, char* name, const char* path);
 //void debugToMatlabFile1D(short *data, int col, char* name, const char* path);
 void normalize(float* dest, int destSize);
 float myAbs(float a);
-

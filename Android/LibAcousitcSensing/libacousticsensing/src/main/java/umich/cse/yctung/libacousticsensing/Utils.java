@@ -5,10 +5,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -17,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.jar.Manifest;
 
 /**
  * Created by eddyxd on 4/25/16.
@@ -92,6 +96,37 @@ public class Utils {
             return Character.toUpperCase(first) + s.substring(1);
         }
     }
+
+    public static void requestPermissionsIfNeed(Context context) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.RECORD_AUDIO}, 1);
+            }
+        }
+    }
+
+    public static void createLibFoldersIfNeed() {
+        createFolderIfNeed(Constant.libFolderPath);
+        createFolderIfNeed(Constant.ndkTraceFolderName);
+    }
+
+    private static void createFolderIfNeed(String folderPath){
+        // 1. create app folder if necessary
+        File folder = new File(folderPath);
+
+        // create necessary folders
+        if (!folder.exists()) {
+            Log.w(Constant.LOG_TAG, "folderPath = "+folderPath+" is not existed, create one");
+            boolean success = folder.mkdir();
+            if (!success) {
+                Log.e(Constant.LOG_TAG, "Unable to create a folder at " + folderPath);
+            }
+        }
+    }
+
 
     public static String[] doubleArrayToStringArray(double[] dataArray) {
         String[] resultArray = new String[dataArray.length];

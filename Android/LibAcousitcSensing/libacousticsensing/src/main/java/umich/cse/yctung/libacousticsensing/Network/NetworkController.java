@@ -261,7 +261,7 @@ public class NetworkController {
 
 					audioHasBeenUpdatedAfterRequestStartIsAsked = true;
 					if(SAVE_LATEST_LOADED_AUDIO_TO_FILE){
-						BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(Constant.appFolderPath+"audioFromServer.dat"));
+						BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(Constant.libFolderPath + "audioFromServer.dat"));
 						bos.write(b);
 						bos.flush();
 						bos.close();

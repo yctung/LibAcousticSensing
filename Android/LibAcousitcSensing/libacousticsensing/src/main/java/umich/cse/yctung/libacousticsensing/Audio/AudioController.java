@@ -38,7 +38,7 @@ public class AudioController {
 
     Context context;
     AudioSource audioSource;
-    AudioSetting audioSetting;
+    RecordSetting audioSetting;
     AudioControllerListener listener;
 
     // Android audio interfaces
@@ -55,7 +55,7 @@ public class AudioController {
     public long audioTotalRecordedSampleCnt = -1; // TODO: check the overflow issue
 
 
-    public AudioController(Context context, AudioControllerListener listener, AudioSource audioSource, AudioSetting recordSetting) {
+    public AudioController(Context context, AudioControllerListener listener, AudioSource audioSource, RecordSetting recordSetting) {
         this.context = context;
         this.listener = listener;
         sensingTimer = new SensingTimer();
@@ -82,19 +82,21 @@ public class AudioController {
 
     // this method is separated from constructor so the same AudioController can be used more than once
     /*
-    public void setAudioSetting(AudioSetting audioSetting) {
+    public void setAudioSetting(RecordSetting audioSetting) {
         this.audioSetting = audioSetting;
         audioRecord = audioSetting.createNewAudioRecord();
     }
     */
 
-    public boolean init(AudioSource audioSource, AudioSetting recordSetting) {
+    public boolean init(AudioSource audioSource, RecordSetting recordSetting) {
         if (keepSensing||isPlaying||isRecording) {
             Log.e(LOG_TAG, "[ERROR]: unable to init because the previous sensing is not stopped yet (forget to stop it?)");
             return false;
         }
 
         this.audioSetting = recordSetting; // TOOD: move it to a better way
+
+
 
         // *** WARN: uncomment this just for testing AGC ***
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
@@ -103,16 +105,22 @@ public class AudioController {
         // check noise supressor if need
         if (NoiseSuppressor.isAvailable()) {
             NoiseSuppressor nc = NoiseSuppressor.create(audioRecord.getAudioSessionId());
-            Log.d(LOG_TAG,"nc before enable = "+nc.getEnabled());
-            //nc.setEnabled(true);
-            //Log.d(LOG_TAG, "nc before enable = "+nc.getEnabled());
+            if (nc != null) {
+                //Log.d(LOG_TAG,"nc before enable = "+nc.getEnabled());
+                //nc.setEnabled(true);
+                //Log.d(LOG_TAG, "nc before enable = "+nc.getEnabled());
+            }
         }
 
         if (AutomaticGainControl.isAvailable()) {
             AutomaticGainControl agc = AutomaticGainControl.create(audioRecord.getAudioSessionId());
+            if (agc != null) {
+            /*
             Log.d(LOG_TAG,"agc before disabled = "+agc.getEnabled());
             agc.setEnabled(false);
             Log.d(LOG_TAG, "agc before disabled = "+agc.getEnabled());
+            */
+            }
         }
 
         // *** END OF WARN: uncomment this just for testing AGC ***
@@ -160,12 +168,12 @@ public class AudioController {
 //=================================================================================================
     private void startRecordAndThenPlayAudio() {
         // NOTE: it is necessary to ensure the audio is recording before playing the audio
-        if (audioSetting.audioMode==AudioSetting.AUDIO_MODE_PLAY_AND_RECORD) {
+        if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_AND_RECORD) {
             startRecording();
             sensingTimer.sendMessageDelayed(Message.obtain(null, MESSAGE_TO_START_PLAY), DELAY_TO_START_PLAY);
-        } else if (audioSetting.audioMode==AudioSetting.AUDIO_MODE_PLAY_ONLY) {
+        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_ONLY) {
             startPlaying();
-        } else if (audioSetting.audioMode==AudioSetting.AUDIO_MODE_RECORD_ONLY) {
+        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_RECORD_ONLY) {
             startRecording();
         } else {
             Log.e(LOG_TAG, "[ERROR]: undefined audioMode="+audioSetting.audioMode);

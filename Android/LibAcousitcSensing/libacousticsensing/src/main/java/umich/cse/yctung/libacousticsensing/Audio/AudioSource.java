@@ -15,7 +15,7 @@ public class AudioSource {
     public int repeatCnt;
     public int preambleEndOffset;
     public String preambleName;
-
+    public int preambleSyncRepeatCnt;
 
     public short[] signal;
     public short[] preamble;

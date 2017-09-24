@@ -14,6 +14,7 @@ android {
             moduleName = "standalone" // module for standalone processing
             ldLibs "log"
             stl "stlport_shared"
+            cFlags "-DDEV_NDK=1"
         }
 
     }

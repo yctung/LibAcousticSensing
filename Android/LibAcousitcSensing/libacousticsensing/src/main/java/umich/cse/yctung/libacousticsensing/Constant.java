@@ -2,6 +2,7 @@ package umich.cse.yctung.libacousticsensing;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.os.Environment;
 import android.util.Log;
 
 /**
@@ -10,7 +11,19 @@ import android.util.Log;
  * )
  */
 public class Constant {
-    public final static String LOG_TAG = "LAS";
+    public final static String LOG_TAG = "LibAS"; // Global tag
+
+
+    public final static String LIB_FOLDER_NAME = "LibAS";
+    public final static String NDK_TRACE_FOLDER_NAME = "ndk";
+    public static String libFolderPath = ""; // to be defined by initGlobalConstant
+    public static String ndkTraceFolderName = ""; // to be defined by initGlobalConstant
+    public static void initGlobalConstant() {
+        String systemPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+        libFolderPath = systemPath + LIB_FOLDER_NAME + "/";
+        ndkTraceFolderName = libFolderPath + NDK_TRACE_FOLDER_NAME + "/";
+    }
+
     public static float DEFAULT_VOL = 1.0f;
 
     public final static String SETTING_JSON_FILE_NAME = "SafeSpeech.json";
@@ -56,10 +69,6 @@ public class Constant {
     // contorl of survey mode (predict or train)
     public final static int SURVEY_MODE_TRAIN = 1;
     public final static int SURVEY_MODE_PREDICT = 2;
-
-    public static String systemPath;
-    public static String appFolderName;
-    public static String appFolderPath;
 
     public static void errorWithDialog(final Activity activity, final String message){
         Log.e(Constant.LOG_TAG, "[ERROR]: "+message);

@@ -6,7 +6,6 @@ function [ ] = SaveAudioSourceAndParseSetting(audioSource, outFolder)
     FILE_NAME_PREAMBLE_TO_ADD_OUT = 'preamble.dat';
     FILE_NAME_PREAMBLE_SYNC_OUT = 'sync.dat';
     
-
     if ~exist(outFolder, 'dir')
         fprintf(1, '[ERROR]: outFolder = %s not existed (warng path?)\n', outFolder);
         return;
@@ -26,11 +25,12 @@ function [ ] = SaveAudioSourceAndParseSetting(audioSource, outFolder)
     
     % TODO: we could use jsonencode, but it is now only supported in 2017b
     json = '{';
-    json = sprintf('%s"id":"libas_standalone",', json);
+    json = sprintf('%s"id":"%s",', json, audioSource.name);
     json = sprintf('%s"sampleRate":%d,', json, audioSource.FS);
     json = sprintf('%s"chCnt":%d,', json, audioSource.chCnt);
     json = sprintf('%s"repeatCnt":%d,', json, audioSource.repeatCnt);
     json = sprintf('%s"preambleEndOffset":%d,', json, audioSource.preambleSource.preambleEndOffset);
+    json = sprintf('%s"preambleSyncRepeatCnt":%d,', json, audioSource.preambleSource.syncRepeatCnt);
     json = sprintf('%s"preambleName":"%s"', json, audioSource.preambleSource.name);
     json = strcat(json, '}');
     

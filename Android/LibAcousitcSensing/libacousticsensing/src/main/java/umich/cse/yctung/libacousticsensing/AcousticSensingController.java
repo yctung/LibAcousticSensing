@@ -1,13 +1,12 @@
 package umich.cse.yctung.libacousticsensing;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +16,10 @@ import android.widget.Spinner;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
 import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
-import umich.cse.yctung.libacousticsensing.Audio.AudioSetting;
+import umich.cse.yctung.libacousticsensing.Audio.RecordSetting;
 import umich.cse.yctung.libacousticsensing.Network.NetworkController;
 import umich.cse.yctung.libacousticsensing.Network.NetworkControllerListener;
 import umich.cse.yctung.libacousticsensing.Standalone.JNIController;
@@ -39,12 +35,12 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 // Constants
 //=================================================================================================
     private final static String LOG_TAG = "AcousticSensingContr..";
-    public int PARSE_MODE_OFFLINE=1; // TOOD: implement the jni parser
-    public int PARSE_MODE_REMOTE=2;  // This mode
-    public int PARSE_MODE_DEFAULT=PARSE_MODE_REMOTE;
+    public int PARSE_MODE_STANDALONE = 1; // TOOD: implement the jni parser
+    public int PARSE_MODE_REMOTE = 2;  // This mode
+    public int PARSE_MODE_DEFAULT = PARSE_MODE_REMOTE;
 
 
-    public int AUDIO_MODE_DEFAULT=AudioSetting.AUDIO_MODE_PLAY_AND_RECORD;
+    public int AUDIO_MODE_DEFAULT= RecordSetting.AUDIO_MODE_PLAY_AND_RECORD;
     public int LOG_MODE_SAVE_AUDIO_TO_FILE=1;
     public int LOG_MODE_DEFAULT=LOG_MODE_SAVE_AUDIO_TO_FILE;
 //=================================================================================================
@@ -59,15 +55,40 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     private JNIController jc;
     private AudioController ac;
     private AudioSource audioSource;
-    private AudioSetting recordSetting;
+    private RecordSetting recordSetting;
     private AcousticSensingControllerListener listener;
     private Context context;
     public AcousticSensingController(AcousticSensingControllerListener listener, Context context) {
+        Constant.initGlobalConstant();
+        Utils.requestPermissionsIfNeed(context);
+        Utils.createLibFoldersIfNeed();
+
         this.listener = listener;
         this.context = context;
         nc = new NetworkController(this);
-        jc = new JNIController("test");
+        jc = new JNIController(Constant.ndkTraceFolderName);
         jc.testNDK();
+    }
+
+    private boolean checkIfReadyToInit() {
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            //Utils.showSimpleAlertDialog();
+            Utils.showSimpleAlertDialogWithCallback(
+                    (Activity)context,
+                    "Failed to request necessary permissions",
+                    "LibAS need RECORD_AUDIO and WRITE_EXTERNAL_STORAGE permission to work",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Utils.requestPermissionsIfNeed(context);
+                        }
+                    });
+            return false;
+        }
+        // we might only be able to create folders at this time
+        Utils.createLibFoldersIfNeed();
+        return true;
     }
 
     /**
@@ -83,15 +104,19 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     public boolean initAsSlaveMode(String serverIp, int serverPort) {
-        this.serverIp=serverIp;
-        this.serverPort=serverPort;
-        this.parseMode=PARSE_MODE_REMOTE;
-        this.audioMode=AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+        boolean readyToInit = checkIfReadyToInit();
+        if (!readyToInit) return false;
+        this.serverIp = serverIp;
+        this.serverPort = serverPort;
+        this.parseMode = PARSE_MODE_REMOTE;
+        this.audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
         return true;
     }
 
     // This mode connect the JNI code in LibAcousticSensing, so no need matlab
     public boolean initAsStandaloneMode(String audioSourceSettingAsset, String signalAsset, String preambleToAddAsset, String preambleSyncAsset) {
+        boolean readyToInit = checkIfReadyToInit();
+        if (!readyToInit) return false;
         short[] signal = Utils.loadAudioFromAssetAsShort(context, signalAsset);
         short[] preamble = Utils.loadAudioFromAssetAsShort(context, preambleToAddAsset);
         short[] sync = Utils.loadAudioFromAssetAsShort(context, preambleSyncAsset);
@@ -104,11 +129,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         audioSource.preamble = preamble;
         audioSource.sync = sync;
 
-        return true;
+        boolean ret = jc.init(audioSource);
+
+        this.parseMode = PARSE_MODE_STANDALONE;
+        this.audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+        return ret;
     }
 
     public void startSensingWhenPossible() {
         if (parseMode==PARSE_MODE_REMOTE) {
+            // in rmote mode, sensing is possible only when the server is connected
             nc.connectToServer(serverIp, serverPort);
         } else {
             startSensingNow();
@@ -117,8 +147,8 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     private void startSensingNow() {
-        recordSetting = new AudioSetting(audioMode);
-        ac = new AudioController(context, this, audioSource, recordSetting);
+        recordSetting = new RecordSetting(audioMode);
+        ac = new AudioController(context, this, audioSource /* include the playSetting */, recordSetting);
         if (ac.init(audioSource, recordSetting)) {
             ac.startSensing();
             listener.sensingStarted();
@@ -127,7 +157,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         }
     }
 
-    private void stopSensingNow() {
+    public void stopSensingNow() {
         if (ac != null) ac.stopSensing();
         listener.sensingEnd();
         ac = null; // TODO: keep audio controller alive to save init delay
@@ -180,8 +210,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         nc.sendUserAction(stamp, tag, code, arg0, arg1, null);
     }
 
-    public boolean isConnected() {
+    private boolean isConnected() {
         return nc.isConnected();
+    }
+
+    public boolean isReadyToSense() {
+        if (parseMode == PARSE_MODE_REMOTE) return isConnected();
+        else if (parseMode == PARSE_MODE_STANDALONE) return jc.isReadyToSense();
+
+        Log.e(LOG_TAG, "Undefined parseMode = " + parseMode);
+        return false; // undefined
     }
 //=================================================================================================
 // Network callbacks
@@ -273,8 +311,10 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
     @Override
     public void audioRecorded(byte[] data, long audioTotalRecordedSampleCnt) {
-        if (nc.isConnected()) {
+        if (this.parseMode == PARSE_MODE_REMOTE && nc.isConnected()) {
             nc.sendDataRequest(data);
+        } else if (this.parseMode == PARSE_MODE_STANDALONE && jc.isReadyToSense()) {
+            jc.addAudioSamples(data);
         }
     }
 }

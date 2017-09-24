@@ -36,8 +36,8 @@ void warn(const char *s,...)
     va_list va; va_start(va,s);
 #ifdef DEV_NDK
     char buffer[DEBUG_STRING_BUFFER_SIZE];
-	vsprintf(buffer,s,va); 
-    va_end(va); 
+	vsprintf(buffer,s,va);
+    va_end(va);
 	DEBUG_MACRO_WARN(buffer);
 #else
     printf("NDK [WARN]: ");
@@ -52,8 +52,8 @@ void error(const char *s,...)
     va_list va; va_start(va,s);
 #ifdef DEV_NDK
     char buffer[DEBUG_STRING_BUFFER_SIZE];
-	vsprintf(buffer,s,va); 
-    va_end(va); 
+	vsprintf(buffer,s,va);
+    va_end(va);
 	DEBUG_MACRO_ERROR(buffer);
 #else
     printf("NDK [ERROR]: ");
@@ -106,6 +106,13 @@ void estimateMeanAndStd(float *s, int len, float *mean, float *std){
 	debug("estimateMeanAndStd: sumAvg=%f, squareSumAvg=%f", sumAvg, squareSumAvg);
 }
 
+void convertShortArrayToFloatArray(float *f, short *s, int size, bool needToReverse) {
+		for (int i = 0; i < size; i ++) {
+				int target = needToReverse ? size - i - 1 : i;
+				f[target] = ((float)s[i])/32767.0;
+		}
+}
+
 /*
 int estimateBinFreqs(float *&freqs, int &binStartFreqIdx, int &binEndFreqIdx, int sCol, int FS, float BIN_START, float BIN_END){
 	float DF = ((float)FS)/((float)sCol);
@@ -128,7 +135,7 @@ int estimateBinFreqs(float *&freqs, int &binStartFreqIdx, int &binEndFreqIdx, in
 		}
 	}
     for (int i=sCol-1;i>=0;i--){
-		if(binEndFreqIdx == -1 && oriFreqs[i]<=BIN_END){ 
+		if(binEndFreqIdx == -1 && oriFreqs[i]<=BIN_END){
 			binEndFreqIdx=i;
 			break;
 		}
@@ -164,7 +171,7 @@ void makeFFTBins(float **s2D, float **&fftBins, int sCol, int sRow, int binStart
 	fftBins = (float **)malloc(sRow*sizeof(float*));
 	for (int r=0; r<sRow; r++){
 		//debug("makeFFTBins: r = %d", r);
-		//debug("makeFFTBins: before fft");	
+		//debug("makeFFTBins: before fft");
 		// b. FFT
 		//kiss_fftr(fft, (kiss_fft_scalar*) fft_in, fft_out);
 		kiss_fftr(fft, (kiss_fft_scalar*) s2D[r], fft_out);
@@ -196,7 +203,7 @@ void normalize(float* dest, int destSize){
 
 	for(int i=0;i<destSize;i++){
 		dest[i] = dest[i]/maxValue;
-	}	
+	}
 }
 
 int getMaxIdx(float* target, int targetSize){
@@ -282,8 +289,8 @@ void makeValidConvolve(float *source, int sourceSize, float *filter, int filterS
 
 // this is equal to the filter function at matlab
 void makeFilter(float *b, int bSize, float *a, int aSize, float *x, int xSize, float *y){
-	int p = aSize-1; 
-	int q = bSize-1; 
+	int p = aSize-1;
+	int q = bSize-1;
 	int pq = p;
 	if(q>p){pq = q;}
 	float *u = (float*)malloc(sizeof(float)*(pq+xSize));
@@ -302,7 +309,7 @@ void makeFilter(float *b, int bSize, float *a, int aSize, float *x, int xSize, f
 		for(int j=i+1;j<i+p+1;j++){
 			u[j] = u[j] - a[aIdx]*y[i];
 			aIdx++;
-		}	
+		}
 
     }
 }
@@ -392,4 +399,3 @@ void debugToMatlabFile2D(short** data, int col, int row, char* name, const char*
 void debugToMatlabFile1D(short *data, int col, char* name, const char* path) {
 	debugToMatlabFile2D(&data, col, 1, name, path);
 }
-
