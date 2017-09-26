@@ -17,8 +17,8 @@ public class JNIController {
     private native void initParseSetting(int recordChCnt, int preambleSearchChIdxMatlab);
     private native void initSenseSetting(String logFolderPath);
     public native boolean isReadyToSense();
-    public native int addAudioSamples(byte[] audioToAdd);
-
+    public native long addAudioSamples(byte[] audioToAdd);
+    public native void debugDumpAddAudioRet(long addAudioRet);
 
     public JNIController(String logFolderPath){
         initSenseSetting(logFolderPath);

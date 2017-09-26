@@ -11,4 +11,5 @@ public interface AcousticSensingControllerListener {
     public void updateSensingProgress(int percent);
     public void serverClosed();
     public void updateResult(int argInt, float argFloat);
+    public void dataJNICallback(long retAddr);
 }

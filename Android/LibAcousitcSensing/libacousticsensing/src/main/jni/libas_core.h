@@ -14,7 +14,7 @@ extern "C" {
                   int preambleEndOffset, int preambleSyncRepeatCnt, jshortArray signalIn, jshortArray preambleIn, jshortArray syncIn);
     JNI_FUNC_HEAD void JNI_FUNC_NAME(initParseSetting)(JNI_FUNC_PARAM int recordChCnt, int preambleSearchChIdxMatlab);
     JNI_FUNC_HEAD bool JNI_FUNC_NAME(isReadyToSense)(JNI_FUNC_NO_PARAM);
-    JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audioToAddByteSize);
+    //JNI_FUNC_HEAD jlong JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audioToAddByteSize);
     JNI_FUNC_HEAD void JNI_FUNC_NAME(debugShowStatus)(JNI_FUNC_NO_PARAM);
 #ifdef __cplusplus
 }

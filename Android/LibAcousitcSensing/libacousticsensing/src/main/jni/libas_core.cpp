@@ -186,10 +186,18 @@ static bool sAudioIsAdding = false;
 #define ADD_AUDIO_RET_ERROR -1
 #define ADD_AUDIO_RET_NO_PREAMBLE_FOUND -2
 #define ADD_AUDIO_RET_NOTHING_TO_PROCESS 0
+// a reference class used to pass memory between jni efficiently
+struct AddAudioRet{
+    int chCnt;
+    int traceCnt;
+    int sampleCnt;
+    float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
+};
+
 // fucntion to add audio to buffers
 // TODO: clean this code? now it is a direct copy from my Matlab code
 #ifdef DEV_NDK
-JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(JNI_FUNC_PARAM jbyteArray audioToAdd){
+JNI_FUNC_HEAD jlong JNI_FUNC_NAME(addAudioSamples)(JNI_FUNC_PARAM jbyteArray audioToAdd){
     debug("--- addAudioSamples ---");
   	// ensure there is no racing condition on adding the audio (should not happen)
   	if(sAudioIsAdding){
@@ -274,16 +282,37 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
   	    int newAudioBufEnd = gAudioBufEnd - lenToProcess;
 
   		  debug("repeatToProcess = %d",repeatToProcess);
+        // TODO: add a ch mask to save memory and time (e.g., only process the 1st channel)
+        AddAudioRet *ret = 0;
+
+        // allocate ret structure if need
+        if (repeatToProcess > 0) {
+            ret = (AddAudioRet *)malloc(sizeof(AddAudioRet));
+            ret->chCnt = ps->recordChCnt;
+            ret->traceCnt = repeatToProcess;
+            ret->sampleCnt = as->signalSize;
+            /*
+            ret->data = (float ***)malloc(ps->recordChCnt * sizeof(float **));
+            for (int chIdx = 0; chIdx < ps->recordChCnt; chIdx++) {
+                *(ret->data + chIdx) = (float **)malloc(repeatToProcess * sizeof(float *));
+                for (int repeatIdx = 0; repeatIdx < repeatToProcess; repeatIdx++){
+                    *(*(ret->data + chIdx) + repeatIdx) = (float *)malloc(as->signalSize * sizeof(float));
+                }
+            }
+            */
+        }
 
         // process data
-        for(int repeatIdx = 0; repeatIdx<repeatToProcess; repeatIdx++){
-            for(int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
+        for (int repeatIdx = 0; repeatIdx < repeatToProcess; repeatIdx++){
+            for (int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
                 // TODO: new a data structure to save these audio data
       					float *audioToProcess = &gAudioBufs[chIdx][repeatIdx * as->signalSize];
 
       					char debugFileName[100];
       					sprintf(debugFileName,"audio_%d_%d",gAudioProcessIdx,chIdx);
       					debugToMatlabFile1D(audioToProcess, as->signalSize, debugFileName, gLogFolderPath);
+
+                //memcpy(*(*(ret->data + chIdx) + repeatIdx), audioToProcess, as->signalSize);
 
       				  // udpate data buffer indexs
                 if(chIdx == ps->recordChCnt - 1){ // end of this repeatation
@@ -294,16 +323,30 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
 
     		// update global audio buf (i.e., remove the processed audio from buf)
     		for(int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
-    			memmove(&gAudioBufs[chIdx][0], &gAudioBufs[chIdx][lenToProcess], newAudioBufEnd*sizeof(float));
+    			   memmove(&gAudioBufs[chIdx][0], &gAudioBufs[chIdx][lenToProcess], newAudioBufEnd * sizeof(float));
     		}
     		gAudioBufEnd = newAudioBufEnd;
 
   		  sAudioIsAdding = false;
-  		  return gAudioProcessIdx; // indicate audio is processed in this time
+  		  //return gAudioProcessIdx; // indicate audio is processed in this time
+        debug("sizeof(ret) = %d, sizeof(jlong) = %d", sizeof(ret), sizeof(jlong));
+
+        jlong retLong = (jlong)(& (* ret));
+        debug("retLong (output) = %ld", retLong);
+        AddAudioRet *temp = (AddAudioRet *)retLong;
+        debug("temp's chCnt %d, traceCnt %d, sampleCnt = %d", temp->chCnt, temp->traceCnt, temp->sampleCnt);
+        return retLong; // return the memory address of the ret structure
   	}
 
   	sAudioIsAdding = false;
   	return ADD_AUDIO_RET_NOTHING_TO_PROCESS;
+}
+
+// just a dummy fucntion to test if the passing by address of addAudioRet works
+JNI_FUNC_HEAD void JNI_FUNC_NAME(debugDumpAddAudioRet)(JNI_FUNC_PARAM jlong addAudioRet) {
+    AddAudioRet *r = (AddAudioRet *)addAudioRet;
+    debug("addAudioRet (input) = %ld", addAudioRet);
+    //debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d", r->chCnt, r->traceCnt, r->sampleCnt);
 }
 
 
@@ -332,12 +375,12 @@ int LibFindPreamble(){
   	int conValidSize = gAudioBufEnd;
   	float *con = (float *)malloc(sizeof(float) * conValidSize);
 
-  	debugToMatlabFile1D(signal, signalLen, (char*)"pilot_signal", gLogFolderPath);
+  	debugToMatlabFile1D(signal, signalLen, (char*)"preamble_signal", gLogFolderPath);
 
   	// NOTE: this convolve is "same" version and it only estimate convolve according the dest size
   	makeConvolveInDestSize(signal, signalLen, as->syncReversed, as->syncSize, con, conValidSize, true);
 
-  	debugToMatlabFile1D(con, conValidSize, (char*)"pilot_con", gLogFolderPath);
+  	debugToMatlabFile1D(con, conValidSize, (char*)"preamble_con", gLogFolderPath);
 
   	float conMean, conStd;
   	estimateMeanAndStd(con, conValidSize, &conMean, &conStd);

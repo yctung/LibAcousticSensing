@@ -24,6 +24,7 @@ import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_PORT;
 
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
     AcousticSensingController asc;
+    JNICallback jc;
     SharedPreferences sharedPref;
     final String TAG = "MainActivity";
 
@@ -99,7 +100,9 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
 
-        asc=new AcousticSensingController(this,this);
+        jc = new JNICallback();
+        jc.debugTest();
+        asc = new AcousticSensingController(this,this);
     }
 
     int userDataCodeToSend = 1;
@@ -174,5 +177,10 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     @Override
     public void updateResult(int argInt, float argFloat) {
 
+    }
+
+    @Override
+    public void dataJNICallback(long retAddr) {
+        jc.dataCallback(retAddr);
     }
 }

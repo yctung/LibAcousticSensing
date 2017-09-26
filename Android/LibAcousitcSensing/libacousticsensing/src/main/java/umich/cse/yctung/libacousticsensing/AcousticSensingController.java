@@ -314,7 +314,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         if (this.parseMode == PARSE_MODE_REMOTE && nc.isConnected()) {
             nc.sendDataRequest(data);
         } else if (this.parseMode == PARSE_MODE_STANDALONE && jc.isReadyToSense()) {
-            jc.addAudioSamples(data);
+            long ret = jc.addAudioSamples(data);
+            if (ret == -1 || ret == -2) {
+                listener.updateDebugStatus(false, "Failed to find preamble (try another microphone?)");
+                stopSensingNow();
+            } else if (ret != 0) { // has some data to return
+                listener.dataJNICallback(ret /* return structure addr */);
+                // *** just debug ***
+                Log.d(LOG_TAG, "ret = " + ret);
+                jc.debugDumpAddAudioRet(ret);
+            }
         }
     }
 }
