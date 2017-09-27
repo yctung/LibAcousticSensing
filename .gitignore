@@ -1,10 +1,24 @@
-**/UserInterfaceState.xcuserstate
+# === General ===
 **/.DS_Store
-**/.idea
+
+# === Android ===
+**/.idea/
+**/.gradle/
+**/build/
+**/main/obj
+**/main/libs
+**/*.iml
+
+# === iOS ===
+**/xcuserdata/
+
+# === Tizen ===
 Tizen/DevApp/Debug
 Tizen/**/.rds_delta
 Tizen/**/.sdk_delta.info
 Tizen/**/.sign
 Tizen/**/crash-info
+
+# === Matlab ===
 *preamble.dat
 *sync.cpp

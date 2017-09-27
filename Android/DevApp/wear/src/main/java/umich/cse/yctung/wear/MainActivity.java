@@ -98,7 +98,7 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 //  Acoustic sensing callbacks
 //=================================================================================================
     @Override
-    public void updateDebugStatus(final String stringToShow) {
+    public void updateDebugStatus(boolean status, final String stringToShow) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -118,7 +118,27 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
     }
 
     @Override
+    public void sensingStarted() {
+
+    }
+
+    @Override
     public void updateSensingProgress(int percent) {
+
+    }
+
+    @Override
+    public void serverClosed() {
+
+    }
+
+    @Override
+    public void updateResult(int argInt, float argFloat) {
+
+    }
+
+    @Override
+    public void dataJNICallback(long retAddr) {
 
     }
 

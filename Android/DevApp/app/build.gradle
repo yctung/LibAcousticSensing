@@ -15,7 +15,7 @@ android {
             moduleName = "jni_callback" // module for standalone processing
             ldLibs "log"
             stl "stlport_shared"
-            cFlags "-DDEV_NDK=1"
+            cFlags "-DDEV_NDK=1 -v"
         }
 
     }

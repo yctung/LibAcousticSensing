@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "umich.cse.yctung.devapp"
@@ -10,6 +10,14 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+
+
+        ndk {
+            moduleName = "jnicallback" // module for standalone processing
+            ldLibs "log"
+            stl "stlport_shared"
+            cFlags "-DDEV_NDK=1 " + "-I${file("src/main/")}".toString()
+        }
     }
     buildTypes {
         release {
@@ -23,5 +31,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
-    compile project(':libacousticsensing')
+    compile project(':libacousticsensing-release')
 }

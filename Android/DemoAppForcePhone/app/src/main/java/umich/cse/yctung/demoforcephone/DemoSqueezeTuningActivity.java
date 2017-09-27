@@ -40,7 +40,7 @@ public class DemoSqueezeTuningActivity extends AppCompatActivity implements Acou
         super.onResume();
 
         if (hasRecordAudioPermission()) {
-            if (!asc.isConnected()) {
+            if (!asc.isReadyToSense()) {
                 Dialog dialog = asc.createInitModeDialog(this, Constant.DEFAULT_SERVER_ADDR, Constant.DEFAULT_SERVER_PORT);
                 dialog.show();
             }
@@ -89,12 +89,11 @@ public class DemoSqueezeTuningActivity extends AppCompatActivity implements Acou
     }
 
 
-
-    //=================================================================================================
+//=================================================================================================
 //  Acoustic sensing callbacks
 //=================================================================================================
     @Override
-    public void updateDebugStatus(final String stringToShow) {
+    public void updateDebugStatus(boolean status, final String stringToShow) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -114,7 +113,17 @@ public class DemoSqueezeTuningActivity extends AppCompatActivity implements Acou
     }
 
     @Override
+    public void sensingStarted() {
+
+    }
+
+    @Override
     public void updateSensingProgress(int percent) {
+
+    }
+
+    @Override
+    public void serverClosed() {
 
     }
 
@@ -155,5 +164,10 @@ public class DemoSqueezeTuningActivity extends AppCompatActivity implements Acou
                 }
             }
         });
+    }
+
+    @Override
+    public void dataJNICallback(long retAddr) {
+
     }
 }
