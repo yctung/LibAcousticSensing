@@ -1,11 +1,16 @@
 %==========================================================================
 % 2017/01/26: Set paths of local helpers and lib
 %==========================================================================
-oriPath=cd('..');
-LibSetup;
-cd(oriPath);
+libPath = '../../../LibAcousticSensing/Matlab/'
+oriPath = cd(libPath)
+
+LibSetup; % setup paths for the core LibAcousticSensing
+
+cd(oriPath); % go back to the original path
+
 addpath('LocalHelpers');
 clear oriPath
 
 % check if the java class is correctly included
+LibLoad; % load java classes
 which JavaSensingServer

@@ -22,3 +22,4 @@ Tizen/**/crash-info
 # === Matlab ===
 *preamble.dat
 *sync.cpp
+**/*.m~
