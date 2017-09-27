@@ -19,7 +19,7 @@ PS.detectRef = 0;
 upas = SetupAudioSource(upSignal);
 downas = SetupAudioSource(downSignal);
 upas.signalGain = 0.8;%8;
-downas.signalGain = 0.8;
+downas.signalGain = 0.2;
 downas.preambleGain = 0;
 StartSensingServer(upas, downas);
 
@@ -46,11 +46,11 @@ function StartSensingServer (upas, downas)
     %phoneCallback = SimpleCallbackFactory('phone');
     phoneCallback = @PeakCallback;
     watchCallback = @DummyCallback;
-    
+
     pss = SensingServer(SERVER_1, watchCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
     pss.startSensingAfterConnectionInit = 0; % avoid auto sensing
     pause(1.0); % wait some time before building the next server
-    
+
     %watchCallback = SimpleCallbackFactory('watch');
     
     wss = SensingServer(SERVER_2, phoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);

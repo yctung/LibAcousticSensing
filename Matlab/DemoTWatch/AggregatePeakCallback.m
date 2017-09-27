@@ -1,7 +1,20 @@
-function [] =  PeakCallback ( obj, type, recorded_data )
+function [] =  AggregatePeakCallback ( obj, type, recorded_data )
     global PS; % user parse setting
     global CallbackCounter;
     global StartTime;
+    
+    global FillUpBuffer;
+    global Phone1Pointer;
+    global Phone2Pointer;
+    
+    
+    %global LoadFromPointer; % Eventually this will be used as we free up space.
+    
+    if size(FillUpBuffer) == [0 0]
+        FillUpBuffer = zeros(4, PS.PERIOD, 200);
+        Phone1Pointer = 0;
+        Phone2Pointer = 0;
+    end
     
     
     %MaxTimePerCallback = duration(0, 0, PS.PERIOD / PS.FS);
@@ -68,6 +81,7 @@ function drawChannel (channelIdx, onechannel, FIGTAG)
     global PS; % user parse setting
     global channel1Ax;
     global channel2Ax;
+    global channel3Ax;
 
     
     upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
