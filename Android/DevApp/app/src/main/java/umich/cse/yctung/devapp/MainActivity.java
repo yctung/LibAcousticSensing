@@ -32,20 +32,16 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     EditText editTextServerAddr, editTextServerPort;
     Button buttonStart, buttonUserData;
     TextView textViewDebugInfo;
-    // Internal status
-    boolean isSensing;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sharedPref = getPreferences(Context.MODE_PRIVATE);
 
-        // Init internal status
-        isSensing = false;
-
         // Link UI elements
         spinnerMode = (Spinner)findViewById(R.id.spinnerMode);
-        String[] modes = new String[]{"Server-client Mode","Real-time Mode"};
+        String[] modes = new String[]{"Remote Mode","Standalone Mode"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, modes);
         spinnerMode.setAdapter(adapter);
         spinnerMode.setSelection(0);
@@ -108,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     int userDataCodeToSend = 1;
     void onUserDataClicked() {
-        if (asc.isConnected()) {
+        if (asc != null && asc.isReadyToSense()) {
             asc.sendUserData("ukn",userDataCodeToSend, 0.0f, 0.0f);
             // update next user data to send
             userDataCodeToSend = userDataCodeToSend == 1 ? 0 : 1;
@@ -116,18 +112,23 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     void onStartOrStopClicked() {
-        if (!isSensing) { // need to start sensing
-            if (spinnerMode.getSelectedItemPosition()==0) { // server-client mode
-                boolean result = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
-                if (!result) textViewDebugInfo.setText("Init fails");
-                else {
-                    asc.startSensingWhenPossible();
-                }
-            } else { // real-time mode
-
+        if (asc == null || !asc.isReadyToSense()) { // need to start sensing
+            boolean initResult = false;
+            if (spinnerMode.getSelectedItemPosition()==0) { // remote mode
+                initResult = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
+            } else { // standalone mode
+                initResult = asc.initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
             }
+
+            if (!initResult) {
+                textViewDebugInfo.setText("Init fails");
+                return;
+            }
+
+            asc.startSensingWhenPossible();
             buttonStart.setText("Stop");
         } else { // need to stop sensing
+            asc.stopSensingNow();
             buttonStart.setText("Start");
         }
     }
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 //  Acoustic sensing callbacks
 //=================================================================================================
     @Override
-    public void updateDebugStatus(final String stringToShow) {
+    public void updateDebugStatus(boolean status, final String stringToShow) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -156,7 +157,17 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     @Override
+    public void sensingStarted() {
+
+    }
+
+    @Override
     public void updateSensingProgress(int percent) {
+
+    }
+
+    @Override
+    public void serverClosed() {
 
     }
 

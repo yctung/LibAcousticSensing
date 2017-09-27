@@ -9,7 +9,7 @@ JavaSensingServer.closeAll(); % close all previous open socket
 
 % build dummy "audible" audios for knowing the sound is played correctly on device
 as = AudioSource(); % default audio source
-
+as.name = 'ForcePhoneAudioSource';
 
 FS = 48000;
 PERIOD = 2400;

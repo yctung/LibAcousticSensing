@@ -1,23 +1,36 @@
 package umich.cse.yctung.libacousticsensing.Audio;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Yu-Chih Tung on 1/31/17.
  * AudioSource is just a container to store the sensing audio data
+ * it also contains the setting of how the player should play the data
  */
 public class AudioSource {
-    int chCnt; // number of channel
-    int fs; // sample rate
-    int repeatCnt;
-    short[] signal;
-    short[] pilot;
-    String payloadName;
-    String pilotName;
+    @SerializedName("id")
+    public String id;
+    public int sampleRate; // sample rate
+    public int chCnt; // number of channel
+    public int repeatCnt;
+    public int preambleEndOffset;
+    public String preambleName;
+    public int preambleSyncRepeatCnt;
 
-    public AudioSource(short[] pilot, short[] signal, int fs, int chCnt, int repeatCnt) {
-        this.pilot = pilot;
+    public short[] signal;
+    public short[] preamble;
+    public short[] sync;
+
+
+    // this is the instructor (incomplete) called in the remote mode
+    public AudioSource(short[] preamble, short[] signal, int sampleRate, int chCnt, int repeatCnt) {
+        this.preamble = preamble;
         this.signal = signal;
-        this.fs = fs;
+        this.sampleRate = sampleRate;
         this.chCnt = chCnt;
         this.repeatCnt = repeatCnt;
     }
+
+    // in the stand alone mode, this class will be initialized by the serialized json file
 }
+

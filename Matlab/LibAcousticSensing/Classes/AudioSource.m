@@ -3,6 +3,7 @@ classdef AudioSource < handle
     %   Detailed explanation goes here
     
     properties
+        name;
         preambleSource;
         preambleGain;
         
@@ -16,6 +17,7 @@ classdef AudioSource < handle
     methods
         % deafult constructor -> use default pilot
         function obj=AudioSource()
+            obj.name = 'defaultAudioSource';
             obj.preambleSource = PreambleSource();
             obj.preambleGain=0.9;
             

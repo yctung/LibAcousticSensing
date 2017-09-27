@@ -1,0 +1,6 @@
+
+
+Trouble Shooting
+Q: Get some JNI/NDK related issue when add LibAS as a imported module?
+A: Try to add "android.useDeprecatedNdk=true" in your project's gradle.properties file. Moreover, you might also want to download and include your NDK tool path int the local.properties. For example, mine is "ndk.dir=/Users/yctung/Library/Android/ndk"
+

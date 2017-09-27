@@ -38,7 +38,7 @@ public class AudioController {
 
     Context context;
     AudioSource audioSource;
-    AudioSetting audioSetting;
+    RecordSetting audioSetting;
     AudioControllerListener listener;
 
     // Android audio interfaces
@@ -55,7 +55,7 @@ public class AudioController {
     public long audioTotalRecordedSampleCnt = -1; // TODO: check the overflow issue
 
 
-    public AudioController(Context context, AudioControllerListener listener, AudioSource audioSource, AudioSetting recordSetting) {
+    public AudioController(Context context, AudioControllerListener listener, AudioSource audioSource, RecordSetting recordSetting) {
         this.context = context;
         this.listener = listener;
         sensingTimer = new SensingTimer();
@@ -72,29 +72,31 @@ public class AudioController {
 
         // TODO: modify the stream type based on audioSource
 
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
 
         while( audioTrack.getState()==AudioTrack.STATE_UNINITIALIZED ){
             Log.e(LOG_TAG, "audioTrackState cant be initialized -> wait next try!");
-            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.fs, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSource.sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, PLAYER_TOTAL_BUFFER_SIZE, AudioTrack.MODE_STREAM);
         }
     }
 
     // this method is separated from constructor so the same AudioController can be used more than once
     /*
-    public void setAudioSetting(AudioSetting audioSetting) {
+    public void setAudioSetting(RecordSetting audioSetting) {
         this.audioSetting = audioSetting;
         audioRecord = audioSetting.createNewAudioRecord();
     }
     */
 
-    public boolean init(AudioSource audioSource, AudioSetting recordSetting) {
+    public boolean init(AudioSource audioSource, RecordSetting recordSetting) {
         if (keepSensing||isPlaying||isRecording) {
             Log.e(LOG_TAG, "[ERROR]: unable to init because the previous sensing is not stopped yet (forget to stop it?)");
             return false;
         }
 
         this.audioSetting = recordSetting; // TOOD: move it to a better way
+
+
 
         // *** WARN: uncomment this just for testing AGC ***
         //audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
@@ -103,16 +105,22 @@ public class AudioController {
         // check noise supressor if need
         if (NoiseSuppressor.isAvailable()) {
             NoiseSuppressor nc = NoiseSuppressor.create(audioRecord.getAudioSessionId());
-            Log.d(LOG_TAG,"nc before enable = "+nc.getEnabled());
-            //nc.setEnabled(true);
-            //Log.d(LOG_TAG, "nc before enable = "+nc.getEnabled());
+            if (nc != null) {
+                //Log.d(LOG_TAG,"nc before enable = "+nc.getEnabled());
+                //nc.setEnabled(true);
+                //Log.d(LOG_TAG, "nc before enable = "+nc.getEnabled());
+            }
         }
 
         if (AutomaticGainControl.isAvailable()) {
             AutomaticGainControl agc = AutomaticGainControl.create(audioRecord.getAudioSessionId());
+            if (agc != null) {
+            /*
             Log.d(LOG_TAG,"agc before disabled = "+agc.getEnabled());
             agc.setEnabled(false);
             Log.d(LOG_TAG, "agc before disabled = "+agc.getEnabled());
+            */
+            }
         }
 
         // *** END OF WARN: uncomment this just for testing AGC ***
@@ -160,12 +168,12 @@ public class AudioController {
 //=================================================================================================
     private void startRecordAndThenPlayAudio() {
         // NOTE: it is necessary to ensure the audio is recording before playing the audio
-        if (audioSetting.audioMode==AudioSetting.AUDIO_MODE_PLAY_AND_RECORD) {
+        if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_AND_RECORD) {
             startRecording();
             sensingTimer.sendMessageDelayed(Message.obtain(null, MESSAGE_TO_START_PLAY), DELAY_TO_START_PLAY);
-        } else if (audioSetting.audioMode==AudioSetting.AUDIO_MODE_PLAY_ONLY) {
+        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_ONLY) {
             startPlaying();
-        } else if (audioSetting.audioMode==AudioSetting.AUDIO_MODE_RECORD_ONLY) {
+        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_RECORD_ONLY) {
             startRecording();
         } else {
             Log.e(LOG_TAG, "[ERROR]: undefined audioMode="+audioSetting.audioMode);
@@ -202,8 +210,8 @@ public class AudioController {
     private void keepAudioPlaying() {
         // NOTE the write is a block call, ref: http://stackoverflow.com/questions/38291469/android-audiotrack-write-blocks-for-the-whole-period-of-playback
         int writeCnt;
-        writeCnt = audioTrack.write(audioSource.pilot, 0, audioSource.pilot.length);
-        if (writeCnt!=audioSource.pilot.length) Log.e(LOG_TAG,"[ERROR]: wrong size of pilot is played by audioTrack, writeCnt="+writeCnt);
+        writeCnt = audioTrack.write(audioSource.preamble, 0, audioSource.preamble.length);
+        if (writeCnt!=audioSource.preamble.length) Log.e(LOG_TAG,"[ERROR]: wrong size of preamble is played by audioTrack, writeCnt="+writeCnt);
         // TODO: check if there will be a delay between several audioTrack write executions
         int playCnt=0;
         while (keepSensing) {

@@ -5,6 +5,7 @@ classdef PreambleSource < handle
     properties
         preambleToAdd;
         syncToDetect;
+        syncRepeatCnt;
         
         FS;
         name;
@@ -28,6 +29,7 @@ classdef PreambleSource < handle
             obj.syncToDetect=syncToDetect;
             obj.preambleToAdd=preambleToAdd;
             obj.preambleEndOffset=endOffset;
+            obj.syncRepeatCnt=repeatCnt;
             
             obj.FS=FS;
         end

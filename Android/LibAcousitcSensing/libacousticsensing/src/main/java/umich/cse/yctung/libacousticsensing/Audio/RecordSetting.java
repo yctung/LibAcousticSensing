@@ -1,5 +1,4 @@
 package umich.cse.yctung.libacousticsensing.Audio;
-
 import android.icu.text.AlphabeticIndex;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -9,9 +8,10 @@ import android.util.Log;
 
 /**
  * Created by Yu-Chih Tung on 2/1/17.
+ * NOTE: the PlaySetting is embedded in the AudioSource
  */
-public class AudioSetting {
-    String TAG = "AudioSetting";
+public class RecordSetting {
+    String TAG = "RecordSetting";
     int AudioSetting;
     public static int AUDIO_MODE_RECORD_ONLY=1;
     public static int AUDIO_MODE_PLAY_ONLY=2;
@@ -23,7 +23,7 @@ public class AudioSetting {
     int recordChCnt;
     int recordFS;
 
-    public AudioSetting(int audioMode) {
+    public RecordSetting(int audioMode) {
         recordChCnt = 2; // TODO: load from server
         this.audioMode = audioMode;
         this.recordFS = 48000;
