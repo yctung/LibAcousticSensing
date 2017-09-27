@@ -1,0 +1,4 @@
+set sysroot /Users/eddyxd/tizen-studio/tools/smart-build-interface/../../platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-device.core
+set debug-file-directory /Users/eddyxd/tizen-studio/tools/smart-build-interface/../../platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-device.core/usr/lib/debug
+set solib-search-path /Users/eddyxd/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Tizen/DevApp/Debug
+dir /Users/eddyxd/tizen-studio/tools/smart-build-interface/../../platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-device.core/usr/src/debug

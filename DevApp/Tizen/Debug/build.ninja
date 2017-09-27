@@ -1,0 +1,26 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+ninja_required_version = 1.5
+include rules.ninja
+include target.ninja
+
+shell = 
+builddir = ../Debug
+sareportdir = ../SA_Report
+sa_checkers = alpha,cplusplus,core,deadcode,resourceLeak,security,unix
+coveragedir = ../Coverage_Report
+
+subninja ../Debug/src/subdir.ninja
+
+targettool = clang++
+targetflags =  -L"../lib" -target arm-tizen-linux-gnueabi -gcc-toolchain /Users/eddyxd/tizen-studio/tools/arm-linux-gnueabi-gcc-4.9/ -ccc-gcc-name arm-linux-gnueabi-g++ -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mtune=cortex-a8 -Xlinker --as-needed  -pie -lpthread --sysroot="/Users/eddyxd/tizen-studio/tools/smart-build-interface/../../platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-device.core" -Xlinker --version-script="../.exportMap" -L"/Users/eddyxd/tizen-studio/tools/smart-build-interface/../../platforms/tizen-3.0/wearable/rootstraps/wearable-3.0-device.core/usr/lib" -lBrokenLocale -laccounts-svc -lanl -lappcore-agent -lappcore-watch -lbadge -lbase-utils-i18n -lbundle -lcairo -lcalendar-service2 -lcapi-appfw-alarm -lcapi-appfw-app-common -lcapi-appfw-app-control -lcapi-appfw-application -lcapi-appfw-app-manager -lcapi-appfw-event -lcapi-appfw-package-manager -lcapi-appfw-preference -lcapi-appfw-widget-application -lcapi-base-common -lcapi-content-media-content -lcapi-content-mime-type -lcapi-location-manager -lcapi-maps-service -lcapi-media-audio-io -lcapi-media-camera -lcapi-media-codec -lcapi-media-controller -lcapi-mediademuxer -lcapi-media-image-util -lcapi-media-metadata-editor -lcapi-media-metadata-extractor -lcapi-mediamuxer -lcapi-media-player -lcapi-media-radio -lcapi-media-recorder -lcapi-media-sound-manager -lcapi-media-streamer -lcapi-media-streamrecorder -lcapi-media-thumbnail-util -lcapi-media-tone-player -lcapi-media-tool -lcapi-media-vision -lcapi-media-wav-player -lcapi-messaging-email -lcapi-messaging-messages -lcapi-network-bluetooth -lcapi-network-connection -lcapi-network-http -lcapi-network-nfc -lcapi-network-smartcard -lcapi-network-wifi-manager -lcapi-network-wifi -lcapi-system-device -lcapi-system-info -lcapi-system-media-key -lcapi-system-runtime-info -lcapi-system-sensor -lcapi-system-system-settings -lcapi-telephony -lcapi-ui-efl-util -lcapi-ui-inputmethod-manager -lcapi-ui-inputmethod -lchromium-ewk -lcidn -lcontacts-service2 -lcore-context-manager -lcore-sync-client -lcrypto -lcrypt -lc -lcsr-client -lcurl -ldali-adaptor -ldali-core -ldali-toolkit -ldata-control -ldlog -ldl -ldpm -lebluez -leconnman0_7x -lecore_buffer -lecore_con -lecore_evas -lecore_file -lecore_imf_evas -lecore_imf -lecore_input_evas -lecore_input -lecore_ipc -lecore -ledbus -ledje -leet -lefl-extension -lefreet_mime -lefreet -lefreet_trash -lehal -leina -leio -leldbus -lelementary -lembryo -lenotify -leofono -leom -leo -lethumb_client -lethumb -leukit -levas -lexif -lfeedback -lfido-client -lfontconfig -lfreetype -lgio-2.0 -lglib-2.0 -lgmodule-2.0 -lgobject-2.0 -lgthread-2.0 -lharfbuzz-icu -lharfbuzz -liotcon -ljson-glib-1.0 -lkey-manager-client -lmessage-port -lminizip -lm -lnotification -lnsd-dns-sd -lnsd-ssdp -lnsl -lnss_compat -lnss_dns -lnss_files -lnss_hesiod -lnss_nisplus -lnss_nis -loauth2 -loauth -lopenal -lphonenumber-utils -lprivilege-info -lpthread -lpush -lresolv -lrt -lsqlite3 -lssl -lstorage -lstt_engine -lstt -ltbm -lthread_db -lttrace -ltts_engine -ltts -ltzsh_common -ltzsh_quickpanel -lutil -lvc-elm -lvc -lwidget_service -lwidget_viewer_dali -lwidget_viewer_evas -lxml2 -lyaca -lz -Werror-implicit-function-declaration
+
+build devapp: build_target src/devapp.o src/libas.o src/recordtest.o 
+build ast: phony src/devapp.o.ast src/libas.o.ast src/recordtest.o.ast
+build externalFnMap.txt: fast_ext_fn src/devapp.o.ast src/libas.o.ast src/recordtest.o.ast
+build sa: phony $sareportdir/src/devapp.o.xml $sareportdir/src/libas.o.xml $sareportdir/src/recordtest.o.xml
+build apichecker: unusedapi_rule src/devapp.o.txt src/libas.o.txt src/recordtest.o.txt
+build cov: cov_report $coveragedir/src/devapp.o.cov $coveragedir/src/libas.o.cov $coveragedir/src/recordtest.o.cov
+

@@ -1,0 +1,5 @@
+build main_build: phony devapp
+build all: phony main_build
+default all
+edje-cc-dep-options = -deps $out.d
+binaryName = devapp
