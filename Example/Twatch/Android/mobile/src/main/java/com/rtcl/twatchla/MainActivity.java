@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     int userDataCodeToSend = 1;
     void onUserDataClicked() {
-        if (asc.isConnected()) {
+        if (asc.isReadyToSense()) {
             asc.sendUserData("ukn",userDataCodeToSend, 0.0f, 0.0f);
             // update next user data to send
             userDataCodeToSend = userDataCodeToSend == 1 ? 0 : 1;
@@ -246,5 +246,10 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     @Override
     public void updateResult(int argInt, float argFloat) {
         Log.e(TAG, "Update result");
+    }
+
+    @Override
+    public void dataJNICallback(long retAddr) {
+
     }
 }

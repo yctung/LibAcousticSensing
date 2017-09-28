@@ -1,3 +1,1 @@
-include ':mobile', ':wear'
-include ':libacousticsensing'
-project(':libacousticsensing').projectDir = new File('../LibAcousitcSensing/libacousticsensing/')
+include ':mobile', ':libacousticsensing-release'

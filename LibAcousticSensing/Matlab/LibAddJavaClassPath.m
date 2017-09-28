@@ -5,15 +5,15 @@
 %           : ref: http://www.mathworks.com/help/matlab/matlab_external/static-path.html#bvnynym
 %==========================================================================
 
-pathToAdd = strcat(pwd,'/LibAcousticSensing/3rdLibs/matSock/bin\n')
+%pathToAdd = strcat(pwd,'/LibAcousticSensing/3rdLibs/matSock/bin\n')
 filePath = strcat(prefdir,'/javaclasspath.txt')
 
 % check matlab version
 
 try
     fid = fopen(filePath, 'wt');
-    fprintf(fid, pathToAdd);  % add folder of *.class files
-    fprintf(fid, '%s/LibAcousticSensing/JavaSensingServer/bin',pwd);
+    %fprintf(fid, pathToAdd);  % add folder of *.class files
+    fprintf(fid, '%s/JavaSensingServer/prebuild/java17/bin',pwd);
     fclose(fid);
 catch err
     msg = sprintf('Could not create %s/javaclasspath.txt - error was: %s', pwd, err.message);
