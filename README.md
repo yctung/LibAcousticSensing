@@ -21,7 +21,7 @@ Based on our experience of developing several acoustic sensing apps, we notice t
 - It is relatively hard to design and test the sensing algorithm directly by the device-supported programming language like Java or Obj-C. Instead, designing such algorithms in Matlab is efficient due to its wide support of several signal processing libraries and also the visualization interface.
 
 The following figure shows how LibAS can reduce the development overheads of designing acoustic sensing applications:
-[LibAS Introduction](Resource/figures/intro_idea.png?raw=true "LibAS Introduction")
+![LibAS Introduction](Resource/figures/intro_idea.png?raw=true "LibAS Introduction")
 
 # Usage: Remote Mode
 
