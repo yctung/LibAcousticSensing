@@ -6,6 +6,7 @@
 %==========================================================================
 TX_SERVER_PORT = 50005; % remember to diable firewall for this port
 RX_SERVER_PORT = 50006; % remember to diable firewall for this port
+import edu.umich.cse.yctung.*
 
 close all;
 JavaSensingServer.closeAll(); % close all previous open socket

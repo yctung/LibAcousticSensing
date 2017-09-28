@@ -2,8 +2,8 @@
 % 2017/01/26: This is a demo for the LibAcousticSensing server module
 %==========================================================================
 %close all;
-
 SERVER_PORT = 50005; % remember to diable firewall for this port
+import edu.umich.cse.yctung.*
 
 as = AudioSource(); % default audio source
 
