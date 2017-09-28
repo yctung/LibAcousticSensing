@@ -46,6 +46,7 @@ char *gLogFolderPath;
 // just test the debug method
 JNI_FUNC_HEAD void JNI_FUNC_NAME(debugTest)(JNI_FUNC_NO_PARAM){
     debug("Here is the ndk debug message");
+    int test = testFuncExternal();
 }
 
 // function to init the audio source setting
@@ -54,7 +55,8 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(initAudioSource)(JNI_FUNC_PARAM int sampleRate,
               int preambleEndOffset, int preambleSyncRepeatCnt, jshortArray signalIn, jshortArray preambleIn, jshortArray syncIn){
     debug("--- initAudioSource ---");
 
-	//int test = testFuncExternal();
+
+    debug("test = %d", test);
 
     AudioSource *as = &gAudioSource; // global setting
     as->sampleRate = sampleRate;

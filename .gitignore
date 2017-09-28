@@ -4,6 +4,7 @@
 # === Android ===
 **/.idea/
 **/.gradle/
+**/.externalNativeBuild/
 **/build/
 **/main/obj
 **/main/libs

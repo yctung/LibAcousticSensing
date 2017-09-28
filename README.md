@@ -21,12 +21,38 @@ Based on our experience of developing several acoustic sensing apps, we notice t
 - It is relatively hard to design and test the sensing algorithm directly by the device-supported programming language like Java or Obj-C. Instead, designing such algorithms in Matlab is efficient due to its wide support of several signal processing libraries and also the visualization interface.
 
 The following figure shows how LibAS can reduce the development overheads of designing acoustic sensing applications:
-![LibAS Introduction](Resource/figures/intro_idea.png?raw=true "LibAS Introduction")
+[LibAS Introduction](Resource/figures/intro_idea.png?raw=true "LibAS Introduction")
 
-# Usage: Remote Mode
+# Usage: Remote Mode (a.k.a. Easy Mode for Demo)
+In this mode, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our [DevApp](DevApp) to your device and this app will automatically streams what ever signal needed for acoustic senisng controlled by a remote Matlab server.
+
+## Prerequisites
+- Matlab (I am using 2016a)
+- Our DevApp for Android/iOS/Tizen installed in your device
+- Network connections between your Matlab machine and your Android/iOS/Tizen device
 
 
-# Usage
+
+
+
+## Troubleshooting
+- If you can't make the connection, try to ping your devices (e.g., adb shell ping xxx.xxx.xxx.xxx) and ensure there is no firewall between your devices
+- If you keep seeing the error message ""
+
+
+
+
+
+# Usage: Standalone Mode (a.k.a. Real App for Product)
+
+
+## Troubleshooting
+- If Android tell you ```Error:Execution failed for task ':libacousticsensing:compileReleaseNdk'. NDK not configured.``` you need to update your ```local.properties``` file to include your ndk path. For example, mine is: ```ndk.dir=/Users/yctung/Library/Android/ndk```
+
+
+
+
+
 First, you need to clone this repo:
 ```
 cd YOUR_SOURCE_FOLDER
