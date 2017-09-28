@@ -37,7 +37,7 @@ In this mode, you don't need to know anything about real-time audio recording/pl
 
 ## Troubleshooting
 - If you can't make the connection, try to ping your devices (e.g., adb shell ping xxx.xxx.xxx.xxx) and ensure there is no firewall between your devices
-- If you keep seeing the error message ""
+- If you keep seeing this Matlab error message ```'SensingServer' not found``` you might need to manually call ```import edu.umich.cse.yctung.*``` before using any ```SensingServer``` class
 
 
 
@@ -47,7 +47,7 @@ In this mode, you don't need to know anything about real-time audio recording/pl
 
 
 ## Troubleshooting
-- If Android tell you ```Error:Execution failed for task ':libacousticsensing:compileReleaseNdk'. NDK not configured.``` you need to update your ```local.properties``` file to include your ndk path. For example, mine is: ```ndk.dir=/Users/yctung/Library/Android/ndk```
+- If Android tell you ```Error:Execution failed for task ':libacousticsensing:compileReleaseNdk'. NDK not configured.``` you need to update your ```local.properties``` file to include your ndk path. For example, mine is: ```sdk.dir=/Users/yctung/Library/Android/ndk```
 
 
 

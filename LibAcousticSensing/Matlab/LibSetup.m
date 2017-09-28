@@ -15,9 +15,7 @@ else
     fprintf(2,'[WARNING]: fails to load libsvm (you might need to compile libsvm and add to your path) = %s\n', computer);
 end
 
-% set up java static path if need
-LibLoad;
-
+import edu.umich.cse.yctung.*
 [check, err] = LibCheckSetup();
 if ~check
     fprintf(2, '[ERROR]: fails to setup LibAcousticSensing,\nerr = %s\n', err);

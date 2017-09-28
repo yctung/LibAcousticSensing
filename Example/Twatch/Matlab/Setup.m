@@ -11,5 +11,4 @@ addpath('LocalHelpers');
 clear oriPath
 
 % check if the java class is correctly included
-LibLoad;
 which JavaSensingServer
