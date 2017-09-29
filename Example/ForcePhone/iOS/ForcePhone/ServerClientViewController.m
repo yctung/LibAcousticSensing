@@ -19,6 +19,7 @@
     isSensing = NO;
     
     asc = [[AcousticSensingController alloc] initWithCaller:self];
+    sc = [[StandaloneCallback alloc] initWithLogFolderPath:@"temp"];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -40,6 +40,8 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(debugTest)(JNI_FUNC_NO_PARAM){
 
 // function to init the audio source setting
 static bool sAudioSourceIsSet = false;
+// TODO: find a better "cross-platform" function signature
+#ifdef DEV_NDK
 JNI_FUNC_HEAD void JNI_FUNC_NAME(initAudioSource)(JNI_FUNC_PARAM int sampleRate, int chCnt, int repeatCnt,
               int preambleEndOffset, int preambleSyncRepeatCnt, jshortArray signalIn, jshortArray preambleIn, jshortArray syncIn){
     debug("--- initAudioSource ---");
@@ -58,6 +60,7 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(initAudioSource)(JNI_FUNC_PARAM int sampleRate,
 #endif
     sAudioSourceIsSet = true;
 }
+#endif
 
 // function to init the parse setting
 // TODO: let more setting be initialized here

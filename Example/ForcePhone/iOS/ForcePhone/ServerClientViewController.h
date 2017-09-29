@@ -12,12 +12,14 @@
 #ifndef ServerClientViewController_h
 #define ServerClientViewController_h
 
+#import "StandaloneCallback.h"
 #import <LibAcousticSensingFramework/AcousticSensingController.h>
 #import <LibAcousticSensingFramework/AcousticSensingControllerCallerDelegate.h>
 
 @interface ServerClientViewController : UIViewController<AcousticSensingControllerCallerDelegate> {
     BOOL isSensing;
     AcousticSensingController *asc;
+    StandaloneCallback *sc;
 }
 
 @property (retain, nonatomic) AcousticSensingController *asc;
