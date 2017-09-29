@@ -26,11 +26,41 @@ The following figure shows how LibAS can reduce the development overheads of des
 # Usage: Remote Mode (a.k.a. Easy Mode for Demo)
 In this mode, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our [DevApp](DevApp) to your device and this app will automatically streams what ever signal needed for acoustic senisng controlled by a remote Matlab server.
 
-## Prerequisites
+## Install
+
+### Prerequisites
 - Matlab (I am using 2016a)
 - Our DevApp for Android/iOS/Tizen installed in your device
 - Network connections between your Matlab machine and your Android/iOS/Tizen device
 
+### Your Mobile Device (or Any Android/Tizen/iOS Device)
+You can download our prebuild DevApp here:
+
+- Android (TODO: update it)
+- iOS (TODO: update it)
+- Tizen (TODO: update it)
+
+### Your Laptop with Matlab Installed
+Let's use the XXX application as an example. In this example, you will be able to ask your device to play a frequency sweep and record the sweep in Matlab. To do so, let's go to your Matlab commandline window and first navigate to the directory of:
+
+```
+cd Utility/XXX
+```
+
+And then call the Setup.m function
+
+```
+Setup
+```
+
+***WARN: For the first using this app, you will see the following message after calling the*** ```Setup```. Please type Y and to add the path and then ***restart*** your Matlab. (It is necessary because Matlab loads customized Java class on boot)
+
+```
+[WARNING]: JavaClassPath is not added yet!
+Add this path will restart the Matlab.
+Do you wanto do this now?
+(Y/N): Y
+```
 
 
 
