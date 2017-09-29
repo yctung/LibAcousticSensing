@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1302F1791F7EB166008ACF96 /* LibAcousticSensingFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302F1761F7EB140008ACF96 /* LibAcousticSensingFramework.framework */; };
 		1302F17A1F7EB166008ACF96 /* LibAcousticSensingFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1302F1761F7EB140008ACF96 /* LibAcousticSensingFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1302F1801F7EB60A008ACF96 /* libas_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1302F17E1F7EB60A008ACF96 /* libas_utils.cpp */; };
 		13099BC81E300914006D8A06 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BC71E300914006D8A06 /* main.m */; };
 		13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BCA1E300914006D8A06 /* AppDelegate.m */; };
 		13099BD31E300915006D8A06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD21E300915006D8A06 /* Assets.xcassets */; };
@@ -77,6 +78,8 @@
 
 /* Begin PBXFileReference section */
 		1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibAcousticSensingFramework.xcodeproj; path = ../../../LibAcousticSensing/iOS/LibAcousticSensingFramework.xcodeproj; sourceTree = "<group>"; };
+		1302F17E1F7EB60A008ACF96 /* libas_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = libas_utils.cpp; path = ../../../../LibAcousticSensing/C/utils/libas_utils.cpp; sourceTree = "<group>"; };
+		1302F17F1F7EB60A008ACF96 /* libas_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libas_utils.h; path = ../../../../LibAcousticSensing/C/utils/libas_utils.h; sourceTree = "<group>"; };
 		13099BC31E300914006D8A06 /* ForcePhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForcePhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13099BC71E300914006D8A06 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		13099BC91E300914006D8A06 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -135,13 +138,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1302F17D1F7EB553008ACF96 /* Standalone */ = {
+			isa = PBXGroup;
+			children = (
+				1302F17E1F7EB60A008ACF96 /* libas_utils.cpp */,
+				1302F17F1F7EB60A008ACF96 /* libas_utils.h */,
+			);
+			name = Standalone;
+			sourceTree = "<group>";
+		};
 		13099BBA1E300914006D8A06 = {
 			isa = PBXGroup;
 			children = (
 				1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */,
-				13099BC51E300914006D8A06 /* DevApp */,
-				13099BDF1E300915006D8A06 /* DevAppTests */,
-				13099BEA1E300915006D8A06 /* DevAppUITests */,
+				13099BC51E300914006D8A06 /* ForcePhone */,
+				13099BDF1E300915006D8A06 /* ForcePhoneTests */,
+				13099BEA1E300915006D8A06 /* ForcePhoneUITests */,
 				13099BC41E300914006D8A06 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -156,9 +168,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		13099BC51E300914006D8A06 /* DevApp */ = {
+		13099BC51E300914006D8A06 /* ForcePhone */ = {
 			isa = PBXGroup;
 			children = (
+				1302F17D1F7EB553008ACF96 /* Standalone */,
 				13C919941EC73B2500A4D1FA /* AudioSource */,
 				13099BC91E300914006D8A06 /* AppDelegate.h */,
 				13099BCA1E300914006D8A06 /* AppDelegate.m */,
@@ -173,7 +186,6 @@
 				13E0F23D1F00548F000B5E34 /* TestViewController.m */,
 				13E0F23E1F00548F000B5E34 /* TestViewController.xib */,
 			);
-			name = DevApp;
 			path = ForcePhone;
 			sourceTree = "<group>";
 		};
@@ -185,23 +197,21 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13099BDF1E300915006D8A06 /* DevAppTests */ = {
+		13099BDF1E300915006D8A06 /* ForcePhoneTests */ = {
 			isa = PBXGroup;
 			children = (
 				13099BE01E300915006D8A06 /* DevAppTests.m */,
 				13099BE21E300915006D8A06 /* Info.plist */,
 			);
-			name = DevAppTests;
 			path = ForcePhoneTests;
 			sourceTree = "<group>";
 		};
-		13099BEA1E300915006D8A06 /* DevAppUITests */ = {
+		13099BEA1E300915006D8A06 /* ForcePhoneUITests */ = {
 			isa = PBXGroup;
 			children = (
 				13099BEB1E300915006D8A06 /* DevAppUITests.m */,
 				13099BED1E300915006D8A06 /* Info.plist */,
 			);
-			name = DevAppUITests;
 			path = ForcePhoneUITests;
 			sourceTree = "<group>";
 		};
@@ -373,6 +383,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1302F1801F7EB60A008ACF96 /* libas_utils.cpp in Sources */,
 				13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */,
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
 				13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */,

@@ -11,10 +11,10 @@ LOCAL_CFLAGS    := \
 	-DSAVE_DEBUG_FILE=false
 
 LOCAL_C_INCLUDES := \
-	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/../../../../../C/ \
 	$(LOCAL_PATH)/../../../../../../../LibAcousticSensing/C/utils
 LOCAL_SRC_FILES := \
-	forcephone.cpp \
+	../../../../../C/forcephone.cpp \
 	../../../../../../../LibAcousticSensing/C/utils/libas_utils.cpp
 	#libas_utils.cpp
 	#../../../../../../../LibAcousticSensing/C/utils/libas_utils.cpp
