@@ -131,8 +131,8 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
             pilotDiffers(:,chToSearchIdx) = -1;
             pilotEndOffsets(chToSearchIdx) = -1;
             
-            
             % dump debug figures when detect fails
+            %{
             h_f = figure;
             plot(signalAll);
             
@@ -148,7 +148,7 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
             legend('con','thres','mean','mean+std','peaks');
             
             hold off;
-            
+            %}
         end
     end
         

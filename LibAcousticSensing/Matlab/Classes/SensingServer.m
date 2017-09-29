@@ -470,27 +470,15 @@ classdef SensingServer < handle
         function buildUI(obj)
             TEXT_FONT_SIZE = 15;
             obj.fig = figure(...
+                'Name','Server',...
+                'NumberTitle','off',...
                 'Position',[50,450,230,230],...
                 'Toolbar','none',...
                 'MenuBar','none',...
                 'DeleteFcn', @obj.destroyFnc);
             obj.panel = uipanel(obj.fig,'Units','pixels','Position',[15,15,200,210]);
             
-            % ref: https://www.mathworks.com/matlabcentral/newsreader/view_thread/292100
-            % issue: not able to get ipaddress form the "getLocalHost" in new MAC
-            % address = java.net.InetAddress.getLocalHost;
-            % IPaddress = char(address.getHostAddress);
-            IPaddress = 'Undefined';
-            if strcmp(computer,'GLNXA64')
-                IPaddress = '(not implemented)';
-            elseif strcmp(computer,'MACI64')
-                IPaddress = system('ifconfig en0 inet | awk ''{print $2}''');
-            %elseif strcmp() % TODO: add windows
-            else
-                IPaddress = 'Unknown IP';
-            end
-                
-            
+            IPaddress = GetAddress();
 
             obj.textServerInfo = uicontrol(obj.panel,'Style','text',...
                         'Position',[20,170,170,40],...

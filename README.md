@@ -62,16 +62,21 @@ Do you wanto do this now?
 (Y/N): Y
 ```
 
+Once you finish this step you can start explore the utility of LibAS :)
 
+## Usage
+
+Once you have both app installed you can following 4 steps to let
+
+
+Please refer to [the project's README](Utility/XXX) for code explainnation.
 
 
 ## Troubleshooting
 - If you can't make the connection, try to ping your devices (e.g., adb shell ping xxx.xxx.xxx.xxx) and ensure there is no firewall between your devices
 - If you keep seeing this Matlab error message ```'SensingServer' not found``` you might need to manually call ```import edu.umich.cse.yctung.*``` before using any ```SensingServer``` class
-
-
-
-
+- If you see some errors related to ```preamble is not synced```, which menas the current setting to find the start of sensing audio is not applicalbe to your device. Please change the speaker/microphone issues and test again and feel free to file an issue if you can't solve it.
+- If you can't hear any sound being played (the sound should be audible for this FreqRespAnalysis example), please check if your app has the permission to play/record sounds or if your device is muted.
 
 # Usage: Standalone Mode (a.k.a. Real App for Product)
 
@@ -80,49 +85,6 @@ Do you wanto do this now?
 - If Android tell you ```Error:Execution failed for task ':libacousticsensing:compileReleaseNdk'. NDK not configured.``` you need to update your ```local.properties``` file to include your ndk path. For example, mine is: ```sdk.dir=/Users/yctung/Library/Android/ndk```
 
 
-
-
-
-First, you need to clone this repo:
-```
-cd YOUR_SOURCE_FOLDER
-git clone https://github.com/yctung/LibAcousticSensing
-```
-There are two ways of using this sensing library.
-You can choose to use the **remote mode** that only requires users to install the pre-build apps in devices and then controls them by a remote Matlab server.
-We suggest people first try this remote mode because it saves lots of time wasting on device-specific issues and process signals on low-level language, like C.
-For each sensing app, this mode only needs users to define (1) what is the sensing signal (2) how to process each reception of the sensing signals.
-
-For people already knows how the acoustic sensing and LibAS work, they can choose to include LibAS as a library into their projects.
-The benefit of this mode is people can ship their app as a standalone app without networking connections. Please follow the "Standalone Mode" section for this usage.
-
-Followings describe the folder structure of LibAS
-```
-|- Android (Android implementations)
-|    |- LibAcousticSensing : core library for Android
-|    |- DevApp             : pre-built app for remote sensing
-|    \- DemoXXXX           : example of standalone app using LibAS
-|- iOS (iOS implementation)
-|    \- ...                : having the same structure as Android
-|- Tizen
-|    \- ...
-|- Java (Linux implementation)
-|    \- ...
-\- Matlab (Remote sensing server)
-     |- LibAcousticSensing : core sensing library functions
-     |- DemoAAA
-     |- DemoBBB
-     \- .....   
-```
-
-# Remote Mode (need Matlab)
-(TODO): add figures
-The above figure shows the idea of LibAS Remote Mode.
-In this mode, users install the pre-built DevApp into their devices and connect to a Matlab sensing server by Internet.
-Sensing (sound) signals are prepared and processed in Matlab, and then returned to the DevApp to make proper responses.
-Refer [How to Use Remote Mode](Matlab/README.md) for the detailed guide.
-
-# Standalone Mode (need to know Phone programing)
 
 # Compatible devices
 In theory, LibAS should be compatible to all Android/Tizen/iOS/Linux devices with microphone/speaker installed.
