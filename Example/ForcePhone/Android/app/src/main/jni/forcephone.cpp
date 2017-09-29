@@ -7,17 +7,7 @@
 //=========================================================================================================
 //         !!! NOTE !!! It is a shared preference -> modify it will affect both iOS and Android code
 //=========================================================================================================
-
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <vector>
-#include "libas_utils.h"
-#include "test_ext.h"
-
-#ifndef DEV_NDK
 #include "forcephone.h"
-#endif
 
 //-------------------------------------------------------------------------
 // 2. Global control variables, start by g prefix
@@ -46,7 +36,6 @@ char *gLogFolderPath;
 // just test the debug method
 JNI_FUNC_HEAD void JNI_FUNC_NAME(debugTest)(JNI_FUNC_NO_PARAM){
     debug("Here is the ndk debug message");
-    int test = testFuncExternal();
 }
 
 // function to init the audio source setting
@@ -54,9 +43,6 @@ static bool sAudioSourceIsSet = false;
 JNI_FUNC_HEAD void JNI_FUNC_NAME(initAudioSource)(JNI_FUNC_PARAM int sampleRate, int chCnt, int repeatCnt,
               int preambleEndOffset, int preambleSyncRepeatCnt, jshortArray signalIn, jshortArray preambleIn, jshortArray syncIn){
     debug("--- initAudioSource ---");
-
-
-    debug("test = %d", test);
 
     AudioSource *as = &gAudioSource; // global setting
     as->sampleRate = sampleRate;

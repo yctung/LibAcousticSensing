@@ -6,5 +6,14 @@ package umich.cse.yctung.demoforcephone;
  */
 
 public class JNICallback {
+    static {
+        System.loadLibrary("jnicallback");
+    }
+
+    private native void debugTest();
+
+    public JNICallback() {
+        debugTest();
+    }
 
 }

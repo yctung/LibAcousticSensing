@@ -70,6 +70,7 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
 
     // Sensing variables
     AcousticSensingController asc;
+    JNICallback jc;
     boolean needToShowOptionWhenPressureIsHighEnough = false;
     boolean isOptionShown = false;
     boolean isAppShown = false;
@@ -364,6 +365,7 @@ public class DemoForceButtonActivity extends AppCompatActivity implements Acoust
 
         // init acosutic sensing controller
         asc=new AcousticSensingController(this,this);
+        jc = new JNICallback();
     }
 
     @Override
