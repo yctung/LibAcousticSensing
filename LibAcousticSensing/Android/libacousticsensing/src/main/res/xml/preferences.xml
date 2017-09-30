@@ -20,10 +20,4 @@
         android:title="@string/pref_port"
         android:summary="@string/pref_portDescription"
         android:defaultValue="@string/pref_defaultPort" />
-
-    <CheckBoxPreference
-        android:key="pref_autostart"
-        android:title="@string/pref_automatic"
-        android:summary="@string/pref_autostartDescription"
-        android:defaultValue="@bool/pref_defaultAutomatic" />
 </PreferenceScreen>

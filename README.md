@@ -99,3 +99,4 @@ Followings include the devices we have used and tested in LibAS:
 
 
 # License
+MIT License

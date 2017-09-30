@@ -1,21 +1,15 @@
-package com.rtcl.twatchla;
-
+package umich.cse.yctung.libacousticsensing.Setting;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+
+import umich.cse.yctung.libacousticsensing.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by yctung on 9/30/17.
  */
-public class SettingsFragment extends PreferenceFragment {
 
-
-
+public class AcousticSensingSettingFragment extends PreferenceFragment {
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,9 +17,4 @@ public class SettingsFragment extends PreferenceFragment {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
     }
-
-
-
 }
-
-

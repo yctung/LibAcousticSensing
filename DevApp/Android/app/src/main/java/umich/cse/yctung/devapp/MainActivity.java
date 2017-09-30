@@ -11,11 +11,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 
 import static umich.cse.yctung.devapp.Constant.SERVER_ADDR_KEY;
 import static umich.cse.yctung.devapp.Constant.SERVER_PORT_KEY;
@@ -24,6 +26,7 @@ import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_PORT;
 
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
     AcousticSensingController asc;
+    AcousticSensingSetting ass;
     JNICallback jc;
     SharedPreferences sharedPref;
     final String TAG = "MainActivity";
@@ -32,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     Spinner spinnerMode;
     EditText editTextServerAddr, editTextServerPort;
     Button buttonStart, buttonUserData;
+    ImageButton buttonSetting;
     TextView textViewDebugInfo;
 
     @Override
@@ -98,11 +102,20 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
+        buttonSetting = (ImageButton)findViewById(R.id.buttonSetting);
+        buttonSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ass != null) ass.showSettingActivity();
+            }
+        });
+
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
 
         jc = new JNICallback();
         jc.debugTest();
-        asc = new AcousticSensingController(this,this);
+        asc = new AcousticSensingController(this, this);
+        ass = new AcousticSensingSetting(this);
     }
 
     int userDataCodeToSend = 1;
