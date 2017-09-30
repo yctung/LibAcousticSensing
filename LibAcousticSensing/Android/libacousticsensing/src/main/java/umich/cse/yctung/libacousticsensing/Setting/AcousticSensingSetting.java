@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import umich.cse.yctung.libacousticsensing.Constant;
+
 /**
  * Created by yctung on 9/29/17.
  * a wrapper to bridge shared preference and the real sensing setting
@@ -24,7 +26,8 @@ public class AcousticSensingSetting {
 
     public AcousticSensingSetting(Context context) {
         this.context = context;
-        this.pref = PreferenceManager.getDefaultSharedPreferences(context);
+        //this.pref = context.PreferenceManager.getDefaultSharedPreferences(context);
+        this.pref = ((Activity)context).getPreferences(Context.MODE_WORLD_WRITEABLE);
     }
 
     public void showSettingActivity() {
@@ -36,5 +39,9 @@ public class AcousticSensingSetting {
                 .replace(android.R.id.content, new AcousticSensingSettingFragment())
                 .commit();
                 */
+    }
+
+    public int getServerPort() {
+        return pref.getInt("PREF_KEY_SERVER_PORT", 50005);
     }
 }

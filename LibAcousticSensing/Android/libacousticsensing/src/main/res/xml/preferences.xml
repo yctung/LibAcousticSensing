@@ -16,7 +16,7 @@
         android:defaultValue="@string/pref_defaultServer" />
 
     <EditTextPreference
-        android:key="pref_port"
+        android:key="PREF_KEY_SERVER_PORT"
         android:title="@string/pref_port"
         android:summary="@string/pref_portDescription"
         android:defaultValue="@string/pref_defaultPort" />

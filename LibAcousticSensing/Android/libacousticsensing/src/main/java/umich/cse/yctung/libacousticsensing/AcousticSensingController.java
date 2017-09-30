@@ -237,6 +237,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             nc.sendInitAction(); // tell server that it is ready to start
             listener.updateDebugStatus(true, "Server is connected, now wait server to send audio");
         }
+        listener.isConnected(success, resp);
     }
 
     @Override
