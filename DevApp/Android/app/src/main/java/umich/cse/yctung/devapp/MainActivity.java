@@ -1,6 +1,7 @@
 package umich.cse.yctung.devapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
 import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
+import umich.cse.yctung.libacousticsensing.Utils;
 
 import static umich.cse.yctung.devapp.Constant.SERVER_ADDR_KEY;
 import static umich.cse.yctung.devapp.Constant.SERVER_PORT_KEY;
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     Spinner spinnerMode;
     EditText editTextServerAddr, editTextServerPort;
     Button buttonStart, buttonUserData;
-    ImageButton buttonSetting;
+    ImageButton buttonSetting, buttonRefresh;
     TextView textViewDebugInfo;
 
     @Override
@@ -110,6 +112,14 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
+        buttonRefresh = (ImageButton)findViewById(R.id.buttonRefresh);
+        buttonRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRefreshClicked();
+            }
+        });
+
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
 
         jc = new JNICallback();
@@ -147,6 +157,19 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             asc.stopSensingNow();
             buttonStart.setText("Start");
         }
+    }
+
+    void onRefreshClicked() {
+        Utils.showYesAndNoAlertDialogWithCallback(this, "Refresh to default setting", "Do you want to refresh the setting to default values?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                sharedPref.edit().putString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR).commit();
+
+                spinnerMode.setSelection(0);
+                editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
+                editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+            }
+        });
     }
 
 //=================================================================================================
