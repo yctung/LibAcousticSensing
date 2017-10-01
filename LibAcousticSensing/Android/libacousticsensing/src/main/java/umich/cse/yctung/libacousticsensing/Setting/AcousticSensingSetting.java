@@ -27,10 +27,22 @@ public class AcousticSensingSetting {
     public AcousticSensingSetting(Context context) {
         this.context = context;
         //this.pref = context.PreferenceManager.getDefaultSharedPreferences(context);
-        this.pref = ((Activity)context).getPreferences(Context.MODE_WORLD_WRITEABLE);
+        //this.pref = ((Activity)context).getPreferences(Context.MODE_PRIVATE);
+        //
+
+        this.pref = PreferenceManager.getDefaultSharedPreferences(context);
+        //pref.edit().clear().commit();
+        /*
+        int temp1 = pref.getInt(KEY_SERVER_IP, 5566);
+        pref.edit().putInt("PREF_KEY_SERVER_PORT", 8888).commit();
+        int temp = pref.getInt("PREF_KEY_SERVER_PORT", 5566);
+        */
     }
 
     public void showSettingActivity() {
+        //AcousticSensingSettingActivity.appContext = context;
+        //AcousticSensingSettingFragment.appContext = context;
+
         Intent i = new Intent(context.getApplicationContext(), AcousticSensingSettingActivity.class);
         context.startActivity(i);
         /*
@@ -42,6 +54,8 @@ public class AcousticSensingSetting {
     }
 
     public int getServerPort() {
-        return pref.getInt("PREF_KEY_SERVER_PORT", 50005);
+        //pref = PreferenceManager.getDefaultSharedPreferences(context);
+        //return pref.getInt(KEY_SERVER_IP, 50005);
+        return Integer.parseInt(pref.getString("PREF_KEY_SERVER_PORT", "100"));
     }
 }
