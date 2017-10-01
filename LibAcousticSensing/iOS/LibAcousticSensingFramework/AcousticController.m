@@ -8,7 +8,7 @@
 
 #import "AcousticController.h"
 //#import "AppDelegate.h"
-#import "Constant.h"
+#import "AppConstant.h"
 
 @implementation AcousticController
 @synthesize refCaller, surveyBaseFolderPath, currentRecordedSampleCnt;

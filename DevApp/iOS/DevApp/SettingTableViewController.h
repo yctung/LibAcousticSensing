@@ -7,8 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "InputCallerDelegate.h"
+#import <LibAcousticSensingFramework/AcousticSensingSetting.h>
 
-@interface SettingTableViewController : UITableViewController
+@class InputViewControllerCollection;
+
+typedef NS_ENUM(NSInteger, CellTagType) {
+    CellTagUndefined,
+    CellTagMode,
+    CellTagServerAddress,
+    CellTagServerPort,
+    CellTagMicSource,
+    CellTagSpeakerSource
+};
+
+@interface SettingTableViewController : UITableViewController <InputCallerDelegate> {
+    InputViewControllerCollection *inputCollection;
+    
+    NSMutableString *serverAddressString;
+    AcousticSensingSetting *ass;
+}
 
 
 //@property (retain, nonatomic) IBOutlet UITableView *tableView;

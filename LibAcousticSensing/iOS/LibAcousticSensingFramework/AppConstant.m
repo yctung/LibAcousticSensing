@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Constant.h"
+#import "AppConstant.h"
 
-@implementation Constant
+@implementation AppConstant
     // Global control
     int const C_DEVICE_IDX_IPHONE = 0;
     BOOL const C_TRACE_SAVE_TO_FILE = NO;

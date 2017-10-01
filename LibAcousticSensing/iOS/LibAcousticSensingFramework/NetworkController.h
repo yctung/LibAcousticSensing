@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NetworkControllerCallerDelegate.h"
-#import "Constant.h"
+#import "AppConstant.h"
 
 #ifndef NetworkController_h
 #define NetworkController_h
