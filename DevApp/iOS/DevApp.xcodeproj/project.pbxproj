@@ -15,6 +15,8 @@
 		13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD41E300915006D8A06 /* LaunchScreen.storyboard */; };
 		13099BE11E300915006D8A06 /* DevAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BE01E300915006D8A06 /* DevAppTests.m */; };
 		13099BEC1E300915006D8A06 /* DevAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BEB1E300915006D8A06 /* DevAppUITests.m */; };
+		135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49A71F80AD4900D2961C /* SettingTableViewController.m */; };
+		135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49A81F80AD4900D2961C /* SettingTableViewController.xib */; };
 		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
 		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
 		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
@@ -90,6 +92,9 @@
 		13099BE71E300915006D8A06 /* DevAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DevAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		13099BEB1E300915006D8A06 /* DevAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevAppUITests.m; sourceTree = "<group>"; };
 		13099BED1E300915006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		135B49A61F80AD4900D2961C /* SettingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingTableViewController.h; sourceTree = "<group>"; };
+		135B49A71F80AD4900D2961C /* SettingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingTableViewController.m; sourceTree = "<group>"; };
+		135B49A81F80AD4900D2961C /* SettingTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingTableViewController.xib; sourceTree = "<group>"; };
 		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
 		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
 		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
@@ -172,6 +177,9 @@
 				13E0F23C1F00548F000B5E34 /* TestViewController.h */,
 				13E0F23D1F00548F000B5E34 /* TestViewController.m */,
 				13E0F23E1F00548F000B5E34 /* TestViewController.xib */,
+				135B49A61F80AD4900D2961C /* SettingTableViewController.h */,
+				135B49A71F80AD4900D2961C /* SettingTableViewController.m */,
+				135B49A81F80AD4900D2961C /* SettingTableViewController.xib */,
 			);
 			path = DevApp;
 			sourceTree = "<group>";
@@ -344,6 +352,7 @@
 				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
+				135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */,
 				13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */,
 				13099BD31E300915006D8A06 /* Assets.xcassets in Resources */,
 			);
@@ -374,6 +383,7 @@
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
 				13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */,
 				13099BC81E300914006D8A06 /* main.m in Sources */,
+				135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
