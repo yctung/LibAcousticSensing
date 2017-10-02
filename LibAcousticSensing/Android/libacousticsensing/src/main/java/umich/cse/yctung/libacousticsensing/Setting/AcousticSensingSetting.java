@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import umich.cse.yctung.libacousticsensing.R;
 
 /**
  * Created by yctung on 9/29/17.
@@ -11,6 +14,8 @@ import android.preference.PreferenceManager;
  */
 
 public class AcousticSensingSetting {
+    private final static String TAG = "AcousticSensingSetting";
+
     // NOTE: the shared preference key here should match the one declared in the preferences.xml
     public final static String PARSE_MODE_KEY = "LIBAS_PARSE_MODE_KEY";
     public final static int PARSE_MODE_REMOTE = 0; // NOTE: need to start from 0
@@ -45,6 +50,24 @@ public class AcousticSensingSetting {
         // NOTE: we don't need to set each individual value in preference
         // TODO: this might ruin app's preference
         pref.edit().clear().commit();
+    }
+
+    public String[] getModeTexts() {
+        String[] modeEntries = context.getResources().getStringArray(R.array.mode_entries);
+        return modeEntries;
+    }
+
+    public int getMode() {
+        String valueString = pref.getString(PARSE_MODE_KEY, String.format("%d", PARSE_MODE_DEFAULT)); // "0" or "1"
+        return Integer.parseInt(valueString);
+    }
+
+    public void setMode(int mode) {
+        if (mode != PARSE_MODE_REMOTE && mode != PARSE_MDOE_STANDALONE) {
+            Log.e(TAG, "Wrong parse mode = " + mode);
+            return;
+        }
+        pref.edit().putString(PARSE_MODE_KEY, String.format("%d", mode)).commit();
     }
 
     public String getServerAddr() {

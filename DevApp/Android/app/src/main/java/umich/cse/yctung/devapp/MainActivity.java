@@ -54,20 +54,27 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
         // Link UI elements
         spinnerMode = (Spinner)findViewById(R.id.spinnerMode);
-        String[] modes = new String[]{"Remote Mode","Standalone Mode"};
+        //String[] modes = new String[]{"Remote Mode","Standalone Mode"};
+        String[] modes = ass.getModeTexts();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, modes);
         spinnerMode.setAdapter(adapter);
-        spinnerMode.setSelection(0);
         spinnerMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // your code here
+                Log.e(TAG, "onItemSelected, position = " + position);
+                ass.setMode(position);
                 updateUI();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
+                Log.e(TAG, "onNothingSelected");
                 // your code here
+                /*
+                ass.setMode(0);
+                updateUI();
+                */
             }
         });
 
@@ -205,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     void updateUI() {
         if (ass != null) {
+            spinnerMode.setSelection(ass.getMode());
             editTextServerAddr.setText(ass.getServerAddr());
             editTextServerPort.setText(ass.getServerPort());
         }

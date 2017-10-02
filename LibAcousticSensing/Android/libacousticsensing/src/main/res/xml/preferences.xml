@@ -6,8 +6,8 @@
         android:summary="@string/pref_modeDescription"
         android:dialogTitle="@string/pref_mode"
         android:entries="@array/mode_entries"
-        android:entryValues="@array/mode_entries"
-        android:defaultValue="@string/pref_defaultMode" />
+        android:entryValues="@array/mode_values"
+        android:defaultValue="0"/>
 
     <EditTextPreference
         android:key="LIBAS_SERVER_ADDR_KEY"
