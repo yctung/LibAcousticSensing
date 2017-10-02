@@ -40,9 +40,11 @@ NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
     return [self getStringFromPerf:LIBAS_SETTING_MODE_KEY defaultValue:LIBAS_SETTING_MODE_DEFAULT];
 }
 
+/*
 - (void)editMode {
     [self showAlertEditForPicker:LIBAS_SETTING_MODE_KEY andTitle:LIBAS_SETTING_MODE_DEFAULT];
 }
+ */
 
 - (void)setMode: (NSString *)mode {
     [[NSUserDefaults standardUserDefaults] setObject:mode forKey:LIBAS_SETTING_MODE_KEY];
@@ -108,7 +110,8 @@ NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
     UIViewController *vc = (UIViewController *)caller;
     [vc presentViewController:alertController animated:YES completion:nil];
 }
-
+// NOTE: not working
+/*
 - (void)showAlertEditForPicker: (NSString *) key andTitle: (NSString *) title {
     // ref: https://stackoverflow.com/questions/25545982/is-there-any-way-to-add-uipickerview-into-uialertcontroller-alert-or-actionshee
     NSUserDefaults *pref = [NSUserDefaults standardUserDefaults];
@@ -128,5 +131,6 @@ NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
     UIViewController *vc = (UIViewController *)caller;
     [vc presentViewController:alertController animated:YES completion:nil];
 }
+ */
 
 @end

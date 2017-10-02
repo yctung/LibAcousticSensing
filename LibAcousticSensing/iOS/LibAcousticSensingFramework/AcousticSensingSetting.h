@@ -30,7 +30,7 @@ extern NSString * const LIBAS_SETTING_MODE_DEFAULT;
 - (void)resetToDefaultSetting;
 
 - (NSString *)getMode;
-- (void)editMode;
+//- (void)editMode;
 - (void)setMode: (NSString *)mode;
 
 - (NSString *)getServerAddress;
