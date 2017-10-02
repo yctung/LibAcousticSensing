@@ -1,4 +1,4 @@
-function [chirpSignal, playSignal] = CreateSignal (direction)
+function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
     %% Create signals
     global PS
     

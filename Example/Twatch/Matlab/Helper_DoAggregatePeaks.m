@@ -1,4 +1,4 @@
-function DoAggregatePeaks ()
+function Helper_DoAggregatePeaks ()
     global PS; % user parse setting
     global CallbackCounter;
     global StartTime;
@@ -34,12 +34,12 @@ function DoAggregatePeaks ()
         elapsedInSeconds = seconds(NowTime - StartTime);
         numChirps = floor(elapsedInSeconds / SecondsPerChirp);
 
-        [ CallbackCounter numChirps ]
+        %[ CallbackCounter numChirps ]
 
         drawChannel(1, FillUpBuffer(:,AlreadyProcessed,1));
         drawChannel(2, FillUpBuffer(:,AlreadyProcessed,2));
         drawChannel(3, FillUpBuffer(:,AlreadyProcessed,3));
-        drawChannel(4, FillUpBuffer(:,AlreadyProcessed,4));
+        %drawChannel(4, FillUpBuffer(:,AlreadyProcessed,4));
     end
     
 end
@@ -69,7 +69,7 @@ function drawChannel (channelIdx, onechannel)
     set(line, 'yData', downsample(upcorr(:,end,1), DOWNFACTOR));
     [pks, locs] = findpeaks(upcorr);
     [topPks, topPksIdx] = sort(pks, 'descend');
-    ONLYTOP = max(length(topPks), MAXONLYTOP);
+    ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
     [maxPk, maxInd] = max(pks);
@@ -84,22 +84,31 @@ function drawChannel (channelIdx, onechannel)
     set(line, 'yData', downsample(downcorr(:,end,1), DOWNFACTOR));
     [pks, locs] = findpeaks(downcorr);
     [topPks, topPksIdx] = sort(pks, 'descend');
-    ONLYTOP = max(length(topPks), MAXONLYTOP);
+    ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
     [maxPk, maxInd] = max(pks);
     set(maxpk, 'xData', locs(maxInd));
     set(maxpk, 'yData', maxPk);
     
-    if channelIdx == 1
-        ylim(channel1Ax, [0 max(pks) + max(pks)*0.1]);
-    elseif channelIdx == 2
-        ylim(channel2Ax, [0 max(pks) + max(pks)*0.1]);
-    else 
-        ylim(channel3Ax, [0 max(pks) + max(pks)*0.1]);
+    if channelIdx == 1, setYBound(channel1Ax, pks);
+    elseif channelIdx == 2, setYBound(channel2Ax, pks);
+    else, setYBound(channel3Ax, pks);
     end
 end
 
+
+function setYBound (chnlAx, pks)
+    maxY = max(pks)+max(pks)*0.1;
+    %'--------------'
+    %[size(pks); size(maxY)]
+    maxY = max(maxY, 1);
+    %sprintf('Max Y is %f, size of Pks is %d and size of max Y is %d\n', maxY, size(pks), size(maxY));
+    ylim(chnlAx, [0, maxY]);
+end
+
+
+    
 
 function createUI()
     % lineCnts is the number of lines per figure
@@ -140,7 +149,7 @@ function createUI()
     
     
     channel3Ax = subplot(3,1,3);
-    hold on;0
+    hold on;
     plot(1, 'r', 'Tag', '3-upcorr-line');
     scatter(0, 0, 50, 'r', 'tag', '3-upcorr-scatter');
     scatter(0, 0, 250, 'r', 'filled', 'tag', '3-upcorr-maxpeak');

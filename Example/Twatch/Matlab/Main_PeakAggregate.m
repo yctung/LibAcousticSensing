@@ -10,14 +10,14 @@ global FillUpPointers;
 global AlreadyProcessed;
 
 %% Initialize global variables
-% FillUpBuffer is <Audio signal, Chirp number, Mic index>
+% FillUpBuffer is <Audio signal, Chirp number, Buffer Index>
 PS.PERIOD = 2400;
 FillUpBuffer = zeros(PS.PERIOD, 200, 4);
 FillUpPointers = [0 0 0 0];
 AlreadyProcessed = 0;
 
-[upChirp, upSignal] = CreateSignal('up');
-[downChirp, downSignal] = CreateSignal('down');
+[upChirp, upSignal] = Helper_CreateSignal('up');
+[downChirp, downSignal] = Helper_CreateSignal('down');
 
 PS.upchirp_data = upChirp;
 PS.downchirp_data = downChirp;
@@ -49,12 +49,12 @@ function StartSensingServer (upas, downas)
     JavaSensingServer.closeAll(); 
     pause(1.0);
     
-    pss = SensingServer(50005, FillUpIndices(1,2), SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
+    pss = SensingServer(50005, CallbackFactory_FillUpIndices(1,2), SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
     pss.startSensingAfterConnectionInit = 0; 
     
     pause(1.0);
     
-    wss = SensingServer(50006, FillUpIndices(3,4), SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);
+    wss = SensingServer(50006, CallbackFactory_FillUpIndices(3,4), SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, downas);
     wss.startSensingAfterConnectionInit = 0;
     
     wss.addSlaveServer(pss);

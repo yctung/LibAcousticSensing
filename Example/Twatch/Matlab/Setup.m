@@ -7,7 +7,7 @@ oriPath = cd(libPath)
 LibSetup; % setup paths for the core LibAcousticSensing
 
 cd(oriPath);
-addpath('LocalHelpers');
+% addpath('LocalHelpers');
 clear oriPath
 
 % check if the java class is correctly included
