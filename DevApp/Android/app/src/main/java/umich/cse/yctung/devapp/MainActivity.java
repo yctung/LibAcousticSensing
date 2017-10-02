@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,13 +27,8 @@ import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
 import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 import umich.cse.yctung.libacousticsensing.Utils;
 
-import static umich.cse.yctung.devapp.Constant.SERVER_ADDR_KEY;
-import static umich.cse.yctung.devapp.Constant.SERVER_PORT_KEY;
-import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_ADDR;
-import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_PORT;
-
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
-    final static String KEY_AUTO_CONNECT = "KEY_AUTO_CONNECT";
+    final static String AUTO_CONNECT_KEY = "DEVAPP_AUTO_CONNECT_KEY";
     AcousticSensingController asc;
     AcousticSensingSetting ass;
     JNICallback jc;
@@ -75,27 +72,51 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         });
 
         editTextServerAddr = (EditText)findViewById(R.id.editTextServerAddr);
-        //editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
-        //editTextServerAddr.setText("10.0.0.12");
-        editTextServerAddr.setText("35.3.119.219");
         editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
-        //editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
-        editTextServerPort.setText("50005");
-
-
 
         // Commit the changes back into the shared preferences
+        editTextServerAddr.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                ass.setServerAddr(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         editTextServerAddr.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 Log.v(TAG, "We should be editing the IP now... " + i);
                 if (i == EditorInfo.IME_NULL || i == EditorInfo.IME_ACTION_DONE) {
-                    sharedPref.edit().putString(
-                            SERVER_ADDR_KEY,
-                            textView.getText().toString()
-                    ).commit();
+                    ass.setServerAddr(textView.getText().toString());
                 }
                 return false;
+            }
+        });
+
+        editTextServerPort.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                ass.setServerPort(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -103,10 +124,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_NULL || i == EditorInfo.IME_ACTION_DONE) {
-                    sharedPref.edit().putInt(
-                            SERVER_PORT_KEY,
-                            Integer.parseInt(textView.getText().toString())
-                    ).commit();
+                    ass.setServerPort(textView.getText().toString());
                 }
                 return false;
             }
@@ -154,12 +172,12 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         });
 
         checkAuto = (CheckBox) findViewById(R.id.checkAuto);
-        checkAuto.setChecked(sharedPref.getBoolean(KEY_AUTO_CONNECT, false));
+        checkAuto.setChecked(sharedPref.getBoolean(AUTO_CONNECT_KEY, false));
         checkAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 sharedPref.edit().putBoolean(
-                        KEY_AUTO_CONNECT,
+                        AUTO_CONNECT_KEY,
                         b
                 ).commit();
                 if (b) { // start auto connecting when people clicked this option
@@ -186,14 +204,12 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     void updateUI() {
-        //editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
-        /*
         if (ass != null) {
-            int port = ass.getServerPort();
-            editTextServerPort.setText(String.format("%d", port));
+            editTextServerAddr.setText(ass.getServerAddr());
+            editTextServerPort.setText(ass.getServerPort());
         }
 
-
+        /*
 
         if (spinnerMode.getSelectedItemPosition() == 0) {
             // remote mode
@@ -270,11 +286,9 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         Utils.showYesAndNoAlertDialogWithCallback(this, "Refresh to default setting", "Do you want to refresh the setting to default values?", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                sharedPref.edit().putString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR).commit();
-
-                spinnerMode.setSelection(0);
-                editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
-                editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+                ass.resetToDefault();
+                updateUI();
+                //spinnerMode.setSelection(0);
             }
         });
         updateUI();
@@ -300,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     @Override
     public void isConnected(boolean success, String resp) {
-        if (sharedPref.getBoolean(KEY_AUTO_CONNECT, false)) {
+        if (sharedPref.getBoolean(AUTO_CONNECT_KEY, false)) {
             // auto connect mode -> do nothing
         } else {
             // update the connect result

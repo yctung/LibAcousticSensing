@@ -42,20 +42,8 @@ public class Constant {
 
     public static boolean APP_RELEASE_TO_USER = false;
 
-    //public static String SERVER_USER_STUDY_ADDR = "192.168.1.114"; // Home + MAC Air
-    public static String SERVER_USER_STUDY_ADDR = "35.2.142.245"; // MWireless + MAC Air
-    //public static String SERVER_USER_STUDY_ADDR = "141.212.110.161"; // OLAF
-    //public static int SERVER_USER_STUDY_PORT_MIN = 50010;
-    //public static int SERVER_USER_STUDY_PORT_MAX = 50030;
-    public static int SERVER_USER_STUDY_PORT_MIN = 50070;
-    public static int SERVER_USER_STUDY_PORT_MAX = 50090;
-    public static boolean SERVER_USER_STUDY_TRY_RANDOM_SHUFFLE = true; // disalbe it will search the socket from SERVER_USER_STUDY_PORT_MIN to SERVER_USER_STUDY_PORT_MAX
-    public static int SERVER_USER_STUDY_RETRY_CNT = 3; // # of times to search all valid server
-    public static long SERVER_USER_STUDY_RETRY_WAIT = 500; // ms for wait for the next round of search -> total search time is about SERVER_USER_STUDY_RETRY_CNT*SERVER_USER_STUDY_RETRY_WAIT
-    public static boolean EANBLE_QA_IN_THE_END_OF_USER_STUDY = true;
-    public static String USER_STUDY_COMPLETE_CODE = "336689";
 
-    public static int MAX_USER_STUDY_REQUEST_RETRY = 5;
+
 
     public final static String INPUT_FOLDER = "AudioInput/";
     public final static String INPUT_PREFIX = "source_";
@@ -100,8 +88,6 @@ public class Constant {
 
     // This function check all the setting meets the final product guideline
     public static void appReleaseCheck(Activity activity){
-        check(activity, SERVER_USER_STUDY_ADDR.equals("141.212.110.161"),"Need to chnage IP to OLAF");
-        check(activity, EANBLE_QA_IN_THE_END_OF_USER_STUDY, "Need to enable QA");
         check(activity, !TRACE_SAVE_TO_FILE, "No need to save trace");
     }
 
