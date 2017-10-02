@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ServerClientViewController.h"
+#import "SettingTableViewController.h"
 
 @interface AppDelegate ()
 
@@ -24,7 +25,8 @@
     // ref: http://stackoverflow.com/questions/36619756/xcode-7-3-cant-create-xib-with-for-uiview-uitableviewcelltogether
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
     UIWindow *window = [[UIWindow alloc] initWithFrame:screenBounds];
-    ServerClientViewController *rootViewController = [[ServerClientViewController alloc] init];
+    //ServerClientViewController *rootViewController = [[ServerClientViewController alloc] init];
+    SettingTableViewController *rootViewController = [[SettingTableViewController alloc] initWithNibName:@"SettingTableViewController" bundle:nil];
     navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     [window setRootViewController:navController];
     [window makeKeyAndVisible];

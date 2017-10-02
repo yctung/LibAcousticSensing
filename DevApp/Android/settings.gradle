@@ -1,3 +1,5 @@
 include ':app', ':wear'
 include ':libacousticsensing'
-project(':libacousticsensing').projectDir = new File('../LibAcousitcSensing/libacousticsensing/')
+project(':libacousticsensing').projectDir = new File('../../LibAcousticSensing/Android/libacousticsensing')
+//ref: https://stackoverflow.com/questions/19299316/require-gradle-project-from-another-directory
+//project(':libacousticsensing').projectDir = new File(settingsDir, '../../LibAcousticSensing/Android/:libacousticsensing')

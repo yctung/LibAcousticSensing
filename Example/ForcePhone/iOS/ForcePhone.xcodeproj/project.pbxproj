@@ -1,0 +1,656 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1302F1791F7EB166008ACF96 /* LibAcousticSensingFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302F1761F7EB140008ACF96 /* LibAcousticSensingFramework.framework */; };
+		1302F17A1F7EB166008ACF96 /* LibAcousticSensingFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1302F1761F7EB140008ACF96 /* LibAcousticSensingFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1302F1801F7EB60A008ACF96 /* libas_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1302F17E1F7EB60A008ACF96 /* libas_utils.cpp */; };
+		1302F1831F7EB7D3008ACF96 /* forcephone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1302F1811F7EB7D3008ACF96 /* forcephone.cpp */; };
+		1302F1861F7EB95B008ACF96 /* StandaloneCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = 1302F1851F7EB95B008ACF96 /* StandaloneCallback.m */; };
+		13099BC81E300914006D8A06 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BC71E300914006D8A06 /* main.m */; };
+		13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BCA1E300914006D8A06 /* AppDelegate.m */; };
+		13099BD31E300915006D8A06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD21E300915006D8A06 /* Assets.xcassets */; };
+		13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD41E300915006D8A06 /* LaunchScreen.storyboard */; };
+		13099BE11E300915006D8A06 /* DevAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BE01E300915006D8A06 /* DevAppTests.m */; };
+		13099BEC1E300915006D8A06 /* DevAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BEB1E300915006D8A06 /* DevAppUITests.m */; };
+		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
+		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
+		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
+		13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */; };
+		13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0F23D1F00548F000B5E34 /* TestViewController.m */; };
+		13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13E0F23E1F00548F000B5E34 /* TestViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1302F1751F7EB140008ACF96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 13099BA01E3008D5006D8A06;
+			remoteInfo = LibAcousticSensingFramework;
+		};
+		1302F1771F7EB140008ACF96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 13099BAA1E3008D5006D8A06;
+			remoteInfo = LibAcousticSensingFrameworkTests;
+		};
+		1302F17B1F7EB166008ACF96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 13099B9F1E3008D5006D8A06;
+			remoteInfo = LibAcousticSensingFramework;
+		};
+		13099BDD1E300915006D8A06 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13099BBB1E300914006D8A06 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13099BC21E300914006D8A06;
+			remoteInfo = DevApp;
+		};
+		13099BE81E300915006D8A06 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13099BBB1E300914006D8A06 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13099BC21E300914006D8A06;
+			remoteInfo = DevApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		13099C0A1E3009F3006D8A06 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1302F17A1F7EB166008ACF96 /* LibAcousticSensingFramework.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibAcousticSensingFramework.xcodeproj; path = ../../../LibAcousticSensing/iOS/LibAcousticSensingFramework.xcodeproj; sourceTree = "<group>"; };
+		1302F17E1F7EB60A008ACF96 /* libas_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = libas_utils.cpp; path = ../../../../LibAcousticSensing/C/utils/libas_utils.cpp; sourceTree = "<group>"; };
+		1302F17F1F7EB60A008ACF96 /* libas_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libas_utils.h; path = ../../../../LibAcousticSensing/C/utils/libas_utils.h; sourceTree = "<group>"; };
+		1302F1811F7EB7D3008ACF96 /* forcephone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = forcephone.cpp; path = ../../C/forcephone.cpp; sourceTree = "<group>"; };
+		1302F1821F7EB7D3008ACF96 /* forcephone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = forcephone.h; path = ../../C/forcephone.h; sourceTree = "<group>"; };
+		1302F1841F7EB95B008ACF96 /* StandaloneCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StandaloneCallback.h; sourceTree = "<group>"; };
+		1302F1851F7EB95B008ACF96 /* StandaloneCallback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StandaloneCallback.m; sourceTree = "<group>"; };
+		13099BC31E300914006D8A06 /* ForcePhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForcePhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13099BC71E300914006D8A06 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		13099BC91E300914006D8A06 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		13099BCA1E300914006D8A06 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		13099BD21E300915006D8A06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		13099BD51E300915006D8A06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		13099BD71E300915006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		13099BDC1E300915006D8A06 /* ForcePhone.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForcePhone.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		13099BE01E300915006D8A06 /* DevAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevAppTests.m; sourceTree = "<group>"; };
+		13099BE21E300915006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		13099BE71E300915006D8A06 /* ForcePhone.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForcePhone.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		13099BEB1E300915006D8A06 /* DevAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevAppUITests.m; sourceTree = "<group>"; };
+		13099BED1E300915006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
+		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
+		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
+		13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToEstimateFreqResp.wav; sourceTree = "<group>"; };
+		13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToCheckAGC.wav; sourceTree = "<group>"; };
+		13E0F23C1F00548F000B5E34 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
+		13E0F23D1F00548F000B5E34 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
+		13E0F23E1F00548F000B5E34 /* TestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		13099BC01E300914006D8A06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1302F1791F7EB166008ACF96 /* LibAcousticSensingFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13099BD91E300915006D8A06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13099BE41E300915006D8A06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1302F1711F7EB140008ACF96 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1302F1761F7EB140008ACF96 /* LibAcousticSensingFramework.framework */,
+				1302F1781F7EB140008ACF96 /* LibAcousticSensingFrameworkTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1302F17D1F7EB553008ACF96 /* Standalone */ = {
+			isa = PBXGroup;
+			children = (
+				1302F1821F7EB7D3008ACF96 /* forcephone.h */,
+				1302F1811F7EB7D3008ACF96 /* forcephone.cpp */,
+				1302F17F1F7EB60A008ACF96 /* libas_utils.h */,
+				1302F17E1F7EB60A008ACF96 /* libas_utils.cpp */,
+				1302F1841F7EB95B008ACF96 /* StandaloneCallback.h */,
+				1302F1851F7EB95B008ACF96 /* StandaloneCallback.m */,
+			);
+			name = Standalone;
+			sourceTree = "<group>";
+		};
+		13099BBA1E300914006D8A06 = {
+			isa = PBXGroup;
+			children = (
+				1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */,
+				13099BC51E300914006D8A06 /* ForcePhone */,
+				13099BDF1E300915006D8A06 /* ForcePhoneTests */,
+				13099BEA1E300915006D8A06 /* ForcePhoneUITests */,
+				13099BC41E300914006D8A06 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		13099BC41E300914006D8A06 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13099BC31E300914006D8A06 /* ForcePhone.app */,
+				13099BDC1E300915006D8A06 /* ForcePhone.xctest */,
+				13099BE71E300915006D8A06 /* ForcePhone.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		13099BC51E300914006D8A06 /* ForcePhone */ = {
+			isa = PBXGroup;
+			children = (
+				1302F17D1F7EB553008ACF96 /* Standalone */,
+				13C919941EC73B2500A4D1FA /* AudioSource */,
+				13099BC91E300914006D8A06 /* AppDelegate.h */,
+				13099BCA1E300914006D8A06 /* AppDelegate.m */,
+				13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */,
+				13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */,
+				13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */,
+				13099BC61E300914006D8A06 /* Supporting Files */,
+				13099BD21E300915006D8A06 /* Assets.xcassets */,
+				13099BD41E300915006D8A06 /* LaunchScreen.storyboard */,
+				13099BD71E300915006D8A06 /* Info.plist */,
+				13E0F23C1F00548F000B5E34 /* TestViewController.h */,
+				13E0F23D1F00548F000B5E34 /* TestViewController.m */,
+				13E0F23E1F00548F000B5E34 /* TestViewController.xib */,
+			);
+			path = ForcePhone;
+			sourceTree = "<group>";
+		};
+		13099BC61E300914006D8A06 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				13099BC71E300914006D8A06 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		13099BDF1E300915006D8A06 /* ForcePhoneTests */ = {
+			isa = PBXGroup;
+			children = (
+				13099BE01E300915006D8A06 /* DevAppTests.m */,
+				13099BE21E300915006D8A06 /* Info.plist */,
+			);
+			path = ForcePhoneTests;
+			sourceTree = "<group>";
+		};
+		13099BEA1E300915006D8A06 /* ForcePhoneUITests */ = {
+			isa = PBXGroup;
+			children = (
+				13099BEB1E300915006D8A06 /* DevAppUITests.m */,
+				13099BED1E300915006D8A06 /* Info.plist */,
+			);
+			path = ForcePhoneUITests;
+			sourceTree = "<group>";
+		};
+		13C919941EC73B2500A4D1FA /* AudioSource */ = {
+			isa = PBXGroup;
+			children = (
+				13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */,
+				13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */,
+			);
+			name = AudioSource;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		13099BC21E300914006D8A06 /* ForcePhone */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13099BF01E300915006D8A06 /* Build configuration list for PBXNativeTarget "ForcePhone" */;
+			buildPhases = (
+				13099BBF1E300914006D8A06 /* Sources */,
+				13099BC01E300914006D8A06 /* Frameworks */,
+				13099BC11E300914006D8A06 /* Resources */,
+				13099C0A1E3009F3006D8A06 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1302F17C1F7EB166008ACF96 /* PBXTargetDependency */,
+			);
+			name = ForcePhone;
+			productName = DevApp;
+			productReference = 13099BC31E300914006D8A06 /* ForcePhone.app */;
+			productType = "com.apple.product-type.application";
+		};
+		13099BDB1E300915006D8A06 /* ForcePhoneTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13099BF31E300915006D8A06 /* Build configuration list for PBXNativeTarget "ForcePhoneTests" */;
+			buildPhases = (
+				13099BD81E300915006D8A06 /* Sources */,
+				13099BD91E300915006D8A06 /* Frameworks */,
+				13099BDA1E300915006D8A06 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13099BDE1E300915006D8A06 /* PBXTargetDependency */,
+			);
+			name = ForcePhoneTests;
+			productName = DevAppTests;
+			productReference = 13099BDC1E300915006D8A06 /* ForcePhone.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		13099BE61E300915006D8A06 /* ForcePhoneUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13099BF61E300915006D8A06 /* Build configuration list for PBXNativeTarget "ForcePhoneUITests" */;
+			buildPhases = (
+				13099BE31E300915006D8A06 /* Sources */,
+				13099BE41E300915006D8A06 /* Frameworks */,
+				13099BE51E300915006D8A06 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13099BE91E300915006D8A06 /* PBXTargetDependency */,
+			);
+			name = ForcePhoneUITests;
+			productName = DevAppUITests;
+			productReference = 13099BE71E300915006D8A06 /* ForcePhone.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		13099BBB1E300914006D8A06 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Yu-Chih";
+				TargetAttributes = {
+					13099BC21E300914006D8A06 = {
+						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = F878Y85U3H;
+					};
+					13099BDB1E300915006D8A06 = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 13099BC21E300914006D8A06;
+					};
+					13099BE61E300915006D8A06 = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 13099BC21E300914006D8A06;
+					};
+				};
+			};
+			buildConfigurationList = 13099BBE1E300914006D8A06 /* Build configuration list for PBXProject "ForcePhone" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 13099BBA1E300914006D8A06;
+			productRefGroup = 13099BC41E300914006D8A06 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 1302F1711F7EB140008ACF96 /* Products */;
+					ProjectRef = 1302F1701F7EB140008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				13099BC21E300914006D8A06 /* ForcePhone */,
+				13099BDB1E300915006D8A06 /* ForcePhoneTests */,
+				13099BE61E300915006D8A06 /* ForcePhoneUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		1302F1761F7EB140008ACF96 /* LibAcousticSensingFramework.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LibAcousticSensingFramework.framework;
+			remoteRef = 1302F1751F7EB140008ACF96 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1302F1781F7EB140008ACF96 /* LibAcousticSensingFrameworkTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = LibAcousticSensingFrameworkTests.xctest;
+			remoteRef = 1302F1771F7EB140008ACF96 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		13099BC11E300914006D8A06 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */,
+				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
+				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
+				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
+				13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */,
+				13099BD31E300915006D8A06 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13099BDA1E300915006D8A06 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13099BE51E300915006D8A06 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		13099BBF1E300914006D8A06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1302F1831F7EB7D3008ACF96 /* forcephone.cpp in Sources */,
+				1302F1801F7EB60A008ACF96 /* libas_utils.cpp in Sources */,
+				13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */,
+				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
+				13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */,
+				1302F1861F7EB95B008ACF96 /* StandaloneCallback.m in Sources */,
+				13099BC81E300914006D8A06 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13099BD81E300915006D8A06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13099BE11E300915006D8A06 /* DevAppTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13099BE31E300915006D8A06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13099BEC1E300915006D8A06 /* DevAppUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1302F17C1F7EB166008ACF96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LibAcousticSensingFramework;
+			targetProxy = 1302F17B1F7EB166008ACF96 /* PBXContainerItemProxy */;
+		};
+		13099BDE1E300915006D8A06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13099BC21E300914006D8A06 /* ForcePhone */;
+			targetProxy = 13099BDD1E300915006D8A06 /* PBXContainerItemProxy */;
+		};
+		13099BE91E300915006D8A06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13099BC21E300914006D8A06 /* ForcePhone */;
+			targetProxy = 13099BE81E300915006D8A06 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		13099BD41E300915006D8A06 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				13099BD51E300915006D8A06 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		13099BEE1E300915006D8A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		13099BEF1E300915006D8A06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		13099BF11E300915006D8A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = ForcePhone/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.ForcePhone;
+				PRODUCT_NAME = ForcePhone;
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		13099BF21E300915006D8A06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = ForcePhone/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.ForcePhone;
+				PRODUCT_NAME = ForcePhone;
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		13099BF41E300915006D8A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = DevAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevAppTests;
+				PRODUCT_NAME = ForcePhone;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ForcePhone.app/ForcePhone";
+			};
+			name = Debug;
+		};
+		13099BF51E300915006D8A06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = DevAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevAppTests;
+				PRODUCT_NAME = ForcePhone;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ForcePhone.app/ForcePhone";
+			};
+			name = Release;
+		};
+		13099BF71E300915006D8A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = DevAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevAppUITests;
+				PRODUCT_NAME = ForcePhone;
+				TEST_TARGET_NAME = DevApp;
+			};
+			name = Debug;
+		};
+		13099BF81E300915006D8A06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = DevAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevAppUITests;
+				PRODUCT_NAME = ForcePhone;
+				TEST_TARGET_NAME = DevApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		13099BBE1E300914006D8A06 /* Build configuration list for PBXProject "ForcePhone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13099BEE1E300915006D8A06 /* Debug */,
+				13099BEF1E300915006D8A06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13099BF01E300915006D8A06 /* Build configuration list for PBXNativeTarget "ForcePhone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13099BF11E300915006D8A06 /* Debug */,
+				13099BF21E300915006D8A06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13099BF31E300915006D8A06 /* Build configuration list for PBXNativeTarget "ForcePhoneTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13099BF41E300915006D8A06 /* Debug */,
+				13099BF51E300915006D8A06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13099BF61E300915006D8A06 /* Build configuration list for PBXNativeTarget "ForcePhoneUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13099BF71E300915006D8A06 /* Debug */,
+				13099BF81E300915006D8A06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 13099BBB1E300914006D8A06 /* Project object */;
+}

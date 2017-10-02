@@ -68,6 +68,7 @@
                 android:digits="0123456789."
                 android:ems="10"
                 android:id="@+id/editTextServerAddr"
+                android:imeOptions="actionDone"
                 android:layout_weight="0.6"/>
         </LinearLayout>
         <LinearLayout
@@ -90,10 +91,65 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="5"
+                android:imeOptions="actionDone"
                 android:id="@+id/editTextServerPort"
                 />
         </LinearLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_below="@+id/layoutServer"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="0.5">
+            <ImageButton
+                android:id="@+id/buttonRefresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_refresh"
+                android:background="?android:selectableItemBackground"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                />
+            <ImageButton
+                android:id="@+id/buttonSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_setting"
+                android:background="?android:selectableItemBackground"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right"
+            android:layout_weight="0.5">
+            <Button
+                android:id="@+id/buttonConnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connect"
+                />
+            <CheckBox
+                android:id="@+id/checkAuto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Auto"
+                />
+        </LinearLayout>
+    </LinearLayout>>
 
 
     <Button
@@ -105,14 +161,14 @@
         android:layout_marginBottom="40dp"
         android:layout_centerHorizontal="true"/>
 
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/btnStart"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        />
 
 
 

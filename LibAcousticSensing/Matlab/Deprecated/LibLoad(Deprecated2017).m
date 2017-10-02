@@ -3,3 +3,5 @@
 %           : since Matlab 2017b, this load needs to called for every script
 %==========================================================================
 import edu.umich.cse.yctung.*
+
+% *** WARN: in 2017, each script needs their "own import"

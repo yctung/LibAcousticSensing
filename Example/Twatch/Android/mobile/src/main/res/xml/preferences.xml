@@ -12,7 +12,7 @@
     <EditTextPreference
         android:key="pref_server"
         android:title="@string/pref_server"
-        android:summary="@string/pref_serverDescription"
+        android:summary="IP %s"
         android:defaultValue="@string/pref_defaultServer" />
 
     <EditTextPreference

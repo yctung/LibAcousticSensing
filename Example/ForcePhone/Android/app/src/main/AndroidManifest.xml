@@ -15,7 +15,7 @@
         </activity>
         <activity
             android:name=".DemoForceButtonActivity"
-            android:label="Demo: ForcePhone"
+            android:label="ForcePhone"
             android:screenOrientation="portrait">
 
             <intent-filter>

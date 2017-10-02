@@ -16,9 +16,24 @@ else
 end
 
 % set up java static path if need
-LibLoad;
+import edu.umich.cse.yctung.*
+check = which('JavaSensingServer');
+if isempty(check)
+    fprintf(2, '[WARNING]: JavaClassPath is not added yet!\n');
+    fprintf(1, 'Add this path will restart the Matlab.\nDo you wanto do this now?\n');
+    add = input('(Y/N): ', 's');
+    add = strtrim(lower(add));
+    if strcmp(add, 'y') || strcmp(add, 'yes')
+        fprintf(1, 'Going to add JavaClassPath');
+        LibAddJavaClassPath;
+    end
+end
 
+% final check
+import edu.umich.cse.yctung.*
 [check, err] = LibCheckSetup();
 if ~check
     fprintf(2, '[ERROR]: fails to setup LibAcousticSensing,\nerr = %s\n', err);
+else
+    fprintf('Setup LibAS succesullfully.\nYou are ready to run our Matlab example :)\n');
 end

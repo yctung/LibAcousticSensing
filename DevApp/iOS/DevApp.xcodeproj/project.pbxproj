@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1302F15C1F7E8EB4008ACF96 /* LibAcousticSensingFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302F1591F7DF315008ACF96 /* LibAcousticSensingFramework.framework */; };
+		1302F15D1F7E8EB4008ACF96 /* LibAcousticSensingFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1302F1591F7DF315008ACF96 /* LibAcousticSensingFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		13099BC81E300914006D8A06 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BC71E300914006D8A06 /* main.m */; };
 		13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BCA1E300914006D8A06 /* AppDelegate.m */; };
 		13099BD31E300915006D8A06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD21E300915006D8A06 /* Assets.xcassets */; };
 		13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD41E300915006D8A06 /* LaunchScreen.storyboard */; };
 		13099BE11E300915006D8A06 /* DevAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BE01E300915006D8A06 /* DevAppTests.m */; };
 		13099BEC1E300915006D8A06 /* DevAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BEB1E300915006D8A06 /* DevAppUITests.m */; };
-		13099C061E3009F3006D8A06 /* LibAcousticSensingFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13099C031E3009E9006D8A06 /* LibAcousticSensingFramework.framework */; };
-		13099C071E3009F3006D8A06 /* LibAcousticSensingFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 13099C031E3009E9006D8A06 /* LibAcousticSensingFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49A71F80AD4900D2961C /* SettingTableViewController.m */; };
+		135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49A81F80AD4900D2961C /* SettingTableViewController.xib */; };
 		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
 		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
 		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
@@ -24,6 +26,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1302F1581F7DF315008ACF96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1302F1531F7DF315008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 13099BA01E3008D5006D8A06;
+			remoteInfo = LibAcousticSensingFramework;
+		};
+		1302F15A1F7DF315008ACF96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1302F1531F7DF315008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 13099BAA1E3008D5006D8A06;
+			remoteInfo = LibAcousticSensingFrameworkTests;
+		};
+		1302F15E1F7E8EB4008ACF96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1302F1531F7DF315008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 13099B9F1E3008D5006D8A06;
+			remoteInfo = LibAcousticSensingFramework;
+		};
 		13099BDD1E300915006D8A06 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 13099BBB1E300914006D8A06 /* Project object */;
@@ -38,27 +61,6 @@
 			remoteGlobalIDString = 13099BC21E300914006D8A06;
 			remoteInfo = DevApp;
 		};
-		13099C021E3009E9006D8A06 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 13099BFD1E3009E9006D8A06 /* LibAcousticSensingFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 13099BA01E3008D5006D8A06;
-			remoteInfo = LibAcousticSensingFramework;
-		};
-		13099C041E3009E9006D8A06 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 13099BFD1E3009E9006D8A06 /* LibAcousticSensingFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 13099BAA1E3008D5006D8A06;
-			remoteInfo = LibAcousticSensingFrameworkTests;
-		};
-		13099C081E3009F3006D8A06 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 13099BFD1E3009E9006D8A06 /* LibAcousticSensingFramework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 13099B9F1E3008D5006D8A06;
-			remoteInfo = LibAcousticSensingFramework;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,7 +70,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				13099C071E3009F3006D8A06 /* LibAcousticSensingFramework.framework in Embed Frameworks */,
+				1302F15D1F7E8EB4008ACF96 /* LibAcousticSensingFramework.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,6 +78,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1302F1531F7DF315008ACF96 /* LibAcousticSensingFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibAcousticSensingFramework.xcodeproj; path = ../../LibAcousticSensing/iOS/LibAcousticSensingFramework.xcodeproj; sourceTree = "<group>"; };
 		13099BC31E300914006D8A06 /* DevApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DevApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13099BC71E300914006D8A06 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		13099BC91E300914006D8A06 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -89,7 +92,9 @@
 		13099BE71E300915006D8A06 /* DevAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DevAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		13099BEB1E300915006D8A06 /* DevAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevAppUITests.m; sourceTree = "<group>"; };
 		13099BED1E300915006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		13099BFD1E3009E9006D8A06 /* LibAcousticSensingFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibAcousticSensingFramework.xcodeproj; path = ../LibAcousticSensingFramework/LibAcousticSensingFramework.xcodeproj; sourceTree = "<group>"; };
+		135B49A61F80AD4900D2961C /* SettingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingTableViewController.h; sourceTree = "<group>"; };
+		135B49A71F80AD4900D2961C /* SettingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingTableViewController.m; sourceTree = "<group>"; };
+		135B49A81F80AD4900D2961C /* SettingTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingTableViewController.xib; sourceTree = "<group>"; };
 		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
 		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
 		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
@@ -105,7 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13099C061E3009F3006D8A06 /* LibAcousticSensingFramework.framework in Frameworks */,
+				1302F15C1F7E8EB4008ACF96 /* LibAcousticSensingFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,10 +131,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1302F1541F7DF315008ACF96 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1302F1591F7DF315008ACF96 /* LibAcousticSensingFramework.framework */,
+				1302F15B1F7DF315008ACF96 /* LibAcousticSensingFrameworkTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		13099BBA1E300914006D8A06 = {
 			isa = PBXGroup;
 			children = (
-				13099BFD1E3009E9006D8A06 /* LibAcousticSensingFramework.xcodeproj */,
+				1302F1531F7DF315008ACF96 /* LibAcousticSensingFramework.xcodeproj */,
 				13099BC51E300914006D8A06 /* DevApp */,
 				13099BDF1E300915006D8A06 /* DevAppTests */,
 				13099BEA1E300915006D8A06 /* DevAppUITests */,
@@ -163,6 +177,9 @@
 				13E0F23C1F00548F000B5E34 /* TestViewController.h */,
 				13E0F23D1F00548F000B5E34 /* TestViewController.m */,
 				13E0F23E1F00548F000B5E34 /* TestViewController.xib */,
+				135B49A61F80AD4900D2961C /* SettingTableViewController.h */,
+				135B49A71F80AD4900D2961C /* SettingTableViewController.m */,
+				135B49A81F80AD4900D2961C /* SettingTableViewController.xib */,
 			);
 			path = DevApp;
 			sourceTree = "<group>";
@@ -193,15 +210,6 @@
 			path = DevAppUITests;
 			sourceTree = "<group>";
 		};
-		13099BFE1E3009E9006D8A06 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				13099C031E3009E9006D8A06 /* LibAcousticSensingFramework.framework */,
-				13099C051E3009E9006D8A06 /* LibAcousticSensingFrameworkTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		13C919941EC73B2500A4D1FA /* AudioSource */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,7 +234,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				13099C091E3009F3006D8A06 /* PBXTargetDependency */,
+				1302F15F1F7E8EB4008ACF96 /* PBXTargetDependency */,
 			);
 			name = DevApp;
 			productName = DevApp;
@@ -305,8 +313,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 13099BFE1E3009E9006D8A06 /* Products */;
-					ProjectRef = 13099BFD1E3009E9006D8A06 /* LibAcousticSensingFramework.xcodeproj */;
+					ProductGroup = 1302F1541F7DF315008ACF96 /* Products */;
+					ProjectRef = 1302F1531F7DF315008ACF96 /* LibAcousticSensingFramework.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -319,18 +327,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		13099C031E3009E9006D8A06 /* LibAcousticSensingFramework.framework */ = {
+		1302F1591F7DF315008ACF96 /* LibAcousticSensingFramework.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = LibAcousticSensingFramework.framework;
-			remoteRef = 13099C021E3009E9006D8A06 /* PBXContainerItemProxy */;
+			remoteRef = 1302F1581F7DF315008ACF96 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		13099C051E3009E9006D8A06 /* LibAcousticSensingFrameworkTests.xctest */ = {
+		1302F15B1F7DF315008ACF96 /* LibAcousticSensingFrameworkTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = LibAcousticSensingFrameworkTests.xctest;
-			remoteRef = 13099C041E3009E9006D8A06 /* PBXContainerItemProxy */;
+			remoteRef = 1302F15A1F7DF315008ACF96 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -344,6 +352,7 @@
 				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
+				135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */,
 				13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */,
 				13099BD31E300915006D8A06 /* Assets.xcassets in Resources */,
 			);
@@ -374,6 +383,7 @@
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
 				13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */,
 				13099BC81E300914006D8A06 /* main.m in Sources */,
+				135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +406,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1302F15F1F7E8EB4008ACF96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LibAcousticSensingFramework;
+			targetProxy = 1302F15E1F7E8EB4008ACF96 /* PBXContainerItemProxy */;
+		};
 		13099BDE1E300915006D8A06 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 13099BC21E300914006D8A06 /* DevApp */;
@@ -405,11 +420,6 @@
 			isa = PBXTargetDependency;
 			target = 13099BC21E300914006D8A06 /* DevApp */;
 			targetProxy = 13099BE81E300915006D8A06 /* PBXContainerItemProxy */;
-		};
-		13099C091E3009F3006D8A06 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = LibAcousticSensingFramework;
-			targetProxy = 13099C081E3009F3006D8A06 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

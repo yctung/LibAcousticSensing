@@ -11,5 +11,4 @@ cd(oriPath);
 clear oriPath
 
 % check if the java class is correctly included
-import edu.umich.cse.yctung.*
 which JavaSensingServer

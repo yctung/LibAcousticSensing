@@ -17,28 +17,75 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Haa" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tlr-GR-gUe">
-                    <rect key="frame" x="57" y="124" width="422" height="226"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gpq-dA-2by">
-                    <rect key="frame" x="116" y="435" width="43" height="30"/>
+                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gpq-dA-2by">
+                    <rect key="frame" x="146" y="507" width="43" height="30"/>
                     <state key="normal" title="Sense"/>
+                    <variation key="heightClass=regular" misplaced="YES">
+                        <rect key="frame" x="279" y="487" width="43" height="30"/>
+                    </variation>
                     <connections>
                         <action selector="actionStartOrStopSensing" destination="-1" eventType="touchUpInside" id="3M2-Bf-QKQ"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kcy-3Y-Yhk">
-                    <rect key="frame" x="108" y="390" width="59" height="30"/>
+                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kcy-3Y-Yhk">
+                    <rect key="frame" x="108" y="418" width="59" height="30"/>
                     <state key="normal" title="Connect"/>
+                    <variation key="heightClass=regular" misplaced="YES">
+                        <rect key="frame" x="271" y="396" width="59" height="30"/>
+                    </variation>
                     <connections>
                         <action selector="connectToServer" destination="-1" eventType="touchUpInside" id="4st-i6-sTO"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Haa" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tlr-GR-gUe">
+                    <rect key="frame" x="49" y="258" width="422" height="226"/>
+                    <color key="backgroundColor" red="0.46455742801047117" green="0.46455742801047117" blue="0.46455742801047117" alpha="1" colorSpace="calibratedRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                    <variation key="heightClass=regular" misplaced="YES">
+                        <rect key="frame" x="89" y="123" width="422" height="226"/>
+                    </variation>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="gpq-dA-2by" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="6vQ-6I-fXx"/>
+                <constraint firstItem="Tlr-GR-gUe" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="9rW-nw-q1b"/>
+                <constraint firstItem="Kcy-3Y-Yhk" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" constant="1" id="I7M-df-eZZ"/>
+                <constraint firstItem="Tlr-GR-gUe" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="iCG-bo-dni"/>
+                <constraint firstItem="Kcy-3Y-Yhk" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="pdG-ut-7bI"/>
+                <constraint firstItem="Kcy-3Y-Yhk" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="prU-hf-R3k"/>
+                <constraint firstItem="Kcy-3Y-Yhk" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="tuG-AE-422"/>
+                <constraint firstItem="gpq-dA-2by" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="vC4-cS-6gl"/>
+                <constraint firstItem="Kcy-3Y-Yhk" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="x6o-Ts-Vdm"/>
+            </constraints>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="9rW-nw-q1b"/>
+                    <exclude reference="iCG-bo-dni"/>
+                    <exclude reference="I7M-df-eZZ"/>
+                    <exclude reference="pdG-ut-7bI"/>
+                    <exclude reference="prU-hf-R3k"/>
+                    <exclude reference="tuG-AE-422"/>
+                    <exclude reference="x6o-Ts-Vdm"/>
+                    <exclude reference="6vQ-6I-fXx"/>
+                    <exclude reference="vC4-cS-6gl"/>
+                </mask>
+            </variation>
+            <variation key="heightClass=regular">
+                <mask key="constraints">
+                    <include reference="9rW-nw-q1b"/>
+                    <include reference="iCG-bo-dni"/>
+                    <exclude reference="I7M-df-eZZ"/>
+                    <include reference="pdG-ut-7bI"/>
+                    <exclude reference="prU-hf-R3k"/>
+                    <include reference="tuG-AE-422"/>
+                    <include reference="x6o-Ts-Vdm"/>
+                    <include reference="6vQ-6I-fXx"/>
+                    <include reference="vC4-cS-6gl"/>
+                </mask>
+            </variation>
         </view>
     </objects>
 </document>

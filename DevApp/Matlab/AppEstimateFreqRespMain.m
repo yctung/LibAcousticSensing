@@ -3,6 +3,9 @@
 %==========================================================================
 %close all;
 SERVER_PORT = 50005; % remember to diable firewall for this port
+
+import edu.umich.cse.yctung.*
+
 close all;
 JavaSensingServer.closeAll(); % close all previous open socket
 pause(1.0);

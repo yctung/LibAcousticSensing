@@ -5,24 +5,44 @@ android {
     buildToolsVersion "25.0.0"
 
     defaultConfig {
-        applicationId "umich.cse.yctung.devapp"
+        applicationId "umich.cse.yctung.forcephone"
         minSdkVersion 16
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
 
+        externalNativeBuild {
+            ndkBuild {
+                targets "jnicallback"
+            }
+        }
 
+        ndk {
+            // Note sure why, but x86 will have a bug to compile
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+
+        /*
+        // yctung: deprecated way to compile nkd files
         ndk {
             moduleName = "jnicallback" // module for standalone processing
             ldLibs "log"
             stl "stlport_shared"
             cFlags "-DDEV_NDK=1 " + "-I${file("src/main/")}".toString()
         }
+        */
     }
+
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
         }
     }
 }

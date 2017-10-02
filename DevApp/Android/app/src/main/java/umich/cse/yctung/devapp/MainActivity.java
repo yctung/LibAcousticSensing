@@ -1,6 +1,8 @@
 package umich.cse.yctung.devapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,14 +10,20 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
+import umich.cse.yctung.libacousticsensing.Utils;
 
 import static umich.cse.yctung.devapp.Constant.SERVER_ADDR_KEY;
 import static umich.cse.yctung.devapp.Constant.SERVER_PORT_KEY;
@@ -23,7 +31,9 @@ import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_ADDR;
 import static umich.cse.yctung.devapp.Constant.DEFAULT_SERVER_PORT;
 
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
+    final static String KEY_AUTO_CONNECT = "KEY_AUTO_CONNECT";
     AcousticSensingController asc;
+    AcousticSensingSetting ass;
     JNICallback jc;
     SharedPreferences sharedPref;
     final String TAG = "MainActivity";
@@ -31,14 +41,19 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     // UI elements
     Spinner spinnerMode;
     EditText editTextServerAddr, editTextServerPort;
-    Button buttonStart, buttonUserData;
+    Button buttonSense, buttonUserData, buttonConnect;
+    ImageButton buttonSetting, buttonRefresh;
+    CheckBox checkAuto;
     TextView textViewDebugInfo;
+    ProgressDialog progressConnecting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        sharedPref = getPreferences(Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+
+        ass = new AcousticSensingSetting(this);
 
         // Link UI elements
         spinnerMode = (Spinner)findViewById(R.id.spinnerMode);
@@ -46,11 +61,23 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, modes);
         spinnerMode.setAdapter(adapter);
         spinnerMode.setSelection(0);
+        spinnerMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                updateUI();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
 
         editTextServerAddr = (EditText)findViewById(R.id.editTextServerAddr);
         editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
         editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
-        editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+        editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
 
 
 
@@ -90,19 +117,109 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
-        buttonStart = (Button)findViewById(R.id.btnStart);
-        buttonStart.setOnClickListener(new View.OnClickListener() {
+        buttonSense = (Button)findViewById(R.id.btnStart);
+        buttonSense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onStartOrStopClicked();
             }
         });
 
+        buttonConnect = (Button) findViewById(R.id.buttonConnect);
+        buttonConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connect();
+            }
+        });
+
+
+        buttonSetting = (ImageButton)findViewById(R.id.buttonSetting);
+        buttonSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ass != null) ass.showSettingActivity();
+            }
+        });
+
+        buttonRefresh = (ImageButton)findViewById(R.id.buttonRefresh);
+        buttonRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRefreshClicked();
+            }
+        });
+
+        checkAuto = (CheckBox) findViewById(R.id.checkAuto);
+        checkAuto.setChecked(sharedPref.getBoolean(KEY_AUTO_CONNECT, false));
+        checkAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                sharedPref.edit().putBoolean(
+                        KEY_AUTO_CONNECT,
+                        b
+                ).commit();
+                if (b) { // start auto connecting when people clicked this option
+                    connect();
+                }
+            }
+        });
+
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
+
+        progressConnecting = new ProgressDialog(MainActivity.this);
+        progressConnecting.setMessage("Connecting");
+
 
         jc = new JNICallback();
         jc.debugTest();
-        asc = new AcousticSensingController(this,this);
+        asc = new AcousticSensingController(this, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    void updateUI() {
+        //editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+        if (ass != null) {
+            int port = ass.getServerPort();
+            editTextServerPort.setText(String.format("%d", port));
+        }
+
+
+        if (spinnerMode.getSelectedItemPosition() == 0) {
+            // remote mode
+            checkAuto.setEnabled(true);
+            editTextServerAddr.setEnabled(true);
+            editTextServerPort.setEnabled(true);
+
+            buttonConnect.setText("Connect");
+
+        } else {
+            // stand alone mode
+            checkAuto.setEnabled(false);
+            editTextServerAddr.setEnabled(false);
+            editTextServerPort.setEnabled(false);
+
+            buttonConnect.setText("Start");
+
+            // TODO: try to init Audio to see if it is ok to sense
+            buttonSense.setText("Start Sensing");
+        }
+
+        if (asc == null || !asc.isReadyToSense()) {
+            // not ready to sense yet
+            buttonSense.setEnabled(false);
+        } else {
+            // ok to sense
+            buttonSense.setEnabled(true);
+        }
+
+
+
     }
 
     int userDataCodeToSend = 1;
@@ -129,11 +246,33 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
 
             asc.startSensingWhenPossible();
-            buttonStart.setText("Stop");
+            buttonSense.setText("Stop");
         } else { // need to stop sensing
             asc.stopSensingNow();
-            buttonStart.setText("Start");
+            buttonSense.setText("Start");
         }
+    }
+
+    void connect() {
+        progressConnecting.show();
+    }
+
+    void retryToConnectIfNeed() {
+
+    }
+
+    void onRefreshClicked() {
+        Utils.showYesAndNoAlertDialogWithCallback(this, "Refresh to default setting", "Do you want to refresh the setting to default values?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                sharedPref.edit().putString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR).commit();
+
+                spinnerMode.setSelection(0);
+                editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
+                editTextServerPort.setText(String.format("%d",sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+            }
+        });
+        updateUI();
     }
 
 //=================================================================================================
@@ -152,6 +291,17 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     @Override
     public void showToast(String stringToShow) {
 
+    }
+
+    @Override
+    public void isConnected(boolean success, String resp) {
+        if (sharedPref.getBoolean(KEY_AUTO_CONNECT, false)) {
+            // auto connect mode -> do nothing
+        } else {
+            // update the connect result
+
+            updateUI();
+        }
     }
 
     @Override

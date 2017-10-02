@@ -25,16 +25,32 @@
 //#include <iostream>
 
 // global control variables
+#ifndef SHOW_DEBUG_MESSAGE
 #define SHOW_DEBUG_MESSAGE true
-#define SAVE_DEBUG_FILE false
+#endif
+
+#ifndef SAVE_DEBUG_FILE
+#define SAVE_DEBUG_FILE true
+#endif
+
+#ifndef DEBUG_TAG
+#define DEBUG_TAG "LibAS-NDK"
+#endif
 
 //using namespace std;
 #ifdef DEV_NDK
-#define JNI_FUNC_NAME(name) Java_umich_cse_yctung_demoforcephone_JNICallback_ ## name
+
+// NOTE: remember to define other module's function name before include this lib
+#ifndef JNI_FUNC_NAME
+#define JNI_FUNC_NAME(name) Java_umich_cse_yctung_libacousticsensing_Standalone_JNIController_ ## name
+#endif
+
 #define JNI_FUNC_HEAD extern "C"
 #define JNI_FUNC_PARAM JNIEnv *env, jobject obj,
 #define JNI_FUNC_NO_PARAM JNIEnv *env, jobject obj
+
 #else
+
 #define JNI_FUNC_NAME(name) JniShared_ ## name
 #define JNI_FUNC_HEAD
 #define JNI_FUNC_PARAM
@@ -42,7 +58,6 @@
 //#define jstring std::string
 #endif
 
-#define DEBUG_TAG "ForcePhone-NDK"
 #define DEBUG_MACRO(x) __android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, "%s", x);
 #define DEBUG_MACRO_WARN(x) __android_log_print(ANDROID_LOG_WARN, DEBUG_TAG, "[WARN]: %s", x);
 #define DEBUG_MACRO_ERROR(x) __android_log_print(ANDROID_LOG_ERROR, DEBUG_TAG, "[ERROR]: %s", x);
