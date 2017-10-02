@@ -53,7 +53,7 @@ extern NSString* const C_LOG_TAG_NOISE_TEST;
 extern NSString* const C_LOG_TAG_DELAY_TEST;
 extern NSString* const C_LOG_TAG_CALIBRATE;
 
-@interface Constant : NSObject {
+@interface AppConstant : NSObject {
     
 }
 
