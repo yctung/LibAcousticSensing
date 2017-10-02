@@ -30,8 +30,8 @@
 		13BF18EB1E48F49F008CB0AE /* AcousticController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EA1E48F49F008CB0AE /* AcousticController.m */; };
 		13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EC1E48F4A4008CB0AE /* AudioRecorder.m */; };
 		13BF18EF1E48F4B3008CB0AE /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18EE1E48F4B3008CB0AE /* NetworkController.m */; };
-		13BF18F21E48F54B008CB0AE /* AppConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18F01E48F54B008CB0AE /* AppConstant.m */; };
-		13BF18F31E48F54B008CB0AE /* AppConstant.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18F11E48F54B008CB0AE /* AppConstant.h */; };
+		13BF18F21E48F54B008CB0AE /* LibConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF18F01E48F54B008CB0AE /* LibConstant.m */; };
+		13BF18F31E48F54B008CB0AE /* LibConstant.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18F11E48F54B008CB0AE /* LibConstant.h */; };
 		13BF18F91E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F51E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav */; };
 		13BF18FA1E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F61E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav */; };
 		13BF18FB1E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F71E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
@@ -81,8 +81,8 @@
 		13BF18EA1E48F49F008CB0AE /* AcousticController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcousticController.m; sourceTree = "<group>"; };
 		13BF18EC1E48F4A4008CB0AE /* AudioRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRecorder.m; sourceTree = "<group>"; };
 		13BF18EE1E48F4B3008CB0AE /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
-		13BF18F01E48F54B008CB0AE /* AppConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConstant.m; sourceTree = "<group>"; };
-		13BF18F11E48F54B008CB0AE /* AppConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppConstant.h; sourceTree = "<group>"; };
+		13BF18F01E48F54B008CB0AE /* LibConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibConstant.m; sourceTree = "<group>"; };
+		13BF18F11E48F54B008CB0AE /* LibConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibConstant.h; sourceTree = "<group>"; };
 		13BF18F51E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-1repeat-6000000period+chirp-12000Hz-12000Hz-6000000samples+pilotchirprepeat.wav"; sourceTree = "<group>"; };
 		13BF18F61E48F920008CB0AE /* source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-1repeat-6000000period+chirp-20000Hz-20000Hz-6000000samples+pilotchirprepeat.wav"; sourceTree = "<group>"; };
 		13BF18F71E48F920008CB0AE /* source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "source_48000rate-5000repeat-1200period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav"; sourceTree = "<group>"; };
@@ -147,8 +147,8 @@
 				13BF18DE1E48F460008CB0AE /* AcousticSensingController.h */,
 				13BF18DF1E48F460008CB0AE /* AcousticSensingController.m */,
 				13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */,
-				13BF18F01E48F54B008CB0AE /* AppConstant.m */,
-				13BF18F11E48F54B008CB0AE /* AppConstant.h */,
+				13BF18F01E48F54B008CB0AE /* LibConstant.m */,
+				13BF18F11E48F54B008CB0AE /* LibConstant.h */,
 				135B49D91F8188C000D2961C /* AcousticSensingSetting.h */,
 				135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */,
 				135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */,
@@ -243,7 +243,7 @@
 				1367D8C41EDD268B00C89823 /* AudioPlayer.h in Headers */,
 				13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */,
 				13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */,
-				13BF18F31E48F54B008CB0AE /* AppConstant.h in Headers */,
+				13BF18F31E48F54B008CB0AE /* LibConstant.h in Headers */,
 				13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */,
 				135B49DE1F81CDAD00D2961C /* AcousticSensingSettingEditorDelegate.h in Headers */,
 				13099BA41E3008D5006D8A06 /* LibAcousticSensingFramework.h in Headers */,
@@ -352,7 +352,7 @@
 			files = (
 				13BF18E11E48F460008CB0AE /* AcousticSensingController.m in Sources */,
 				13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */,
-				13BF18F21E48F54B008CB0AE /* AppConstant.m in Sources */,
+				13BF18F21E48F54B008CB0AE /* LibConstant.m in Sources */,
 				13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */,
 				13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */,
 				13E0F23B1F0053B0000B5E34 /* TestAudioPlayerController.m in Sources */,

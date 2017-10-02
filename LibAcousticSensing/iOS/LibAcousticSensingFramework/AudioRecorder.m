@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #include <AudioToolbox/AudioToolbox.h>
 #import "AudioRecorder.h"
-#import "AppConstant.h"
+#import "LibConstant.h"
 
 @import AVFoundation;
 

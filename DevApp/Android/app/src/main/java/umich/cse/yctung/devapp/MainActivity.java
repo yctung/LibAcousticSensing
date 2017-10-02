@@ -75,9 +75,12 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         });
 
         editTextServerAddr = (EditText)findViewById(R.id.editTextServerAddr);
-        editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
+        //editTextServerAddr.setText(sharedPref.getString(SERVER_ADDR_KEY, DEFAULT_SERVER_ADDR));
+        //editTextServerAddr.setText("10.0.0.12");
+        editTextServerAddr.setText("35.3.119.219");
         editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
-        editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+        //editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+        editTextServerPort.setText("50005");
 
 
 
@@ -184,10 +187,12 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     void updateUI() {
         //editTextServerPort.setText(String.format("%d", sharedPref.getInt(SERVER_PORT_KEY, DEFAULT_SERVER_PORT)));
+        /*
         if (ass != null) {
             int port = ass.getServerPort();
             editTextServerPort.setText(String.format("%d", port));
         }
+
 
 
         if (spinnerMode.getSelectedItemPosition() == 0) {
@@ -212,13 +217,13 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
         if (asc == null || !asc.isReadyToSense()) {
             // not ready to sense yet
-            buttonSense.setEnabled(false);
+            //buttonSense.setEnabled(false);
         } else {
             // ok to sense
             buttonSense.setEnabled(true);
         }
 
-
+        */
 
     }
 

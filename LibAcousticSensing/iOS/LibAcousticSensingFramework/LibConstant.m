@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "AppConstant.h"
+#import "LibConstant.h"
 
-@implementation AppConstant
+@implementation LibConstant
     // Global control
     int const C_DEVICE_IDX_IPHONE = 0;
     BOOL const C_TRACE_SAVE_TO_FILE = NO;
@@ -19,12 +19,14 @@
     BOOL const C_TRACE_SEND_TO_NETWORK = YES;
 
     // Network setting
+    //
     //NSString * const C_SERVER_ADDR = @"10.0.0.12"; // Umich5566 in office
     //NSString * const C_SERVER_ADDR = @"192.168.1.143"; // Home
-    NSString * const C_SERVER_ADDR = @"192.168.0.108"; // Taiwan
+    //NSString * const C_SERVER_ADDR_DEFAULT = @"192.168.0.108"; // Taiwan
     //NSString * const C_SERVER_ADDR = @"35.2.25.249"; // MWireless
-    int const C_DETECT_SERVER_PORT = 50009;
-    int const C_TRIGGER_SERVER_PORT = 50010;
+    //int const C_DETECT_SERVER_PORT = 50009;
+    //int const C_TRIGGER_SERVER_PORT = 50010;
+
 
     // Folder and file setting
     NSString * const C_APP_FOLDER_NAME = @"AudioAna";

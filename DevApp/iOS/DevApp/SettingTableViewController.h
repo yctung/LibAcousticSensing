@@ -7,10 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "InputCallerDelegate.h"
+#import <LibAcousticSensingFramework/AcousticSensingSettingEditorDelegate.h>
 #import <LibAcousticSensingFramework/AcousticSensingSetting.h>
-
-@class InputViewControllerCollection;
 
 typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagUndefined,
@@ -18,14 +16,13 @@ typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagServerAddress,
     CellTagServerPort,
     CellTagMicSource,
-    CellTagSpeakerSource
+    CellTagSpeakerSource,
+    CellTagResetToDefault
 };
 
-@interface SettingTableViewController : UITableViewController <InputCallerDelegate> {
-    InputViewControllerCollection *inputCollection;
-    
-    NSMutableString *serverAddressString;
+@interface SettingTableViewController : UITableViewController <AcousticSensingSettingEditorDelegate> {
     AcousticSensingSetting *ass;
+    UISegmentedControl *modeSegmentControl;
 }
 
 

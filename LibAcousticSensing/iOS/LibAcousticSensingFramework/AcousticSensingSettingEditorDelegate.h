@@ -9,7 +9,7 @@
 #ifndef AcousticSensingSettingEditorDelegate_h
 #define AcousticSensingSettingEditorDelegate_h
 
-@protocol AcousticSensingSettingEditDelegate <NSObject>
+@protocol AcousticSensingSettingEditorDelegate <NSObject>
 - (void)finishEditSetting;
 @end
 
