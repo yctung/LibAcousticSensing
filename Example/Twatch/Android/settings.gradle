@@ -1,1 +1,1 @@
-include ':mobile', ':libacousticsensing-release'
+include ':mobile', ':libacousticsensing-release-mic'

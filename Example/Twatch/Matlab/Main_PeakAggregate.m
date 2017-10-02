@@ -8,16 +8,28 @@ global PS; PS = struct();
 global FillUpBuffer;
 global FillUpPointers;
 global AlreadyProcessed;
-
+%global PS;
 %% Initialize global variables
 % FillUpBuffer is <Audio signal, Chirp number, Buffer Index>
-PS.PERIOD = 2400;
+%PS.PERIOD = 2400;
+
+PS.downPass = [1000 1200];
+PS.upPass = [1500 1700];
+%PS.downPass = [1000 1200];
+%PS.upPass = [1000 1200];
+
+[upChirp, upSignal] = Helper_CreateSignal('up');
+[downChirp, downSignal] = Helper_CreateSignal('down');
+%[upChirp, upSignal] = Helper_CreatePN('up');
+%[downChirp, downSignal] = Helper_CreatePN('down');
+%[upChirp, upSignal] = Helper_CreateBandedPN('up');
+%[downChirp, downSignal] = Helper_CreateBandedPN('down');
+
+
 FillUpBuffer = zeros(PS.PERIOD, 200, 4);
 FillUpPointers = [0 0 0 0];
 AlreadyProcessed = 0;
 
-[upChirp, upSignal] = Helper_CreateSignal('up');
-[downChirp, downSignal] = Helper_CreateSignal('down');
 
 PS.upchirp_data = upChirp;
 PS.downchirp_data = downChirp;

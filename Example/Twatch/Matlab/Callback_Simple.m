@@ -14,6 +14,10 @@ function [] =  SimpleCallback ( obj, type, data )
             createUI(obj, FIGTAG, data);
         else
             % Plot a simplified version of the data
+            C1 = data(:,1,1);
+            C2 = data(:,1,2);
+            all(C1 == C2)
+            
             line = findobj('Tag', sprintf('%sline',FIGTAG));
             %upcons = abs(convn(data, PS.upsignalToCorrelate,'same'));
             %set(convPlot, 'yData', upcons(:, end, 1));

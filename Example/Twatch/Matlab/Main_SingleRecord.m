@@ -18,6 +18,7 @@ function upas = SetupAudioSource (signal)
 end
 
 function StartSensingServer (upas)
+    global pss;
     %% Create sensing servers with signals
     import edu.umich.cse.yctung.*;
     SERVER_1 = 50005; % remember to diable firewall for this port
@@ -27,7 +28,7 @@ function StartSensingServer (upas)
     pause(1.0);
 
     % NOTE: DummyCallback is used so no signal received at tx will be parsed
-    phoneCallback = @SimpleCallback
+    phoneCallback = @Callback_Simple;
     pss = SensingServer(SERVER_1, phoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
     pss.startSensingAfterConnectionInit = 0; % avoid auto sensing
     pause(1.0); % wait some time before building the next server

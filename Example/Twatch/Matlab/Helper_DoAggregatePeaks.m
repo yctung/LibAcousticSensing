@@ -1,11 +1,7 @@
 function Helper_DoAggregatePeaks ()
-    global PS; % user parse setting
-    global CallbackCounter;
-    global StartTime;
-    
-    global FillUpBuffer;
-    global FillUpPointers;
-    global AlreadyProcessed;    
+    global PS CallbackCounter StartTime;    
+    global FillUpBuffer FillUpPointers AlreadyProcessed;
+    global ch1Details ch2Details ch3Details aggregateDetails;
     
     if any(FillUpPointers <= AlreadyProcessed)
         return;
@@ -36,24 +32,51 @@ function Helper_DoAggregatePeaks ()
 
         %[ CallbackCounter numChirps ]
 
-        drawChannel(1, FillUpBuffer(:,AlreadyProcessed,1));
-        drawChannel(2, FillUpBuffer(:,AlreadyProcessed,2));
-        drawChannel(3, FillUpBuffer(:,AlreadyProcessed,3));
+        [c1PeakUp, c1PeakDown, c1PeakDiff] = drawChannel(1, FillUpBuffer(:,AlreadyProcessed,1));
+        [c2PeakUp, c2PeakDown, c2PeakDiff] = drawChannel(2, FillUpBuffer(:,AlreadyProcessed,2));
+        [c3PeakUp, c3PeakDown, c3PeakDiff] = drawChannel(3, FillUpBuffer(:,AlreadyProcessed,3));
         %drawChannel(4, FillUpBuffer(:,AlreadyProcessed,4));
+        
+        set(ch1Details, 'string', sprintf('Channel 1: Up:%d, Down:%d, Diff:%d', c1PeakUp, c1PeakDown, c1PeakDiff));
+        set(ch2Details, 'string', sprintf('Channel 2: Up:%d, Down:%d, Diff:%d', c2PeakUp, c2PeakDown, c2PeakDiff));
+        set(ch3Details, 'string', sprintf('Channel 3: Up:%d, Down:%d, Diff:%d', c3PeakUp, c3PeakDown, c3PeakDiff));
+        
+        % Fine-tune these numbers to get the actual distance
+        MIC_DISTANCE_CONSTANT = 0;
+        C = 1; % Actually it's 343 m/sec or something
+        FS = 1; %Actually it's 48000.
+        
+        % Distance between c1 and c3.
+        distance_c1_c3 = (c1PeakDown - c1PeakUp) - (c3PeakDown - c3PeakUp);
+        distance_c1_c3 = C*distance_c1_c3/(2*FS) + MIC_DISTANCE_CONSTANT;
+        
+        % Distance between c2 and c3.
+        distance_c2_c3 = (c2PeakDown - c2PeakUp) - (c3PeakDown - c3PeakUp);
+        distance_c2_c3 = C*distance_c2_c3/(2*FS) + MIC_DISTANCE_CONSTANT;
+        
+        set(aggregateDetails, 'string', sprintf('C_1 to C_3 = %f. C_2 to C_3 = %f', distance_c1_c3, distance_c2_c3)); 
     end
     
 end
 
 
-function drawChannel (channelIdx, onechannel)
+function [peakUp, peakDown, peakDiff] = drawChannel (channelIdx, onechannel)
     global PS; % user parse setting
-    global channel1Ax;
-    global channel2Ax;
-    global channel3Ax;
-
+    global channel1Ax channel2Ax channel3Ax;
     
-    upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
-    downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
+    
+    % First band pass the data
+    
+
+    %upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
+    %downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
+    
+    [b, a] = butter(2, PS.upPass/(PS.FS/2), 'bandpass');
+    upcorr = abs(convn(filter(b, a, onechannel), PS.upchirp_data, 'same'));
+    
+    [d, c] = butter(2, PS.downPass/(PS.FS/2), 'bandpass');
+    downcorr = abs(convn(filter(d, c, onechannel), PS.downchirp_data, 'same'));
+    
     
     line = findobj('tag', sprintf('%d-upcorr-line', channelIdx));
     sctplt = findobj('tag',  sprintf('%d-upcorr-scatter', channelIdx));
@@ -67,13 +90,13 @@ function drawChannel (channelIdx, onechannel)
     newx = downsample(1:size(upcorr(:,end,1)), DOWNFACTOR);
     set(line, 'xData', newx);
     set(line, 'yData', downsample(upcorr(:,end,1), DOWNFACTOR));
-    [pks, locs] = findpeaks(upcorr);
-    [topPks, topPksIdx] = sort(pks, 'descend');
+    [upPks, locs] = findpeaks(upcorr);
+    [topPks, topPksIdx] = sort(upPks, 'descend');
     ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
-    [maxPk, maxInd] = max(pks);
-    set(maxpk, 'xData', locs(maxInd));
+    [maxPk, peakUp] = max(upPks);
+    set(maxpk, 'xData', locs(peakUp));
     set(maxpk, 'yData', maxPk);
 
     line = findobj('tag', sprintf('%d-downcorr-line', channelIdx));
@@ -82,19 +105,24 @@ function drawChannel (channelIdx, onechannel)
 
     set(line, 'xData', newx);
     set(line, 'yData', downsample(downcorr(:,end,1), DOWNFACTOR));
-    [pks, locs] = findpeaks(downcorr);
-    [topPks, topPksIdx] = sort(pks, 'descend');
+    [downPks, locs] = findpeaks(downcorr);
+    [topPks, topPksIdx] = sort(downPks, 'descend');
     ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
-    [maxPk, maxInd] = max(pks);
-    set(maxpk, 'xData', locs(maxInd));
+    [maxPk, peakDown] = max(downPks);
+    set(maxpk, 'xData', locs(peakDown));
     set(maxpk, 'yData', maxPk);
     
-    if channelIdx == 1, setYBound(channel1Ax, pks);
-    elseif channelIdx == 2, setYBound(channel2Ax, pks);
-    else, setYBound(channel3Ax, pks);
+    peakDiff = peakDown - peakUp;
+    
+    if channelIdx == 1, setYBound(channel1Ax, [upPks; downPks]);
+    elseif channelIdx == 2, setYBound(channel2Ax, [upPks; downPks]);
+    else, setYBound(channel3Ax, [upPks; downPks]);
     end
+    
+    
+    
 end
 
 
@@ -112,18 +140,54 @@ end
 
 function createUI()
     % lineCnts is the number of lines per figure
-    global channel1Ax;
-    global channel2Ax;
-    global channel3Ax;
+    global channel1Ax channel2Ax channel3Ax;
+    global ch1Details ch2Details ch3Details aggregateDetails;
     
     PADDING = 50;
     WIDTH = 250;
+    NROWS = 4;
+    
+    FONTSIZE = 15;
     
     set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
     FigPos = [50,50,3*WIDTH+2*PADDING,PADDING*4+WIDTH*3];
-    figure('Position', FigPos,'Toolbar','none','MenuBar','none','Tag','PeakFig');
+    fig = figure('Position', FigPos,'Toolbar','none','MenuBar','none','Tag','PeakFig');
     
-    channel1Ax = subplot(3,1,1);
+    hold on;
+    
+    h_panel = uipanel('Parent', gcf, 'Units', 'normal', 'Position', [0  3/NROWS 1 1/NROWS]);  %top fourth
+    ch1Details = uicontrol(h_panel, ...
+                'Style','text',...
+                'units', 'normalized', ...
+                'Position',[0, 2/4, 1, 1/4],...
+                'FontSize',FONTSIZE ,...
+                'String','Ch 1 details');
+            
+     ch2Details = uicontrol(h_panel, ...
+                'Style','text',...
+                'units', 'normalized', ...
+                'Position',[0, 1/4, 1, 1/4],...
+                'FontSize',FONTSIZE ,...
+                'String','Ch 2 details');
+            
+     ch3Details = uicontrol(h_panel, ...
+                'Style','text',...
+                'units', 'normalized', ...
+                'Position',[0, 0, 1, 1/4],...
+                'FontSize',FONTSIZE ,...
+                'String','Ch 3 details');
+    
+            
+   aggregateDetails = uicontrol(h_panel, ...
+    'Style','text',...
+    'units', 'normalized', ...
+    'Position',[0, 3/4, 1, 1/4],...
+    'FontSize',FONTSIZE ,...
+    'String','Aggregate details');
+
+
+    
+    channel1Ax = subplot(NROWS,1,2);
     hold on;
     plot(1, 'r', 'Tag', '1-upcorr-line');
     scatter(0, 0, 50, 'r', 'tag', '1-upcorr-scatter');
@@ -135,7 +199,7 @@ function createUI()
     hold off;
     
     
-    channel2Ax = subplot(3,1,2);
+    channel2Ax = subplot(NROWS,1,3);
     hold on;
     plot(1, 'r', 'Tag', '2-upcorr-line');
     scatter(0, 0, 50, 'r', 'tag', '2-upcorr-scatter');
@@ -148,7 +212,7 @@ function createUI()
     
     
     
-    channel3Ax = subplot(3,1,3);
+    channel3Ax = subplot(NROWS,1,4);
     hold on;
     plot(1, 'r', 'Tag', '3-upcorr-line');
     scatter(0, 0, 50, 'r', 'tag', '3-upcorr-scatter');

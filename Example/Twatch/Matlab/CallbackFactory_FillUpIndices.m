@@ -3,7 +3,7 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2)
      
      
      
-     % FillUpBuffer has three dimensions. It is filled up as:
+     %  has three dimensions. It is filled up as:
      %        < Data , Chirp Number, Fill Up Buffer Index >
      % This is called PER DEVICE (i.e., 2 microphones)
      % Where each ind1 and ind2 is used for each microphone

@@ -171,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         }
     }
 
-
     /**
      * Update the status message. Pass in the enum and update the image of the image button.
      * @param status
@@ -250,6 +249,11 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     @Override
     public void dataJNICallback(long retAddr) {
+
+    }
+
+    @Override
+    public void isConnected(boolean b, String s) {
 
     }
 }
