@@ -18,6 +18,7 @@ function upas = SetupAudioSource (signal)
 end
 
 function StartSensingServer (upas)
+    global pss;
     %% Create sensing servers with signals
     import edu.umich.cse.yctung.*;
     SERVER_1 = 50005; % remember to diable firewall for this port

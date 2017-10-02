@@ -13,9 +13,17 @@ global AlreadyProcessed;
 % FillUpBuffer is <Audio signal, Chirp number, Buffer Index>
 %PS.PERIOD = 2400;
 
+PS.downPass = [1000 1200];
+PS.upPass = [1500 1700];
+%PS.downPass = [1000 1200];
+%PS.upPass = [1000 1200];
 
 [upChirp, upSignal] = Helper_CreateSignal('up');
 [downChirp, downSignal] = Helper_CreateSignal('down');
+%[upChirp, upSignal] = Helper_CreatePN('up');
+%[downChirp, downSignal] = Helper_CreatePN('down');
+%[upChirp, upSignal] = Helper_CreateBandedPN('up');
+%[downChirp, downSignal] = Helper_CreateBandedPN('down');
 
 
 FillUpBuffer = zeros(PS.PERIOD, 200, 4);

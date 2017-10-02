@@ -251,4 +251,9 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     public void dataJNICallback(long retAddr) {
 
     }
+
+    @Override
+    public void isConnected(boolean b, String s) {
+
+    }
 }

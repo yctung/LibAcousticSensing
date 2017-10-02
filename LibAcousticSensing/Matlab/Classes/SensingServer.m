@@ -456,8 +456,12 @@ classdef SensingServer < handle
             fprintf('    Destroying figure. Should tell client to disconnect\n');
             
             if (obj.isConnected)
-                obj.jss.writeByte(int8(obj.REACTION_SERVER_CLOSED));
-            end        
+                try
+                    obj.jss.writeByte(int8(obj.REACTION_SERVER_CLOSED));
+                catch err
+                    fprintf('    Error destroying figure. Probably socket closed.\n');
+                end
+            end
             
             for i = 1:length(obj.slaveServers)
                 delete(obj.slaveServers(i).fig);

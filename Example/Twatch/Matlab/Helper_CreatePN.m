@@ -1,37 +1,28 @@
-function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
+function [ chirpSignal, playSignal ] = Helper_CreatePN( direction )
+%HEPLPER_CREATEPN Summary of this function goes here
+%   Detailed explanation goes here
+
     %% Create signals
     global PS
     
     import edu.umich.cse.yctung.*;
     
-    
     FS = 48000;
     PERIOD = 24000; %2400;
     CHIRP_LEN = 2400;%1200;
-    %CHIRP_FREQ_START = 800;% 18000; %18000;
-    %CHIRP_FREQ_END = 1200; %24000;
     FADING_RATIO = 0.5;
     
     PS.FS = FS;
     PS.PERIOD = PERIOD;
     
-
-    
     time = (0:CHIRP_LEN-1)./FS; 
     
     playSignal = zeros(PERIOD, 1);
-    if strcmp(direction, 'up')
-        playSignal(1:CHIRP_LEN) = chirp(  time, ...
-                                        PS.upPass(1), ...
-                                        time(end), ...
-                                        PS.upPass(2));
-    else
-        playSignal(1:CHIRP_LEN) = chirp(  time, ...
-                                PS.downPass(2), ...
-                                time(end), ...
-                                PS.downPass(1));
-
+    if strcmp(direction, 'up'), rng(1);
+    else, rng(2);
     end
+        
+    playSignal(1:CHIRP_LEN) = rand(length(time), 1); 
     
     % add hamming window
     FADDING_WIN_SIZE = floor(CHIRP_LEN*FADING_RATIO);
@@ -45,7 +36,7 @@ function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
     w(1:length(winStart)) = winStart;
     w(end-length(winEnd)+1:end) = winEnd;
     % apply fadding to the sync signal
-
+    
     playSignal(1:CHIRP_LEN) = playSignal(1:CHIRP_LEN).*w;
     playSignal = playSignal./max(abs(playSignal));
     playSignal = playSignal(:);
@@ -54,3 +45,4 @@ function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
     % XXX Is this why we're doing the convolution instead of correlation?
     chirpSignal = playSignal(CHIRP_LEN:-1:1);
 end
+
