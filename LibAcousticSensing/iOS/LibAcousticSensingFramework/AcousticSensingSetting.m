@@ -12,6 +12,14 @@
 
 NSString * const LIBAS_SETTING_SERVER_ADDR_KEY = @"LIBAS_SETTING_SERVER_ADDR_KEY";
 
+- (id)initWithEditorDelegate: (id<AcousticControllerCallerDelegate>) callerIn {
+    self = [super init];
+    if (self) {
+        caller = callerIn;
+    }
+    return self;
+}
+
 - (NSString *)getServerAddress {
     NSUserDefaults *pref = [NSUserDefaults standardUserDefaults];
     if ([pref objectForKey:LIBAS_SETTING_SERVER_ADDR_KEY] == nil) {
@@ -20,5 +28,15 @@ NSString * const LIBAS_SETTING_SERVER_ADDR_KEY = @"LIBAS_SETTING_SERVER_ADDR_KEY
         return [pref stringForKey:LIBAS_SETTING_SERVER_ADDR_KEY];
     }
 }
+
+- (void)editServerAddress {
+    
+}
+- (void)setServerAddress: (NSString *)address {
+    
+}
+
+// Utility input alert controller creations
+- (void)showAlertEditForNumber: () (NSString *) title
 
 @end

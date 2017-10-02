@@ -16,6 +16,7 @@
 		134F9F9A1EDE86AC003B382B /* AudioSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 134F9F981EDE86AC003B382B /* AudioSource.m */; };
 		135B49DB1F8188C000D2961C /* AcousticSensingSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = 135B49D91F8188C000D2961C /* AcousticSensingSetting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		135B49DC1F8188C000D2961C /* AcousticSensingSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */; };
+		135B49DE1F81CDAD00D2961C /* AcousticSensingSettingEditorDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1367D8C41EDD268B00C89823 /* AudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1367D8C21EDD268B00C89823 /* AudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1367D8C51EDD268B00C89823 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1367D8C31EDD268B00C89823 /* AudioPlayer.m */; };
 		13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18D91E48F400008CB0AE /* NetworkController.h */; };
@@ -66,6 +67,7 @@
 		134F9F981EDE86AC003B382B /* AudioSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioSource.m; sourceTree = "<group>"; };
 		135B49D91F8188C000D2961C /* AcousticSensingSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcousticSensingSetting.h; sourceTree = "<group>"; };
 		135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcousticSensingSetting.m; sourceTree = "<group>"; };
+		135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AcousticSensingSettingEditorDelegate.h; sourceTree = "<group>"; };
 		1367D8C21EDD268B00C89823 /* AudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioPlayer.h; sourceTree = "<group>"; };
 		1367D8C31EDD268B00C89823 /* AudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioPlayer.m; sourceTree = "<group>"; };
 		13BF18D91E48F400008CB0AE /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				13BF18F11E48F54B008CB0AE /* AppConstant.h */,
 				135B49D91F8188C000D2961C /* AcousticSensingSetting.h */,
 				135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */,
+				135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */,
 			);
 			path = LibAcousticSensingFramework;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 				13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */,
 				13BF18F31E48F54B008CB0AE /* AppConstant.h in Headers */,
 				13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */,
+				135B49DE1F81CDAD00D2961C /* AcousticSensingSettingEditorDelegate.h in Headers */,
 				13099BA41E3008D5006D8A06 /* LibAcousticSensingFramework.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
