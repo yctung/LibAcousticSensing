@@ -1,4 +1,4 @@
-function [callback] = TWatchCallbackFactory( FIG_TAG )
+function [callback] = CallbackFactory_Analysis( FIG_TAG )
     callback = @CallbackFunc;
     
     function f = CallbackFunc( obj, type, data )
