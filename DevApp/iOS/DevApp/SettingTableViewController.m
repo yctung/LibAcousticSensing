@@ -21,13 +21,19 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
         // TODO: init preference
-        [self setTitle:@"Setting"];
+        [self setTitle:@"Sening Setting"];
         
-        ass = [[AcousticSensingSetting alloc] init];
-        NSString *temp = [ass getServerAddress];
+        ass = [[AcousticSensingSetting alloc] initWithEditorDelegate:self];
         
-        serverAddressString = [[NSMutableString alloc] initWithString:temp];
-        inputCollection = [[InputViewControllerCollection alloc] initWithControlString:@"NDW" andCaller:self];
+        modeSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_MODE_REMOTE, LIBAS_SETTING_MODE_STANDALONE, nil]];
+        [modeSegmentControl setFrame:CGRectMake(0, 0, 200, 30)];
+        [modeSegmentControl addTarget:self action:@selector(modeChanged) forControlEvents:UIControlEventValueChanged];
+        NSString *modeNow = [ass getMode];
+        if ([modeNow isEqualToString:LIBAS_SETTING_MODE_REMOTE]) {
+            [modeSegmentControl setSelectedSegmentIndex:0];
+        } else if ([modeNow isEqualToString:LIBAS_SETTING_MODE_STANDALONE]) {
+            [modeSegmentControl setSelectedSegmentIndex:1];
+        }
         
     }
     return self;
@@ -76,7 +82,12 @@
             }
             break;
         case 2: // action section
-            
+            switch (row) {
+                case 0:
+                    return CellTagResetToDefault;
+                default:
+                    break;
+            }
             break;
         default:
             break;
@@ -143,20 +154,26 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
+    cell.accessoryView = nil;
+    cell.detailTextLabel.text = nil;
+    
     CellTagType tag = [self whichCellTag:indexPath];
     switch (tag) {
         case CellTagMode:
             cell.textLabel.text = @"Mode";
-            
+            cell.accessoryView = modeSegmentControl;
             break;
         case CellTagServerAddress:
             cell.textLabel.text = @"Server IP";
-            cell.detailTextLabel.text = serverAddressString;
+            cell.detailTextLabel.text = [ass getServerAddress];
             break;
         case CellTagServerPort:
             cell.textLabel.text = @"Server Port";
+            cell.detailTextLabel.text = [ass getServerPort];
             break;
-            
+        case CellTagResetToDefault:
+            cell.textLabel.text = @"Reset Setting";
+            break;
         default:
             cell.textLabel.text = @"Undefined";
             break;
@@ -208,37 +225,19 @@
     CellTagType tag = [self whichCellTag:indexPath];
     
     switch (tag) {
-        case CellTagServerAddress: {
-            UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Login"
-                                                                                      message: @"Input username and password"
-                                                                               preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                textField.placeholder = @"name";
-                textField.textColor = [UIColor blueColor];
-                textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-                textField.borderStyle = UITextBorderStyleRoundedRect;
-            }];
-            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                textField.placeholder = @"password";
-                textField.textColor = [UIColor blueColor];
-                textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-                textField.borderStyle = UITextBorderStyleRoundedRect;
-                textField.secureTextEntry = YES;
-            }];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                NSArray * textfields = alertController.textFields;
-                UITextField * namefield = textfields[0];
-                UITextField * passwordfiled = textfields[1];
-                NSLog(@"%@:%@",namefield.text,passwordfiled.text);
-                NSUserDefaults *pref = [NSUserDefaults standardUserDefaults];
-                [pref setObject:namefield.text forKey:LIBAS_SETTING_SERVER_ADDR_KEY];
-                
-            }]];
-            [self presentViewController:alertController animated:YES completion:nil];
-            
-            
+        case CellTagMode:
+            [ass editMode];
             break;
-        }
+        case CellTagServerAddress:
+            [ass editServerAddress];
+            break;
+        case CellTagServerPort:
+            [ass editServerPort];
+            break;
+            
+        case CellTagResetToDefault:
+            [ass resetToDefaultSetting];
+            break;
         default:
             break;
     }
@@ -267,11 +266,15 @@
 }
 */
 
+- (void)modeChanged {
+    [ass setMode: [modeSegmentControl titleForSegmentAtIndex:[modeSegmentControl selectedSegmentIndex]]];
+}
+
 // will be called after finish select in select views
-- (void)inputFinishedThenReloadData{
-    [inputCollection clean];
-    //[myTableView reloadData];
-    
+- (void)finishEditSetting {
+    //[inputCollection clean];
+    UITableView *tv = (UITableView *)[self view];
+    [tv reloadData];
 }
 
 @end
