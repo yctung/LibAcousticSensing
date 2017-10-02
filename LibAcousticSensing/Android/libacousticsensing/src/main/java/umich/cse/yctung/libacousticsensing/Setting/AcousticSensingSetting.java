@@ -29,7 +29,7 @@ public class AcousticSensingSetting {
     private final static String SERVER_IP_DEFAULT = "50005"; // my AP in Lab
 
     public final static String RECORD_AUDIO_SOURCE_KEY = "LIBAS_RECORD_AUDIO_SOURCE_KEY";
-    public final static int RECORD_AUDIO_SOURCE_RECOG = 0;
+    public final static int RECORD_AUDIO_SOURCE_RECOG = 0; // NOTE: need to start from 0
     public final static int RECORD_AUDIO_SOURCE_MIC = 1;
     public final static int RECORD_AUDIO_SOURCE_CAM = 2;
     private final static int RECORD_AUDIO_SOURCE_DEFAULT = RECORD_AUDIO_SOURCE_RECOG;
