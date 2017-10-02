@@ -10,5 +10,7 @@ cd(oriPath);
 % addpath('LocalHelpers');
 clear oriPath
 
+import edu.umich.cse.yctung.*;
+
 % check if the java class is correctly included
 which JavaSensingServer

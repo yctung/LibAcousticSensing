@@ -6,10 +6,10 @@ function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
     
     
     FS = 48000;
-    PERIOD = 2400; %2400;
-    CHIRP_LEN = 1200;%1200;
-    CHIRP_FREQ_START = 18000; %18000;
-    CHIRP_FREQ_END = 24000; %24000;
+    PERIOD = 48000; %2400;
+    CHIRP_LEN = 2400;%1200;
+    CHIRP_FREQ_START = 800;% 18000; %18000;
+    CHIRP_FREQ_END = 1200; %24000;
     FADING_RATIO = 0.5;
     
     PS.FS = FS;

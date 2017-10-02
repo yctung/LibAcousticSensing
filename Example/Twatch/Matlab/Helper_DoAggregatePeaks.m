@@ -36,16 +36,20 @@ function Helper_DoAggregatePeaks ()
 
         %[ CallbackCounter numChirps ]
 
-        drawChannel(1, FillUpBuffer(:,AlreadyProcessed,1));
-        drawChannel(2, FillUpBuffer(:,AlreadyProcessed,2));
-        drawChannel(3, FillUpBuffer(:,AlreadyProcessed,3));
+        [c1PeakUp, c1PeakDown, c1PeakDiff] = drawChannel(1, FillUpBuffer(:,AlreadyProcessed,1));
+        [c2PeakUp, c2PeakDown, c2PeakDiff] = drawChannel(2, FillUpBuffer(:,AlreadyProcessed,2));
+        [c3PeakUp, c3PeakDown, c3PeakDiff] = drawChannel(3, FillUpBuffer(:,AlreadyProcessed,3));
         %drawChannel(4, FillUpBuffer(:,AlreadyProcessed,4));
+        
+        sprintf('Channel 1: Up:%d, Down:%d, Diff:%d', c1PeakUp, c1PeakDown, c1PeakDiff)
+        sprintf('Channel 2: Up:%d, Down:%d, Diff:%d', c2PeakUp, c2PeakDown, c2PeakDiff)
+        sprintf('Channel 3: Up:%d, Down:%d, Diff:%d', c3PeakUp, c3PeakDown, c3PeakDiff)
     end
     
 end
 
 
-function drawChannel (channelIdx, onechannel)
+function [peakUp, peakDown, peakDiff] = drawChannel (channelIdx, onechannel)
     global PS; % user parse setting
     global channel1Ax;
     global channel2Ax;
@@ -72,8 +76,8 @@ function drawChannel (channelIdx, onechannel)
     ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
-    [maxPk, maxInd] = max(pks);
-    set(maxpk, 'xData', locs(maxInd));
+    [maxPk, peakUp] = max(pks);
+    set(maxpk, 'xData', locs(peakUp));
     set(maxpk, 'yData', maxPk);
 
     line = findobj('tag', sprintf('%d-downcorr-line', channelIdx));
@@ -87,9 +91,11 @@ function drawChannel (channelIdx, onechannel)
     ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
-    [maxPk, maxInd] = max(pks);
-    set(maxpk, 'xData', locs(maxInd));
+    [maxPk, peakDown] = max(pks);
+    set(maxpk, 'xData', locs(peakDown));
     set(maxpk, 'yData', maxPk);
+    
+    peakDiff = peakDown - peakUp;
     
     if channelIdx == 1, setYBound(channel1Ax, pks);
     elseif channelIdx == 2, setYBound(channel2Ax, pks);

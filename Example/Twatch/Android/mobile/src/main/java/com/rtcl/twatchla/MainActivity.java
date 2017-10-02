@@ -171,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         }
     }
 
-
     /**
      * Update the status message. Pass in the enum and update the image of the image button.
      * @param status
