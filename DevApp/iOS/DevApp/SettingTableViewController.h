@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, CellTagType) {
 
 @interface SettingTableViewController : UITableViewController <AcousticSensingSettingEditorDelegate, AcousticSensingControllerCallerDelegate> {
     AcousticSensingSetting *ass;
+    AcousticSensingController *asc;
     UISegmentedControl *modeSegmentControl;
 }
 

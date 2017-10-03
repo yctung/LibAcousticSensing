@@ -23,8 +23,6 @@
 		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
 		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
 		13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */; };
-		13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0F23D1F00548F000B5E34 /* TestViewController.m */; };
-		13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13E0F23E1F00548F000B5E34 /* TestViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,9 +104,6 @@
 		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
 		13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToEstimateFreqResp.wav; sourceTree = "<group>"; };
 		13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToCheckAGC.wav; sourceTree = "<group>"; };
-		13E0F23C1F00548F000B5E34 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
-		13E0F23D1F00548F000B5E34 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
-		13E0F23E1F00548F000B5E34 /* TestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,9 +175,6 @@
 				13099BD21E300915006D8A06 /* Assets.xcassets */,
 				13099BD41E300915006D8A06 /* LaunchScreen.storyboard */,
 				13099BD71E300915006D8A06 /* Info.plist */,
-				13E0F23C1F00548F000B5E34 /* TestViewController.h */,
-				13E0F23D1F00548F000B5E34 /* TestViewController.m */,
-				13E0F23E1F00548F000B5E34 /* TestViewController.xib */,
 				135B49A61F80AD4900D2961C /* SettingTableViewController.h */,
 				135B49A71F80AD4900D2961C /* SettingTableViewController.m */,
 				135B49A81F80AD4900D2961C /* SettingTableViewController.xib */,
@@ -363,7 +355,6 @@
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
 				135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */,
-				13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */,
 				13099BD31E300915006D8A06 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -392,7 +383,6 @@
 				13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */,
 				135B49E11F83D9F400D2961C /* Utils.m in Sources */,
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
-				13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */,
 				135B49CB1F816FA700D2961C /* AppConstant.m in Sources */,
 				13099BC81E300914006D8A06 /* main.m in Sources */,
 				135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */,

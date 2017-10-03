@@ -22,6 +22,7 @@
         [self setTitle:@"Sening Setting"];
         
         ass = [[AcousticSensingSetting alloc] initWithEditorDelegate:self];
+        asc = [[AcousticSensingController alloc] initWithCaller:self];
         
         modeSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_MODE_REMOTE, LIBAS_SETTING_MODE_STANDALONE, nil]];
         [modeSegmentControl setFrame:CGRectMake(0, 0, 200, 30)];
