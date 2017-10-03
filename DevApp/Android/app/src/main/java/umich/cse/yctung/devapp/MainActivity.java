@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,6 +30,7 @@ import umich.cse.yctung.libacousticsensing.Utils;
 
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
     final static String AUTO_CONNECT_KEY = "DEVAPP_AUTO_CONNECT_KEY";
+    final static int RETRY_WAIT = 1000; // ms
     AcousticSensingController asc;
     AcousticSensingSetting ass;
     JNICallback jc;
@@ -144,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                 onUserDataClicked();
             }
         });
+        buttonUserData.setVisibility(View.INVISIBLE); // TODO: add this function back
 
         buttonSense = (Button)findViewById(R.id.btnStart);
         buttonSense.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connect();
+                onInitOrFinalizeClicked();
             }
         });
 
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                         b
                 ).commit();
                 if (b) { // start auto connecting when people clicked this option
-                    connect();
+                    onInitOrFinalizeClicked();
                 }
             }
         });
@@ -208,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     public void onResume() {
         super.onResume();
         updateUI();
+        retryInitIfNeed();
     }
 
     void updateUI() {
@@ -217,38 +221,40 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             editTextServerPort.setText(ass.getServerPort());
         }
 
-        /*
-
-        if (spinnerMode.getSelectedItemPosition() == 0) {
-            // remote mode
+        if (asc == null || !asc.isReadyToSense()) {
+            // not ready to sense yet
+            buttonConnect.setEnabled(true);
             checkAuto.setEnabled(true);
-            editTextServerAddr.setEnabled(true);
-            editTextServerPort.setEnabled(true);
 
-            buttonConnect.setText("Connect");
+            if (spinnerMode.getSelectedItemPosition() == ass.PARSE_MODE_REMOTE) { // remote mode
+                spinnerMode.setEnabled(true);
+                editTextServerAddr.setEnabled(true);
+                editTextServerPort.setEnabled(true);
+            } else { // stand alone mode
+                spinnerMode.setEnabled(false);
+                editTextServerAddr.setEnabled(false);
+                editTextServerPort.setEnabled(false);
+            }
 
+            buttonConnect.setText("Connect/init");
+            buttonSense.setEnabled(false);
         } else {
-            // stand alone mode
+            // ok to sense
+            buttonConnect.setEnabled(false);
             checkAuto.setEnabled(false);
+            spinnerMode.setEnabled(false);
             editTextServerAddr.setEnabled(false);
             editTextServerPort.setEnabled(false);
 
-            buttonConnect.setText("Start");
-
-            // TODO: try to init Audio to see if it is ok to sense
-            buttonSense.setText("Start Sensing");
-        }
-
-        if (asc == null || !asc.isReadyToSense()) {
-            // not ready to sense yet
-            //buttonSense.setEnabled(false);
-        } else {
-            // ok to sense
+            buttonConnect.setText("Disconnect/reset");
             buttonSense.setEnabled(true);
+
+            if (!asc.isSensing()) {
+                buttonSense.setText("Sense");
+            } else {
+                buttonSense.setText("Stop");
+            }
         }
-
-        */
-
     }
 
     int userDataCodeToSend = 1;
@@ -261,33 +267,67 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     void onStartOrStopClicked() {
-        if (asc == null || !asc.isReadyToSense()) { // need to start sensing
-            boolean initResult = false;
-            if (spinnerMode.getSelectedItemPosition()==0) { // remote mode
-                initResult = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
-            } else { // standalone mode
-                initResult = asc.initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
-            }
+        if (asc == null || !asc.isReadyToSense()) { // not ready to sense yet
+            Log.e(TAG, "Not ready to sense yet");
+            return;
+        }
 
-            if (!initResult) {
-                textViewDebugInfo.setText("Init fails");
-                return;
-            }
-
+        if (!asc.isSensing()) {
             asc.startSensingWhenPossible();
-            buttonSense.setText("Stop");
         } else { // need to stop sensing
             asc.stopSensingNow();
-            buttonSense.setText("Start");
         }
+        updateUI();
     }
 
-    void connect() {
+    void onInitOrFinalizeClicked() {
+        if (asc == null || !asc.isReadyToSense()) {
+            initIfPossible();
+        } else {
+            finalzeIfPossible();
+        }
+        updateUI();
+    }
+
+    void initIfPossible() {
+        if (asc == null || asc.isReadyToSense()) {
+            Log.e(TAG, "Unable to init when the sensing controller has be initialized");
+            return;
+        }
+
+        // TODO: init by setting
+        boolean initResult = false;
+        if (spinnerMode.getSelectedItemPosition()==0) { // remote mode
+            initResult = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
+        } else { // standalone mode
+            initResult = asc.initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
+        }
+
+        if (!initResult) {
+            textViewDebugInfo.setText("Init fails");
+            return;
+        }
+
         progressConnecting.show();
     }
 
-    void retryToConnectIfNeed() {
+    void retryInitIfNeed() {
+        // If auto start, then call the click function again after some time
+        Boolean autostart = sharedPref.getBoolean(AUTO_CONNECT_KEY, false);
+        if (autostart) {
+            Log.v(TAG, "Attempting to auto start.");
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    initIfPossible();
+                }
+            }, RETRY_WAIT);
+        }
+    }
 
+    void finalzeIfPossible() {
+        // TODO: finialize the sensing controller
     }
 
     void onRefreshClicked() {
@@ -322,23 +362,37 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     @Override
     public void isConnected(boolean success, String resp) {
-        if (sharedPref.getBoolean(AUTO_CONNECT_KEY, false)) {
-            // auto connect mode -> do nothing
-        } else {
-            // update the connect result
-
-            updateUI();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressConnecting.dismiss();
+                if (sharedPref.getBoolean(AUTO_CONNECT_KEY, false)) {
+                    // auto connect mode -> do nothing
+                    retryInitIfNeed();
+                }
+                updateUI();
+            }
+        });
     }
 
     @Override
     public void sensingEnd() {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
     }
 
     @Override
     public void sensingStarted() {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
     }
 
     @Override
