@@ -315,7 +315,7 @@
             case REACTION_STOP_SENSING: {
                 NSRange rangeToRemove = NSMakeRange(0, 1);
                 [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
-                [refCaller serverAskStartStoping];
+                [refCaller serverAskStopSensing];
                 break;
             }
             case REACTION_SET_RESULT: {
