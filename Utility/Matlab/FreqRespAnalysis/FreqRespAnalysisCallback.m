@@ -8,17 +8,18 @@ function [] = FreqRespAnalysisCallback( obj, type, data )
             dataCellBufEnd = 0;
             createUI(obj);
         else
-            dataSize = size(data)
+            dataSize = size(data);
             for traceIdx = 1:size(data,2)
                 dataCellBuf{ dataCellBufEnd + 1 } = squeeze(data(:,traceIdx,:));
                 dataCellBufEnd = dataCellBufEnd + 1;
                 
                 dataFreq = abs(fft(dataCellBuf{dataCellBufEnd}));
                 dataFreq = dataFreq(1:floor(size(dataFreq, 1) / 2),:);
-                resp = log10(smooth(dataFreq, 30));
-                
-                line = findobj('Tag', sprintf('line01_%02d', dataCellBufEnd));
-                set(line, 'yData', resp); % only show the 1st ch
+                for chIdx = 1:size(data, 3)    
+                    resp = log10(smooth(dataFreq(:, chIdx), 30));
+                    line = findobj('Tag', sprintf('line%02d_%02d', chIdx, dataCellBufEnd));
+                    set(line, 'yData', resp); % only show the 1st ch
+                end
             end
         end
     end
@@ -26,18 +27,27 @@ function [] = FreqRespAnalysisCallback( obj, type, data )
 end
 
 function createUI(obj)
-    set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
-    obj.userfig = figure('Name','Callback','NumberTitle','off', 'Position',[50,50,350,350]);
+
+    PLOT_AXE_IN_WIDTH = 250;
+    PLOT_AXE_OUT_WIDTH = 310;
+    PLOT_AXE_CNT = 2;
     
-    figCnt = 1;
+    
+    set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
+    obj.userfig = figure('Name','Callback','NumberTitle','off', 'Position',[50,50, PLOT_AXE_OUT_WIDTH * PLOT_AXE_CNT + 100, 350]);
+    
+    
     lineCnt = 5;
-    for i = 1:figCnt,
+    for i = 1:PLOT_AXE_CNT,
+        obj.axe = axes('Parent',obj.userfig,'Units','pixels','Position', [PLOT_AXE_OUT_WIDTH * (i-1) + 100, 60, PLOT_AXE_IN_WIDTH, 250]);
+        
         hold on;
         for j = 1:lineCnt,
             plot([0,0],'Tag',sprintf('line%02d_%02d',i,j),'linewidth',2); % only show the 1st ch
             ylabel('Response (dB)');
             xlabel('Frequency (Hz)');
         end
+        title(sprintf('ch %d', i));
         hold off;
     end
 

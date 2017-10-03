@@ -295,6 +295,9 @@ public class JavaSensingServer extends Thread {
 			}
 			
 		} catch (IOException e) {
+			// NOTE: we assume the socket is closed whenever there is a read socket exception happens
+			// TODO: let Matlab know if it is an internal error or just a socket close event
+			fireDataEvent(new SocketEvent(this, ACTION_CLOSE, null));
 			if (e.toString().equals("java.net.SocketException: Socket closed")) {
 				threadMessage("[WARN]: socket is closed (either by local or remote entity)");
 			} else {

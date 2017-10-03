@@ -22,6 +22,7 @@ import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
 import umich.cse.yctung.libacousticsensing.Audio.RecordSetting;
 import umich.cse.yctung.libacousticsensing.Network.NetworkController;
 import umich.cse.yctung.libacousticsensing.Network.NetworkControllerListener;
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 import umich.cse.yctung.libacousticsensing.Standalone.JNIController;
 
 /**
@@ -34,10 +35,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 //=================================================================================================
 // Constants
 //=================================================================================================
-    private final static String LOG_TAG = "AcousticSensingContr..";
-    public int PARSE_MODE_STANDALONE = 1; // TOOD: implement the jni parser
-    public int PARSE_MODE_REMOTE = 2;  // This mode
-    public int PARSE_MODE_DEFAULT = PARSE_MODE_REMOTE;
+    private final static String LOG_TAG = "SensingController";
 
 
     public int AUDIO_MODE_DEFAULT= RecordSetting.AUDIO_MODE_PLAY_AND_RECORD;
@@ -54,14 +52,20 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     private NetworkController nc;
     private JNIController jc;
     private AudioController ac;
+    private AcousticSensingSetting setting;
     private AudioSource audioSource;
     private RecordSetting recordSetting;
     private AcousticSensingControllerListener listener;
     private Context context;
+    private boolean isSensing;
+    private boolean needToStartSensingWhenReady;
     public AcousticSensingController(AcousticSensingControllerListener listener, Context context) {
         Constant.initGlobalConstant();
         Utils.requestPermissionsIfNeed(context);
         Utils.createLibFoldersIfNeed();
+
+        isSensing = false;
+        needToStartSensingWhenReady = false;
 
         this.listener = listener;
         this.context = context;
@@ -95,26 +99,28 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
      * init with default value
      * @return
      */
-    public boolean init() {
-        return init(AUDIO_MODE_DEFAULT, PARSE_MODE_DEFAULT, LOG_MODE_DEFAULT, -1);
+    public boolean init(AcousticSensingSetting setting) {
+        this.setting = setting;
+
+        if (setting.getParseMode() == setting.PARSE_MODE_REMOTE) {
+            return initAsRemoteMode(setting.getServerAddr(), Integer.parseInt(setting.getServerPort()));
+        } else if (setting.getParseMode() == setting.PARSE_MDOE_STANDALONE) {
+            // TODO: get these standalone callback setting from the AcousticSensingSetting
+            return initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
+        }
+        return false;
     }
 
-    public boolean init(int audooMode, int parseMode, int logMode, int playCnt) {
-        return true;
-    }
-
-    public boolean initAsSlaveMode(String serverIp, int serverPort) {
+    private boolean initAsRemoteMode(String serverIp, int serverPort) {
         boolean readyToInit = checkIfReadyToInit();
         if (!readyToInit) return false;
-        this.serverIp = serverIp;
-        this.serverPort = serverPort;
-        this.parseMode = PARSE_MODE_REMOTE;
         this.audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+        nc.connectToServer(serverIp, serverPort);
         return true;
     }
 
     // This mode connect the JNI code in LibAcousticSensing, so no need matlab
-    public boolean initAsStandaloneMode(String audioSourceSettingAsset, String signalAsset, String preambleToAddAsset, String preambleSyncAsset) {
+    private boolean initAsStandaloneMode(String audioSourceSettingAsset, String signalAsset, String preambleToAddAsset, String preambleSyncAsset) {
         boolean readyToInit = checkIfReadyToInit();
         if (!readyToInit) return false;
         short[] signal = Utils.loadAudioFromAssetAsShort(context, signalAsset);
@@ -131,26 +137,31 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
         boolean ret = jc.init(audioSource);
 
-        this.parseMode = PARSE_MODE_STANDALONE;
         this.audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
         return ret;
     }
 
     public void startSensingWhenPossible() {
+        startSensingNow();
+        // TODO: implement the logic to start sensing when the audio from the server is set and ready
+        /*
         if (parseMode==PARSE_MODE_REMOTE) {
             // in rmote mode, sensing is possible only when the server is connected
-            nc.connectToServer(serverIp, serverPort);
+            needToStartSensingWhenReady = true;
         } else {
             startSensingNow();
             listener.sensingStarted();
-        }
+        }*/
     }
 
     private void startSensingNow() {
-        recordSetting = new RecordSetting(audioMode);
+        recordSetting = new RecordSetting(AUDIO_MODE_DEFAULT);
+        recordSetting.applyDeviceSensingSetting(setting);
+
         ac = new AudioController(context, this, audioSource /* include the playSetting */, recordSetting);
         if (ac.init(audioSource, recordSetting)) {
             ac.startSensing();
+            isSensing = true;
             listener.sensingStarted();
         } else {
             Log.e(LOG_TAG, "Fail to init the AudioController");
@@ -159,6 +170,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
     public void stopSensingNow() {
         if (ac != null) ac.stopSensing();
+        isSensing = false;
         listener.sensingEnd();
         ac = null; // TODO: keep audio controller alive to save init delay
     }
@@ -187,7 +199,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         AcousticSensingController asc = AcousticSensingController.this;
-                        boolean result = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
+                        boolean result = asc.initAsRemoteMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
                         if (!result) asc.updateDebugStatus(false, "Init fails");
                         else {
                             asc.startSensingWhenPossible();
@@ -215,11 +227,16 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     public boolean isReadyToSense() {
-        if (parseMode == PARSE_MODE_REMOTE) return isConnected();
-        else if (parseMode == PARSE_MODE_STANDALONE) return jc.isReadyToSense();
+        if (setting == null) return false; // not init yet
+        else if (setting.getParseMode() == setting.PARSE_MODE_REMOTE) return isConnected() && audioSource != null;
+        else if (setting.getParseMode() == setting.PARSE_MDOE_STANDALONE) return jc.isReadyToSense() && audioSource != null;
 
         Log.e(LOG_TAG, "Undefined parseMode = " + parseMode);
         return false; // undefined
+    }
+
+    public boolean isSensing() {
+        return isSensing;
     }
 //=================================================================================================
 // Network callbacks
@@ -228,8 +245,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     public void isConnected(boolean success, String resp) {
         if (!success) {
             listener.updateDebugStatus(false, "Server connect fails, "+resp);
-        }
-        else {
+        } else {
             // send init vars (let the server know the config of the device used for sensing)
             nc.sendSetAction(NetworkController.SET_TYPE_VALUE_STRING, "traceChannelCnt", "2".getBytes()); // TODO: modify it based on device
             nc.sendSetAction(NetworkController.SET_TYPE_STRING, "userDevice", Utils.getDeviceName().getBytes());
@@ -312,9 +328,9 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
     @Override
     public void audioRecorded(byte[] data, long audioTotalRecordedSampleCnt) {
-        if (this.parseMode == PARSE_MODE_REMOTE && nc.isConnected()) {
+        if (setting.getParseMode() == setting.PARSE_MODE_REMOTE && nc.isConnected()) {
             nc.sendDataRequest(data);
-        } else if (this.parseMode == PARSE_MODE_STANDALONE && jc.isReadyToSense()) {
+        } else if (setting.getParseMode() == setting.PARSE_MDOE_STANDALONE && jc.isReadyToSense()) {
             long ret = jc.addAudioSamples(data);
             if (ret == -1 || ret == -2) {
                 listener.updateDebugStatus(false, "Failed to find preamble (try another microphone?)");

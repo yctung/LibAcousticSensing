@@ -96,12 +96,10 @@ public class AudioController {
 
         this.audioSetting = recordSetting; // TOOD: move it to a better way
 
-
-
         // *** WARN: uncomment this just for testing AGC ***
         //audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
-        Log.w(LOG_TAG, "MediaRecorder.AudioSource.MIC");
+        audioRecord = new AudioRecord(recordSetting.audioSource, recordSetting.recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, recordSetting.RECORDER_TOTAL_BUFFER_SIZE);
+        Log.w(LOG_TAG, "AudioSource = " + recordSetting.audioSource);
 
         // check noise supressor if need
         if (NoiseSuppressor.isAvailable()) {
@@ -149,7 +147,9 @@ public class AudioController {
 
     public void stopSensing() {
         keepSensing = false; // NOTE: set this flag will enforce the play & recording thread to stop
-        while (isPlaying||isRecording) Log.w(LOG_TAG, "wait audio playing and recording terminate");
+        Log.w(LOG_TAG, "wait audio playing and recording terminate ...");
+        while (isPlaying||isRecording);
+        Log.w(LOG_TAG, "audio playing and recording has terminated!");
     }
 
     /*
