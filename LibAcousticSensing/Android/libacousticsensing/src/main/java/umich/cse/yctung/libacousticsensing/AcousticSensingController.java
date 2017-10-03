@@ -71,7 +71,6 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         this.context = context;
         nc = new NetworkController(this);
         jc = new JNIController(Constant.ndkTraceFolderName);
-        jc.testNDK();
     }
 
     private boolean checkIfReadyToInit() {

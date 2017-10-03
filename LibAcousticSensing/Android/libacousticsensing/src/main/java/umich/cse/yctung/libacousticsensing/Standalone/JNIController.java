@@ -12,7 +12,6 @@ public class JNIController {
 
     // NOTE: these JNI functions can't be recognized by AndroidStudio (but they existed)
     //       because I am using the old script to compile ndk files manually
-    public native void testNDK();
     private native void initAudioSource(int sampleRate, int chCnt, int repeatCnt, int preambleEndOffset, int preambleSyncRepeatCnt, short[] signal, short[] preamble, short[] sync);
     private native void initParseSetting(int recordChCnt, int preambleSearchChIdxMatlab);
     private native void initSenseSetting(String logFolderPath);
