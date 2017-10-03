@@ -7,15 +7,8 @@
 //
 
 #import "AcousticSensingController.h"
-#import "AcousticControllerCallerDelegate.h"
-#import "FrameworkCheck.h"
-#import "AudioSource.h"
-#import "AcousticController.h"
-#import "NetworkController.h"
-#import "AcousticController.h"
-#import "NetworkControllerCallerDelegate.h"
-#import "TestAudioPlayerController.h"
 
+/*
 @interface AcousticSensingController()
 @property (nonatomic) int audioMode;
 @property (nonatomic, retain) NSString *myString;
@@ -26,11 +19,11 @@
 @property (nonatomic, retain) AcousticController* ac;
 //@property (nonatomic, retain) id<AcousticControllerCallerDelegate> refCaller;
 @end
-
+*/
 
 
 @implementation AcousticSensingController
-@synthesize nc, ac, audioSource;
+//@synthesize nc, ac, audioSource;
 
 // Private constants
 // ref: http://stackoverflow.com/questions/17228334/what-is-the-best-way-to-create-constants-in-objective-c
@@ -65,7 +58,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 }
 
 - (BOOL) setAsRemoteModeWithServerIp: (NSString*) serverIp andPort: (int) serverPort {
-    self.audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+    audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
     [nc connectServerWithIp:serverIp andPort:serverPort];
     return true;
 }
@@ -174,7 +167,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 }
 
 - (void)audioReceivedFromServer:(AudioSource *)audioSourceIn {
-    [self setAudioSource:audioSourceIn];
+    audioSource = audioSourceIn;
     [audioSource retain]; // not sure if necessary, but just in case
     [caller readyToSense:YES message:@"AudioSource is received from remote server"];
 }
