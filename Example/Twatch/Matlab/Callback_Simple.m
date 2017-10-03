@@ -1,4 +1,4 @@
-function [] =  SimpleCallback ( obj, type, data )
+function [] =  Callback_Simple ( obj, type, data )
     SAVE_FOLDER = 'saved';
     global PS; % user parse setting
     FIGTAG = "TAG";
