@@ -6,6 +6,8 @@ import android.media.MediaRecorder;
 import android.media.audiofx.AutomaticGainControl;
 import android.util.Log;
 
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
+
 /**
  * Created by Yu-Chih Tung on 2/1/17.
  * NOTE: the PlaySetting is embedded in the AudioSource
@@ -23,13 +25,22 @@ public class RecordSetting {
     int recordChCnt;
     int recordFS;
 
+    // device dependent setting
+    int audioSource = MediaRecorder.AudioSource.DEFAULT;
+
     public RecordSetting(int audioMode) {
         recordChCnt = 2; // TODO: load from server
         this.audioMode = audioMode;
         this.recordFS = 48000;
     }
 
+    public void applyDeviceSensingSetting(AcousticSensingSetting setting) {
+        audioSource = setting.getAudioSourceInAndroidRecorderFormat();
+    }
+
     // don't use this vraible any more becuase it might avoid the audio record being released correctly
+    // TODO: remove it, not used anymore
+    /*
     public AudioRecord createNewAudioRecord() {
         // TODO: create recorder based on user's setting
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, recordFS, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, RECORDER_TOTAL_BUFFER_SIZE);
@@ -47,6 +58,6 @@ public class RecordSetting {
         if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) return audioRecord;
         Log.e(TAG, "Unable to init AudioRecord class (forget to request the permission or using a wrong setting?)");
         return null;
-    }
+    }*/
 
 }

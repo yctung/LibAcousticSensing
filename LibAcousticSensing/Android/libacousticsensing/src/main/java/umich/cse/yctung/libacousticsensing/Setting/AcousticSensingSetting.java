@@ -3,7 +3,9 @@ package umich.cse.yctung.libacousticsensing.Setting;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaRecorder;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import umich.cse.yctung.libacousticsensing.R;
@@ -50,6 +52,25 @@ public class AcousticSensingSetting {
         // NOTE: we don't need to set each individual value in preference
         // TODO: this might ruin app's preference
         pref.edit().clear().commit();
+    }
+
+    public int getAudioSource() {
+        String valueString = pref.getString(RECORD_AUDIO_SOURCE_KEY, String.format("%d", RECORD_AUDIO_SOURCE_DEFAULT));
+        return Integer.parseInt(valueString);
+    }
+
+    public int getAudioSourceInAndroidRecorderFormat() {
+        int as = getAudioSource();
+        switch (as) {
+            case RECORD_AUDIO_SOURCE_RECOG:
+                return MediaRecorder.AudioSource.VOICE_RECOGNITION;
+            case RECORD_AUDIO_SOURCE_MIC:
+                return MediaRecorder.AudioSource.MIC;
+            case RECORD_AUDIO_SOURCE_CAM:
+                return MediaRecorder.AudioSource.CAMCORDER;
+        }
+        Log.e(TAG, "Undefined audio source = " + as);
+        return MediaRecorder.AudioSource.DEFAULT;
     }
 
     public String[] getModeTexts() {

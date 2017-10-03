@@ -155,7 +155,9 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     private void startSensingNow() {
-        recordSetting = new RecordSetting(audioMode);
+        recordSetting = new RecordSetting(AUDIO_MODE_DEFAULT);
+        recordSetting.applyDeviceSensingSetting(setting);
+
         ac = new AudioController(context, this, audioSource /* include the playSetting */, recordSetting);
         if (ac.init(audioSource, recordSetting)) {
             ac.startSensing();
