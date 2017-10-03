@@ -31,9 +31,13 @@ NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
 }
 
 - (void) resetToDefaultSetting {
-    [self setServerAddress:LIBAS_SETTING_SERVER_ADDR_DEFAULT];
-    [self setServerPort:LIBAS_SETTING_SERVER_PORT_DEFAULT];
-    [caller finishEditSetting];
+    UIViewController *vc = (UIViewController *)caller;
+    [Utils showAlert:vc withTitle:@"Reset setting to default" message:@"Are you sure you want to give up the current setting?" andOkCallback:^(UIAlertAction *action){
+        [self setMode:LIBAS_SETTING_MODE_DEFAULT];
+        [self setServerAddress:LIBAS_SETTING_SERVER_ADDR_DEFAULT];
+        [self setServerPort:LIBAS_SETTING_SERVER_PORT_DEFAULT];
+        [caller finishEditSetting];
+    }];
 }
 
 - (NSString *)getMode {
@@ -101,7 +105,6 @@ NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
         NSArray * textfields = alertController.textFields;
         UITextField * numberfield = textfields[0];
         NSLog(@"input number = %@", numberfield.text);
-        
         
         [pref setObject:numberfield.text forKey:key];
         [caller finishEditSetting];

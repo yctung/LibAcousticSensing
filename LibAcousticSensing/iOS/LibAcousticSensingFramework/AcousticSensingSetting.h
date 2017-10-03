@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "AcousticSensingSettingEditorDelegate.h"
+#import "Utils.h"
 
 extern NSString * const LIBAS_SETTING_SERVER_ADDR_KEY;
 extern NSString * const LIBAS_SETTING_SERVER_PORT_KEY;

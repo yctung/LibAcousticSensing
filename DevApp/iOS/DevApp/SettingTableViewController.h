@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <LibAcousticSensingFramework/AcousticSensingSettingEditorDelegate.h>
 #import <LibAcousticSensingFramework/AcousticSensingSetting.h>
+#import <LibAcousticSensingFramework/AcousticSensingController.h>
+#import <LibAcousticSensingFramework/AcousticSensingControllerCallerDelegate.h>
 
 typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagUndefined,
@@ -17,10 +19,11 @@ typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagServerPort,
     CellTagMicSource,
     CellTagSpeakerSource,
-    CellTagResetToDefault
+    CellTagResetToDefault,
+    CellTagStart
 };
 
-@interface SettingTableViewController : UITableViewController <AcousticSensingSettingEditorDelegate> {
+@interface SettingTableViewController : UITableViewController <AcousticSensingSettingEditorDelegate, AcousticSensingControllerCallerDelegate> {
     AcousticSensingSetting *ass;
     UISegmentedControl *modeSegmentControl;
 }

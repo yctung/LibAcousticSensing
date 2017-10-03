@@ -8,8 +8,6 @@
 
 #import "SettingTableViewController.h"
 #import "AppConstant.h"
-#import "InputViewControllerCollection.h"
-#import "SelectNumberViewController.h"
 
 @interface SettingTableViewController ()
     
@@ -28,13 +26,6 @@
         modeSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_MODE_REMOTE, LIBAS_SETTING_MODE_STANDALONE, nil]];
         [modeSegmentControl setFrame:CGRectMake(0, 0, 200, 30)];
         [modeSegmentControl addTarget:self action:@selector(modeChanged) forControlEvents:UIControlEventValueChanged];
-        NSString *modeNow = [ass getMode];
-        if ([modeNow isEqualToString:LIBAS_SETTING_MODE_REMOTE]) {
-            [modeSegmentControl setSelectedSegmentIndex:0];
-        } else if ([modeNow isEqualToString:LIBAS_SETTING_MODE_STANDALONE]) {
-            [modeSegmentControl setSelectedSegmentIndex:1];
-        }
-        
     }
     return self;
 }
@@ -85,6 +76,8 @@
             switch (row) {
                 case 0:
                     return CellTagResetToDefault;
+                case 1:
+                    return CellTagStart;
                 default:
                     break;
             }
@@ -140,28 +133,55 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *cellId = @"Cell";
+    static NSString *cellIdSetting = @"CellIdSetting";
+    static NSString *cellIdAction = @"CellIdAction";
     
     //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId forIndexPath:indexPath];
     // we should use the shorter version of this dequeue method to avoid the error of
     // "unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier"
     // ref: https://stackoverflow.com/questions/23526756/unable-to-dequeue-a-cell-with-identifier-cell-must-register-a-nib-or-a-class-f
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     
     // Configure the cell...
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellId] autorelease];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    //if (cell == nil) {
+        //cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellId] autorelease];
+        //cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        //cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId] autorelease];
+    //}
+    
+    
+    UITableViewCell *cell;
+    CellTagType tag = [self whichCellTag:indexPath];
+    
+    if (tag == CellTagResetToDefault || tag == CellTagStart) { //  action cells
+        cell = [tableView dequeueReusableCellWithIdentifier:cellIdAction];
+        if (cell == nil) {
+            // NOTE: only UITableViewCellStyleDefault can make the text in the center
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdAction] autorelease];
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        }
+    } else { //  setting cells
+        cell = [tableView dequeueReusableCellWithIdentifier:cellIdSetting];
+        if (cell == nil) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdSetting] autorelease];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        cell.detailTextLabel.text = nil;
+        cell.accessoryView = nil;
     }
     
-    cell.accessoryView = nil;
-    cell.detailTextLabel.text = nil;
-    
-    CellTagType tag = [self whichCellTag:indexPath];
     switch (tag) {
+        // ---------------
+        //  setting cells
+        // ---------------
         case CellTagMode:
             cell.textLabel.text = @"Mode";
             cell.accessoryView = modeSegmentControl;
+            if ([[ass getMode] isEqualToString:LIBAS_SETTING_MODE_REMOTE]) {
+                [modeSegmentControl setSelectedSegmentIndex:0];
+            } else if ([[ass getMode] isEqualToString:LIBAS_SETTING_MODE_STANDALONE]) {
+                [modeSegmentControl setSelectedSegmentIndex:1];
+            }
             break;
         case CellTagServerAddress:
             cell.textLabel.text = @"Server IP";
@@ -171,8 +191,14 @@
             cell.textLabel.text = @"Server Port";
             cell.detailTextLabel.text = [ass getServerPort];
             break;
+        // ---------------
+        //  action cells
+        // ---------------
         case CellTagResetToDefault:
             cell.textLabel.text = @"Reset Setting";
+            break;
+        case CellTagStart:
+            cell.textLabel.text = @"Start";
             break;
         default:
             cell.textLabel.text = @"Undefined";
@@ -226,7 +252,7 @@
     
     switch (tag) {
         case CellTagMode:
-            [ass editMode];
+            //[ass editMode];
             break;
         case CellTagServerAddress:
             [ass editServerAddress];
@@ -234,7 +260,6 @@
         case CellTagServerPort:
             [ass editServerPort];
             break;
-            
         case CellTagResetToDefault:
             [ass resetToDefaultSetting];
             break;
@@ -275,6 +300,17 @@
     //[inputCollection clean];
     UITableView *tv = (UITableView *)[self view];
     [tv reloadData];
+}
+
+//==================================================================================================
+//	Acoustic sensing controller callbacks
+//==================================================================================================
+- (void)updateDebugStatus: (NSString *) status {
+    NSLog(@"updateDebugStatus: %@", status);
+    //[debugStatus setText:status];
+}
+- (void)unexpectedEnd:(int) code withReason: (NSString *) reason {
+    
 }
 
 @end

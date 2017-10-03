@@ -17,6 +17,8 @@
 		135B49DB1F8188C000D2961C /* AcousticSensingSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = 135B49D91F8188C000D2961C /* AcousticSensingSetting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		135B49DC1F8188C000D2961C /* AcousticSensingSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */; };
 		135B49DE1F81CDAD00D2961C /* AcousticSensingSettingEditorDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		135B49E41F83DCBC00D2961C /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 135B49E21F83DCBC00D2961C /* Utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		135B49E51F83DCBC00D2961C /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49E31F83DCBC00D2961C /* Utils.m */; };
 		1367D8C41EDD268B00C89823 /* AudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1367D8C21EDD268B00C89823 /* AudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1367D8C51EDD268B00C89823 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1367D8C31EDD268B00C89823 /* AudioPlayer.m */; };
 		13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF18D91E48F400008CB0AE /* NetworkController.h */; };
@@ -68,6 +70,8 @@
 		135B49D91F8188C000D2961C /* AcousticSensingSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcousticSensingSetting.h; sourceTree = "<group>"; };
 		135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcousticSensingSetting.m; sourceTree = "<group>"; };
 		135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AcousticSensingSettingEditorDelegate.h; sourceTree = "<group>"; };
+		135B49E21F83DCBC00D2961C /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		135B49E31F83DCBC00D2961C /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		1367D8C21EDD268B00C89823 /* AudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioPlayer.h; sourceTree = "<group>"; };
 		1367D8C31EDD268B00C89823 /* AudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioPlayer.m; sourceTree = "<group>"; };
 		13BF18D91E48F400008CB0AE /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
@@ -152,6 +156,8 @@
 				135B49D91F8188C000D2961C /* AcousticSensingSetting.h */,
 				135B49DA1F8188C000D2961C /* AcousticSensingSetting.m */,
 				135B49DD1F81CD6200D2961C /* AcousticSensingSettingEditorDelegate.h */,
+				135B49E21F83DCBC00D2961C /* Utils.h */,
+				135B49E31F83DCBC00D2961C /* Utils.m */,
 			);
 			path = LibAcousticSensingFramework;
 			sourceTree = "<group>";
@@ -241,6 +247,7 @@
 				135B49DB1F8188C000D2961C /* AcousticSensingSetting.h in Headers */,
 				13BF18E81E48F48D008CB0AE /* AudioRecorder.h in Headers */,
 				1367D8C41EDD268B00C89823 /* AudioPlayer.h in Headers */,
+				135B49E41F83DCBC00D2961C /* Utils.h in Headers */,
 				13BF18DB1E48F400008CB0AE /* NetworkController.h in Headers */,
 				13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */,
 				13BF18F31E48F54B008CB0AE /* LibConstant.h in Headers */,
@@ -353,6 +360,7 @@
 				13BF18E11E48F460008CB0AE /* AcousticSensingController.m in Sources */,
 				13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */,
 				13BF18F21E48F54B008CB0AE /* LibConstant.m in Sources */,
+				135B49E51F83DCBC00D2961C /* Utils.m in Sources */,
 				13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */,
 				13BF18ED1E48F4A4008CB0AE /* AudioRecorder.m in Sources */,
 				13E0F23B1F0053B0000B5E34 /* TestAudioPlayerController.m in Sources */,
