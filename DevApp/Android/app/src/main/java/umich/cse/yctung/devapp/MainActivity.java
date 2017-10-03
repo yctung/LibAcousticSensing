@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     void updateUI() {
         if (ass != null) {
-            spinnerMode.setSelection(ass.getMode());
+            spinnerMode.setSelection(ass.getParseMode());
             editTextServerAddr.setText(ass.getServerAddr());
             editTextServerPort.setText(ass.getServerPort());
         }
@@ -296,12 +296,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         }
 
         // TODO: init by setting
-        boolean initResult = false;
-        if (spinnerMode.getSelectedItemPosition()==0) { // remote mode
-            initResult = asc.initAsSlaveMode(editTextServerAddr.getText().toString(),Integer.parseInt(editTextServerPort.getText().toString()));
-        } else { // standalone mode
-            initResult = asc.initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
-        }
+        boolean initResult = asc.init(ass);
 
         if (!initResult) {
             textViewDebugInfo.setText("Init fails");

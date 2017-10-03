@@ -57,7 +57,7 @@ public class AcousticSensingSetting {
         return modeEntries;
     }
 
-    public int getMode() {
+    public int getParseMode() {
         String valueString = pref.getString(PARSE_MODE_KEY, String.format("%d", PARSE_MODE_DEFAULT)); // "0" or "1"
         return Integer.parseInt(valueString);
     }
