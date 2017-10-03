@@ -159,6 +159,7 @@
         if (cell == nil) {
             // NOTE: only UITableViewCellStyleDefault can make the text in the center
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdAction] autorelease];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
         }
     } else { //  setting cells
@@ -205,7 +206,6 @@
             cell.textLabel.text = @"Undefined";
             break;
     }
-    
     
     return cell;
 }
@@ -264,11 +264,12 @@
         case CellTagResetToDefault:
             [ass resetToDefaultSetting];
             break;
+        case CellTagStart:
+            [asc setSensingSetting:ass];
+            break;
         default:
             break;
     }
-    
-    
     
     // Navigation logic may go here, for example:
     // Create the next view controller.
@@ -306,12 +307,16 @@
 //==================================================================================================
 //	Acoustic sensing controller callbacks
 //==================================================================================================
-- (void)updateDebugStatus: (NSString *) status {
+- (void)updateDebugStatus:(NSString *)status {
     NSLog(@"updateDebugStatus: %@", status);
     //[debugStatus setText:status];
 }
-- (void)unexpectedEnd:(int) code withReason: (NSString *) reason {
+- (void)unexpectedEnd:(int)code withReason:(NSString *)reason {
     
+}
+
+- (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message {
+    NSLog(@"readyToSense: %d, message = %@", isReadyToSense, message);
 }
 
 @end

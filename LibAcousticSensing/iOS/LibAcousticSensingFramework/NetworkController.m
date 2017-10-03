@@ -11,7 +11,7 @@
 #import "AudioSource.h"
 
 
-
+// ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/NetworkingTopics/Articles/UsingSocketsandSocketStreams.html#//apple_ref/doc/uid/CH73-SW1
 
 @implementation NetworkController
 @synthesize refCaller;
@@ -46,6 +46,10 @@
         [outputStream setDelegate:self];
         [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [outputStream open];
+        
+        // set a time out event
+        double CONNECT_TIMEOUT_IN_SEC = 1.0;
+        [self performSelector:@selector(connectFailAndCleanUp) withObject:nil afterDelay:CONNECT_TIMEOUT_IN_SEC];
     }
     
     /*
@@ -60,6 +64,21 @@
     CFReadStreamSetProperty(readStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
     CFWriteStreamSetProperty(writeStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
      */
+}
+
+- (void)closeSocketStreams {
+    [inputStream setDelegate:nil];
+    [inputStream close];
+    [outputStream setDelegate:nil];
+    [outputStream close];
+}
+
+- (void)connectFailAndCleanUp {
+    NSLog(@"connectFailAndCleanUp, isConnected = %d", isConnected);
+    if (!isConnected) { // failed to connect -> clean up
+        [self closeSocketStreams];
+        [refCaller isConnected:NO withResp:@"Connect timeout"];
+    }
 }
 
 - (void)sendData:(UInt32)byteSize audioData:(void *)audioData{
@@ -141,7 +160,6 @@
     if(error<0){
         NSLog(@"Unalbe to closeServer: error = %ld",(long)error);
     }
-
 }
 
 /*
@@ -251,7 +269,7 @@
                 
                 int CHECK_OFFSET = SIGNAL_LEN_OFFSET + OFFSET_INT + signalShortToRead*2;
                 
-                if (CHECK_OFFSET > byteLen) return; // not enough data to parse
+                if (CHECK_OFFSET + 1 > byteLen) return; // not enough data to parse
                 
                 // start reading media data
                 int FS = NET_BYTES_TO_INT32(bytes+FS_OFFSET);

@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-#import "ServerClientViewController.h"
 #import "SettingTableViewController.h"
 
 @interface AppDelegate ()

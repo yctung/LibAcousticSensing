@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <LibAcousticSensingFramework/AcousticSensingSettingEditorDelegate.h>
 #import <LibAcousticSensingFramework/AcousticSensingSetting.h>
+#import <LibAcousticSensingFramework/AcousticSensingSettingEditorDelegate.h>
 #import <LibAcousticSensingFramework/AcousticSensingController.h>
 #import <LibAcousticSensingFramework/AcousticSensingControllerCallerDelegate.h>
 

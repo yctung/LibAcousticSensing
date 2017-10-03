@@ -19,8 +19,6 @@
 		135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49A81F80AD4900D2961C /* SettingTableViewController.xib */; };
 		135B49CB1F816FA700D2961C /* AppConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49CA1F816FA700D2961C /* AppConstant.m */; };
 		135B49E11F83D9F400D2961C /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49E01F83D9F400D2961C /* Utils.m */; };
-		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
-		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
 		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
 		13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */; };
 /* End PBXBuildFile section */
@@ -99,9 +97,6 @@
 		135B49CA1F816FA700D2961C /* AppConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConstant.m; sourceTree = "<group>"; };
 		135B49DF1F83D9F400D2961C /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		135B49E01F83D9F400D2961C /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
-		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
-		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
-		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
 		13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToEstimateFreqResp.wav; sourceTree = "<group>"; };
 		13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToCheckAGC.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -168,9 +163,6 @@
 				13C919941EC73B2500A4D1FA /* AudioSource */,
 				13099BC91E300914006D8A06 /* AppDelegate.h */,
 				13099BCA1E300914006D8A06 /* AppDelegate.m */,
-				13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */,
-				13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */,
-				13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */,
 				13099BC61E300914006D8A06 /* Supporting Files */,
 				13099BD21E300915006D8A06 /* Assets.xcassets */,
 				13099BD41E300915006D8A06 /* LaunchScreen.storyboard */,
@@ -350,7 +342,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */,
 				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
@@ -380,7 +371,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */,
 				135B49E11F83D9F400D2961C /* Utils.m in Sources */,
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
 				135B49CB1F816FA700D2961C /* AppConstant.m in Sources */,
