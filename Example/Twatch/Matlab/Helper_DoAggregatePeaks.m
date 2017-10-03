@@ -43,8 +43,8 @@ function Helper_DoAggregatePeaks ()
         
         % Fine-tune these numbers to get the actual distance
         MIC_DISTANCE_CONSTANT = 0;
-        C = 1; % Actually it's 343 m/sec or something
-        FS = 1; %Actually it's 48000.
+        C = 345.63334; % Actually it's 343 m/sec or something
+        FS = 48000.0; %Actually it's 48000.
         
         % Distance between c1 and c3.
         distance_c1_c3 = (c1PeakDown - c1PeakUp) - (c3PeakDown - c3PeakUp);
@@ -54,7 +54,7 @@ function Helper_DoAggregatePeaks ()
         distance_c2_c3 = (c2PeakDown - c2PeakUp) - (c3PeakDown - c3PeakUp);
         distance_c2_c3 = C*distance_c2_c3/(2*FS) + MIC_DISTANCE_CONSTANT;
         
-        set(aggregateDetails, 'string', sprintf('C_1 to C_3 = %f. C_2 to C_3 = %f', distance_c1_c3, distance_c2_c3)); 
+        set(aggregateDetails, 'string', sprintf('C_1 to C_3 = %f cm. C_2 to C_3 = %f cm', distance_c1_c3*100, distance_c2_c3*100)); 
     end
     
 end
@@ -71,10 +71,13 @@ function [peakUp, peakDown, peakDiff] = drawChannel (channelIdx, onechannel)
     %upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
     %downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
     
-    [b, a] = butter(2, PS.upPass/(PS.FS/2), 'bandpass');
+    
+    FilterCutoffs = [PS.upPass(1) - 200 PS.upPass(2) + 200];
+    [b, a] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
     upcorr = abs(convn(filter(b, a, onechannel), PS.upchirp_data, 'same'));
     
-    [d, c] = butter(2, PS.downPass/(PS.FS/2), 'bandpass');
+    FilterCutoffs = [PS.downPass(1) - 200 PS.downPass(2) + 200];
+    [d, c] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
     downcorr = abs(convn(filter(d, c, onechannel), PS.downchirp_data, 'same'));
     
     
