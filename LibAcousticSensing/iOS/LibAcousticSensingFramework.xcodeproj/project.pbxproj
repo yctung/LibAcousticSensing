@@ -40,7 +40,7 @@
 		13BF18FC1E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13BF18F81E48F920008CB0AE /* source_48000rate-5000repeat-2400period+chirp-18000Hz-24000Hz-1200samples+namereduced.wav */; };
 		13BF19041E48FAAF008CB0AE /* TraceSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19021E48FAAE008CB0AE /* TraceSaver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13BF19051E48FAAF008CB0AE /* TraceSaver.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF19031E48FAAF008CB0AE /* TraceSaver.m */; };
-		13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */; };
+		13BF19081E48FDEF008CB0AE /* TraceSaverCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19071E48FDEF008CB0AE /* TraceSaverCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13C919931EC710C900A4D1FA /* AcousticSensingControllerCallerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BF19091E490225008CB0AE /* AcousticSensingControllerCallerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13E0F23A1F0053B0000B5E34 /* TestAudioPlayerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E0F2381F0053B0000B5E34 /* TestAudioPlayerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13E0F23B1F0053B0000B5E34 /* TestAudioPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0F2391F0053B0000B5E34 /* TestAudioPlayerController.m */; };
