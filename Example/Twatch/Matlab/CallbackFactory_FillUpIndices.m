@@ -1,4 +1,4 @@
-function [callback] = CallbackFactory_FillUpIndices (ind1, ind2)
+function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
      callback = @FillUpCallback;
      
      
@@ -35,7 +35,8 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2)
             
             % If enough data has filled up, we will look for peaks.
             if all(FillUpPointers > AlreadyProcessed)
-                Helper_DoAggregatePeaks();
+                %Helper_DoAggregatePeaks();
+                CallOnceFull();
             end
         end
     end 
