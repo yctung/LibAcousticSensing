@@ -14,5 +14,5 @@
 - (int)consumeReceivedData:(NSData*) dataReceived;
 - (void)audioReceivedFromServer:(AudioSource *) audioSource;
 - (void)serverAskStartSensing;
-- (void)serverAskStartStoping;
+- (void)serverAskStopSensing;
 @end

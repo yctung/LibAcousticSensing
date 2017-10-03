@@ -4,20 +4,19 @@ include $(CLEAR_VARS)
 
 TARGET_ARCH_ABI := all
 LOCAL_MODULE	:= standalone
-LOCAL_CFLAGS    := -DDEV_NDK=1
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_CFLAGS    := \
+	-DDEV_NDK=1 \
+	-DDEBUG_TAG=\"LibAS-NDK\" \
+	-DSHOW_DEBUG_MESSAGE=true \
+	-DSAVE_DEBUG_FILE=false
+
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/../../../../../C/ \
+	$(LOCAL_PATH)/../../../../../C/utils
 LOCAL_SRC_FILES := \
-	libas_core.cpp \
-	libas_utils.cpp \
-	libas_test.cpp \
-	kissfft/kiss_fft.c \
-    kissfft/kiss_fftr.c
+	../../../../../C/libas_core.cpp \
+	../../../../../C/utils/libas_utils.cpp
+
 LOCAL_LDLIBS += -llog -ldl
 
 include $(BUILD_SHARED_LIBRARY)
-
-# set the min sdk for using ndk audio lib
-# ref: http://stackoverflow.com/questions/29912960/how-to-use-native-opensl-es-in-android-studio
-# APP_ABI := armeabi
-# APP_PLATFORM := android-9
-# TARGET_PLATFORM := android-9

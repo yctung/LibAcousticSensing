@@ -16,11 +16,24 @@
 #import "NetworkControllerCallerDelegate.h"
 #import "AcousticControllerCallerDelegate.h"
 #import "AcousticSensingControllerCallerDelegate.h"
+#import "AcousticSensingSetting.h"
+#import "AudioSource.h"
+#import "AcousticController.h"
+#import "NetworkController.h"
+#import "NetworkControllerCallerDelegate.h"
 
-@interface AcousticSensingController : NSObject<UIAlertViewDelegate, NetworkControllerCallerDelegate, AcousticControllerCallerDelegate>
+@interface AcousticSensingController : NSObject<UIAlertViewDelegate, NetworkControllerCallerDelegate, AcousticControllerCallerDelegate> {
+    AcousticSensingSetting *setting;
+    id<AcousticSensingControllerCallerDelegate> caller;
+    int audioMode;
+    AudioSource* audioSource;
+    NetworkController* nc;
+    AcousticController* ac;
+}
 
 - (id)initWithCaller: (id<AcousticSensingControllerCallerDelegate>) callerIn;
-- (void) createInitModeDialogWithIp: (NSString*) serverIpDefault andPort: (int) serverPortDefault;
+//- (void) createInitModeDialogWithIp: (NSString*) serverIpDefault andPort: (int) serverPortDefault;
+- (BOOL) setSensingSetting: (AcousticSensingSetting *)setting;
 - (void) startSensingNow;
 - (void) stopSensingNow;
 - (BOOL) isSensing;

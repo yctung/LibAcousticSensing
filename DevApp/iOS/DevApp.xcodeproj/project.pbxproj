@@ -17,25 +17,10 @@
 		13099BEC1E300915006D8A06 /* DevAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BEB1E300915006D8A06 /* DevAppUITests.m */; };
 		135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49A71F80AD4900D2961C /* SettingTableViewController.m */; };
 		135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49A81F80AD4900D2961C /* SettingTableViewController.xib */; };
-		135B49B51F816E9900D2961C /* InputViewControllerCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49AE1F816E9900D2961C /* InputViewControllerCollection.m */; };
-		135B49B61F816E9900D2961C /* SelectOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49B01F816E9900D2961C /* SelectOverlay.m */; };
-		135B49B71F816E9900D2961C /* SelectNumberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49B21F816E9900D2961C /* SelectNumberViewController.m */; };
-		135B49C51F816EA500D2961C /* InputTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49BC1F816EA500D2961C /* InputTextViewController.m */; };
-		135B49C61F816EA500D2961C /* InputLineTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49BE1F816EA500D2961C /* InputLineTextViewController.m */; };
-		135B49C71F816EA500D2961C /* InputControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49C11F816EA500D2961C /* InputControl.m */; };
-		135B49C81F816EA500D2961C /* SelectOptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49C31F816EA500D2961C /* SelectOptionViewController.m */; };
 		135B49CB1F816FA700D2961C /* AppConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49CA1F816FA700D2961C /* AppConstant.m */; };
-		135B49CE1F81710100D2961C /* MyTapInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49CD1F81710100D2961C /* MyTapInterceptor.m */; };
-		135B49D21F81828D00D2961C /* SelectOption.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49D11F81828D00D2961C /* SelectOption.xib */; };
-		135B49D41F81829400D2961C /* SelectNumber.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49D31F81829400D2961C /* SelectNumber.xib */; };
-		135B49D61F81829B00D2961C /* InputLineText.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49D51F81829B00D2961C /* InputLineText.xib */; };
-		135B49D81F8182A700D2961C /* InputText.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49D71F8182A700D2961C /* InputText.xib */; };
-		13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */; };
-		13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */; };
+		135B49E11F83D9F400D2961C /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49E01F83D9F400D2961C /* Utils.m */; };
 		13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */; };
 		13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */; };
-		13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0F23D1F00548F000B5E34 /* TestViewController.m */; };
-		13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13E0F23E1F00548F000B5E34 /* TestViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,37 +93,12 @@
 		135B49A61F80AD4900D2961C /* SettingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingTableViewController.h; sourceTree = "<group>"; };
 		135B49A71F80AD4900D2961C /* SettingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingTableViewController.m; sourceTree = "<group>"; };
 		135B49A81F80AD4900D2961C /* SettingTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingTableViewController.xib; sourceTree = "<group>"; };
-		135B49AD1F816E9900D2961C /* InputViewControllerCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputViewControllerCollection.h; sourceTree = "<group>"; };
-		135B49AE1F816E9900D2961C /* InputViewControllerCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputViewControllerCollection.m; sourceTree = "<group>"; };
-		135B49AF1F816E9900D2961C /* SelectOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectOverlay.h; sourceTree = "<group>"; };
-		135B49B01F816E9900D2961C /* SelectOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectOverlay.m; sourceTree = "<group>"; };
-		135B49B11F816E9900D2961C /* SelectNumberViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectNumberViewController.h; sourceTree = "<group>"; };
-		135B49B21F816E9900D2961C /* SelectNumberViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectNumberViewController.m; sourceTree = "<group>"; };
-		135B49BB1F816EA500D2961C /* InputTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputTextViewController.h; sourceTree = "<group>"; };
-		135B49BC1F816EA500D2961C /* InputTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputTextViewController.m; sourceTree = "<group>"; };
-		135B49BD1F816EA500D2961C /* InputLineTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputLineTextViewController.h; sourceTree = "<group>"; };
-		135B49BE1F816EA500D2961C /* InputLineTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputLineTextViewController.m; sourceTree = "<group>"; };
-		135B49BF1F816EA500D2961C /* InputCallerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputCallerDelegate.h; sourceTree = "<group>"; };
-		135B49C01F816EA500D2961C /* InputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputControl.h; sourceTree = "<group>"; };
-		135B49C11F816EA500D2961C /* InputControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputControl.m; sourceTree = "<group>"; };
-		135B49C21F816EA500D2961C /* SelectOptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectOptionViewController.h; sourceTree = "<group>"; };
-		135B49C31F816EA500D2961C /* SelectOptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectOptionViewController.m; sourceTree = "<group>"; };
 		135B49C91F816FA700D2961C /* AppConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppConstant.h; sourceTree = "<group>"; };
 		135B49CA1F816FA700D2961C /* AppConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConstant.m; sourceTree = "<group>"; };
-		135B49CC1F81710100D2961C /* MyTapInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTapInterceptor.h; sourceTree = "<group>"; };
-		135B49CD1F81710100D2961C /* MyTapInterceptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTapInterceptor.m; sourceTree = "<group>"; };
-		135B49D11F81828D00D2961C /* SelectOption.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SelectOption.xib; sourceTree = "<group>"; };
-		135B49D31F81829400D2961C /* SelectNumber.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SelectNumber.xib; sourceTree = "<group>"; };
-		135B49D51F81829B00D2961C /* InputLineText.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputLineText.xib; sourceTree = "<group>"; };
-		135B49D71F8182A700D2961C /* InputText.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputText.xib; sourceTree = "<group>"; };
-		13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerClientViewController.h; sourceTree = "<group>"; };
-		13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerClientViewController.m; sourceTree = "<group>"; };
-		13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ServerClientViewController.xib; sourceTree = "<group>"; };
+		135B49DF1F83D9F400D2961C /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		135B49E01F83D9F400D2961C /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		13C9199F1EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToEstimateFreqResp.wav; sourceTree = "<group>"; };
 		13C919A31EC767AE00A4D1FA /* latestAudioToCheckAGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = latestAudioToCheckAGC.wav; sourceTree = "<group>"; };
-		13E0F23C1F00548F000B5E34 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
-		13E0F23D1F00548F000B5E34 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
-		13E0F23E1F00548F000B5E34 /* TestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,25 +160,20 @@
 		13099BC51E300914006D8A06 /* DevApp */ = {
 			isa = PBXGroup;
 			children = (
-				135B49AC1F816E7600D2961C /* InputControl */,
 				13C919941EC73B2500A4D1FA /* AudioSource */,
 				13099BC91E300914006D8A06 /* AppDelegate.h */,
 				13099BCA1E300914006D8A06 /* AppDelegate.m */,
-				13BF190A1E4913E6008CB0AE /* ServerClientViewController.h */,
-				13BF190B1E4913E6008CB0AE /* ServerClientViewController.m */,
-				13BF190C1E4913E6008CB0AE /* ServerClientViewController.xib */,
 				13099BC61E300914006D8A06 /* Supporting Files */,
 				13099BD21E300915006D8A06 /* Assets.xcassets */,
 				13099BD41E300915006D8A06 /* LaunchScreen.storyboard */,
 				13099BD71E300915006D8A06 /* Info.plist */,
-				13E0F23C1F00548F000B5E34 /* TestViewController.h */,
-				13E0F23D1F00548F000B5E34 /* TestViewController.m */,
-				13E0F23E1F00548F000B5E34 /* TestViewController.xib */,
 				135B49A61F80AD4900D2961C /* SettingTableViewController.h */,
 				135B49A71F80AD4900D2961C /* SettingTableViewController.m */,
 				135B49A81F80AD4900D2961C /* SettingTableViewController.xib */,
 				135B49C91F816FA700D2961C /* AppConstant.h */,
 				135B49CA1F816FA700D2961C /* AppConstant.m */,
+				135B49DF1F83D9F400D2961C /* Utils.h */,
+				135B49E01F83D9F400D2961C /* Utils.m */,
 			);
 			path = DevApp;
 			sourceTree = "<group>";
@@ -247,34 +202,6 @@
 				13099BED1E300915006D8A06 /* Info.plist */,
 			);
 			path = DevAppUITests;
-			sourceTree = "<group>";
-		};
-		135B49AC1F816E7600D2961C /* InputControl */ = {
-			isa = PBXGroup;
-			children = (
-				135B49CC1F81710100D2961C /* MyTapInterceptor.h */,
-				135B49CD1F81710100D2961C /* MyTapInterceptor.m */,
-				135B49BB1F816EA500D2961C /* InputTextViewController.h */,
-				135B49BC1F816EA500D2961C /* InputTextViewController.m */,
-				135B49BD1F816EA500D2961C /* InputLineTextViewController.h */,
-				135B49BE1F816EA500D2961C /* InputLineTextViewController.m */,
-				135B49BF1F816EA500D2961C /* InputCallerDelegate.h */,
-				135B49C01F816EA500D2961C /* InputControl.h */,
-				135B49C11F816EA500D2961C /* InputControl.m */,
-				135B49C21F816EA500D2961C /* SelectOptionViewController.h */,
-				135B49C31F816EA500D2961C /* SelectOptionViewController.m */,
-				135B49AD1F816E9900D2961C /* InputViewControllerCollection.h */,
-				135B49AE1F816E9900D2961C /* InputViewControllerCollection.m */,
-				135B49AF1F816E9900D2961C /* SelectOverlay.h */,
-				135B49B01F816E9900D2961C /* SelectOverlay.m */,
-				135B49B11F816E9900D2961C /* SelectNumberViewController.h */,
-				135B49B21F816E9900D2961C /* SelectNumberViewController.m */,
-				135B49D11F81828D00D2961C /* SelectOption.xib */,
-				135B49D31F81829400D2961C /* SelectNumber.xib */,
-				135B49D51F81829B00D2961C /* InputLineText.xib */,
-				135B49D71F8182A700D2961C /* InputText.xib */,
-			);
-			name = InputControl;
 			sourceTree = "<group>";
 		};
 		13C919941EC73B2500A4D1FA /* AudioSource */ = {
@@ -415,16 +342,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13BF190E1E4913E6008CB0AE /* ServerClientViewController.xib in Resources */,
 				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
-				135B49D41F81829400D2961C /* SelectNumber.xib in Resources */,
-				135B49D21F81828D00D2961C /* SelectOption.xib in Resources */,
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
-				135B49D61F81829B00D2961C /* InputLineText.xib in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
 				135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */,
-				13E0F2401F00548F000B5E34 /* TestViewController.xib in Resources */,
-				135B49D81F8182A700D2961C /* InputText.xib in Resources */,
 				13099BD31E300915006D8A06 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -450,20 +371,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				135B49C61F816EA500D2961C /* InputLineTextViewController.m in Sources */,
-				135B49C71F816EA500D2961C /* InputControl.m in Sources */,
-				13BF190D1E4913E6008CB0AE /* ServerClientViewController.m in Sources */,
+				135B49E11F83D9F400D2961C /* Utils.m in Sources */,
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
-				13E0F23F1F00548F000B5E34 /* TestViewController.m in Sources */,
 				135B49CB1F816FA700D2961C /* AppConstant.m in Sources */,
-				135B49C51F816EA500D2961C /* InputTextViewController.m in Sources */,
-				135B49CE1F81710100D2961C /* MyTapInterceptor.m in Sources */,
-				135B49B61F816E9900D2961C /* SelectOverlay.m in Sources */,
 				13099BC81E300914006D8A06 /* main.m in Sources */,
-				135B49C81F816EA500D2961C /* SelectOptionViewController.m in Sources */,
 				135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */,
-				135B49B51F816E9900D2961C /* InputViewControllerCollection.m in Sources */,
-				135B49B71F816E9900D2961C /* SelectNumberViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

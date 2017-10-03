@@ -7,44 +7,36 @@
 //
 
 #import "AcousticSensingController.h"
-#import "AcousticControllerCallerDelegate.h"
-#import "FrameworkCheck.h"
-#import "AudioSource.h"
-#import "AcousticController.h"
-#import "NetworkController.h"
-#import "AcousticController.h"
-#import "NetworkControllerCallerDelegate.h"
-#import "TestAudioPlayerController.h"
 
+/*
 @interface AcousticSensingController()
 @property (nonatomic) int audioMode;
-@property (nonatomic) int parseMode;
 @property (nonatomic, retain) NSString *myString;
 @property (nonatomic, retain) AudioSource* audioSource;
-@property (nonatomic) int serverPort;
-@property (nonatomic, retain) NSString* serverIp;
+//@property (nonatomic) int serverPort;
+//@property (nonatomic, retain) NSString* serverIp;
 @property (nonatomic, retain) NetworkController* nc;
 @property (nonatomic, retain) AcousticController* ac;
-@property (nonatomic, retain) id<AcousticControllerCallerDelegate> refCaller;
+//@property (nonatomic, retain) id<AcousticControllerCallerDelegate> refCaller;
 @end
-
+*/
 
 
 @implementation AcousticSensingController
-@synthesize nc, ac, refCaller, audioSource;
+//@synthesize nc, ac, audioSource;
 
 // Private constants
 // ref: http://stackoverflow.com/questions/17228334/what-is-the-best-way-to-create-constants-in-objective-c
-static int const PARSE_MODE_OFFLINE=1; // TOOD: implement the jni parser
-static int const PARSE_MODE_REMOTE=2;  // This mode
-static int const PARSE_MODE_DEFAULT=PARSE_MODE_REMOTE;
+//static int const PARSE_MODE_OFFLINE=1; // TOOD: implement the jni parser
+//static int const PARSE_MODE_REMOTE=2;  // This mode
+//static int const PARSE_MODE_DEFAULT=PARSE_MODE_REMOTE;
 
 
 static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
-- (id) initWithCaller:(id<AcousticControllerCallerDelegate>) callerIn {
+- (id) initWithCaller:(id<AcousticSensingControllerCallerDelegate>) callerIn {
     self = [super init];
     if (self) {
-        refCaller = callerIn;
+        caller = callerIn;
         [self updateDebugStatus:@"initWithCaller"];
         
         nc = [[NetworkController alloc] initWithCaller: self];
@@ -55,25 +47,30 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
     return self;
 }
 
-- (BOOL) setAsSlaveModeWithServerIp: (NSString*) serverIp andPort: (int) serverPort {
-    self.serverIp=serverIp;
-    self.serverPort=serverPort;
-    self.parseMode=PARSE_MODE_REMOTE;
-    self.audioMode=AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+- (BOOL) setSensingSetting: (AcousticSensingSetting *)settingIn {
+    setting = settingIn;
+    
+    if ([[setting getMode] isEqualToString:LIBAS_SETTING_MODE_REMOTE]) {
+        return [self setAsRemoteModeWithServerIp:[setting getServerAddress] andPort:[[setting getServerPort] intValue]];
+    }
+    NSLog(@"[ERROR]: undefined mode = %@", [setting getMode]);
+    return NO;
+}
+
+- (BOOL) setAsRemoteModeWithServerIp: (NSString*) serverIp andPort: (int) serverPort {
+    audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+    [nc connectServerWithIp:serverIp andPort:serverPort];
     return true;
 }
 
 
 - (void) startSensingWhenPossible {
-    if (self.parseMode==PARSE_MODE_REMOTE) {
-        [nc connectServerWithIp:self.serverIp andPort:self.serverPort];
-    } else {
-        //startSensingNow();
-    }
+    // TODO: allow senisng start when the audio received in the remote server
+    [self startSensingNow];
 }
 
 - (void) startSensingNow {
-    ac = [[AcousticController alloc] initWithAudioSource: audioSource andCaller:self];
+    ac = [[AcousticController alloc] initWithAudioSource:audioSource andCaller:self];
     [ac startSurvey];
 }
 
@@ -94,6 +91,8 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 
 // fucntion to show the customized dialog for initialization
 // ref: http://stackoverflow.com/questions/10389635/uialertview-with-two-textfields-and-two-buttons
+// NOTE: deprecated API
+/*
 - (void) createInitModeDialogWithIp: (NSString*) serverIpDefault andPort: (int) serverPortDefault {
     UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Please select init mode" message:@"IP address / port" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
     [av setAlertViewStyle:UIAlertViewStyleLoginAndPasswordInput];
@@ -125,11 +124,11 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
             [self startSensingWhenPossible];
         }
     }
-}
+}*/
 
 - (void)updateDebugStatus:(NSString*) status {
     // TODO: fix this werid warning ....
-    [refCaller updateDebugStatus: status];
+    [caller updateDebugStatus: status];
 }
 
 //==================================================================================================
@@ -159,7 +158,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         */
     } else {
         //[labelStatus setText:[NSString stringWithFormat:@"Fail to connect: %@", resp]];
-        
+        [caller readyToSense:NO message:@"Failed to connect remote server"];
     }
 }
 
@@ -167,9 +166,10 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
     return 0;
 }
 
-- (void)audioReceivedFromServer:(AudioSource *)audioSource {
-    [self setAudioSource:audioSource];
+- (void)audioReceivedFromServer:(AudioSource *)audioSourceIn {
+    audioSource = audioSourceIn;
     [audioSource retain]; // not sure if necessary, but just in case
+    [caller readyToSense:YES message:@"AudioSource is received from remote server"];
 }
 
 - (void)serverAskStartSensing {

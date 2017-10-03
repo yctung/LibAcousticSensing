@@ -10,12 +10,25 @@ android {
         versionCode 1
         versionName "1.0"
 
+        externalNativeBuild {
+            ndkBuild {
+                targets "standalone"
+            }
+        }
+
+        ndk {
+            // Note sure why, but x86 will have a bug to compile
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+
+        /*
         ndk {
             moduleName = "standalone" // module for standalone processing
             ldLibs "log"
-            stl "stlport_shared"
+            stl "gnustl_static"
             cFlags "-DDEV_NDK=1 -v"
         }
+        */
 
     }
     buildTypes {
@@ -24,31 +37,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    // JNI-related settings
-    // TODO: use the nwe Android JNI setting?
-    /*
-    task buildNative(type: Exec, description: 'Compile JNI source via NDK') {
-        def ndkDir = android.ndkDirectory
-        commandLine "$ndkDir/ndk-build",
-                '-C', file('src/main/jni').absolutePath, // Change src/main/jni the relative path to your jni source
-                '-j', Runtime.runtime.availableProcessors(),
-                'all',
-                'NDK_DEBUG=1'
-                //'TARGET_PLATFORM=android-9'
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
     }
-    task cleanNative(type: Exec, description: 'Clean JNI object files') {
-        def ndkDir = android.ndkDirectory
-        commandLine "$ndkDir/ndk-build",
-                '-C', file('src/main/jni').absolutePath, // Change src/main/jni the relative path to your jni source
-                'clean'
-    }
-    // NOTE: I cancel the auto build script by Android Studio -> Need to manually build ndk
-    clean.dependsOn 'cleanNative'
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn buildNative
-    }
-    */
 }
 
 dependencies {

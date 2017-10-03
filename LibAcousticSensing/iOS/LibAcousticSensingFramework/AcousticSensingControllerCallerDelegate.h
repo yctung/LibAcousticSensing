@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol AcousticSensingControllerCallerDelegate <NSObject>
-- (void)updateDebugStatus: (NSString *) status;
-- (void)unexpectedEnd:(int) code withReason: (NSString *) reason;
+- (void)updateDebugStatus:(NSString *)status;
+- (void)unexpectedEnd:(int)code withReason:(NSString *)reason;
+- (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message;
 @end
