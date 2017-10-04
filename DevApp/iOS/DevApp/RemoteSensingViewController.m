@@ -76,6 +76,10 @@
 
 - (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message {
     NSLog(@"readyToSense: %d, message = %@", isReadyToSense, message);
+    if (!isReadyToSense) {
+        // server might be closed remotely
+        [[self navigationController] popViewControllerAnimated:YES];
+    }
 }
 
 - (void)sensingStarted {

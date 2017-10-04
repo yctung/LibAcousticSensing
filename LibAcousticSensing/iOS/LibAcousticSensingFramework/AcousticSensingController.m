@@ -167,7 +167,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         */
     } else {
         //[labelStatus setText:[NSString stringWithFormat:@"Fail to connect: %@", resp]];
-        [caller readyToSense:NO message:@"Failed to connect remote server"];
+        [caller readyToSense:NO message:resp];
     }
 }
 
