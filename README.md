@@ -41,7 +41,7 @@ You can download our prebuild DevApp here:
 - Tizen (TODO: update it)
 
 ### Your Laptop with Matlab Installed
-Let's use the XXX application as an example. In this example, you will be able to ask your device to play a frequency sweep and record the sweep in Matlab. To do so, let's go to your Matlab commandline window and first navigate to the directory of:
+Let's use the XXX application as an example. In this example, you will be able to ask your device to play a frequency sweep and record the sweep in Matlab. To do so, let's go to your Matlab command window and first navigate to the directory of:
 
 ```
 cd Utility/XXX
@@ -67,7 +67,7 @@ Once you finish this step you can start explore the utility of LibAS :)
 ## Usage
 
 Once you have both app installed you can following 4 steps to let
-
+![Demo Freq Resp][Resource/figures/demo_freq_resp.png?raw=true "Demo Freq Resp"]
 
 Please refer to [the project's README](Utility/XXX) for code explainnation.
 
