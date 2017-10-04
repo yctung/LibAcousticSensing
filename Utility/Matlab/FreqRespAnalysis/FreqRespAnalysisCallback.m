@@ -1,6 +1,7 @@
 function [] = FreqRespAnalysisCallback( obj, type, data )
     global dataCellBuf; % save this data buffer for the future reference
     global dataCellBufEnd;
+    global PS;
     
     if type == obj.CALLBACK_TYPE_DATA,
         if obj.userfig == -1, % need to create a new UI window
@@ -17,8 +18,10 @@ function [] = FreqRespAnalysisCallback( obj, type, data )
                 dataFreq = dataFreq(1:floor(size(dataFreq, 1) / 2),:);
                 for chIdx = 1:size(data, 3)    
                     resp = log10(smooth(dataFreq(:, chIdx), 30));
+                    freqs = (1:length(resp)) ./length(resp) .* (PS.FS/2);
                     line = findobj('Tag', sprintf('line%02d_%02d', chIdx, dataCellBufEnd));
                     set(line, 'yData', resp); % only show the 1st ch
+                    set(line, 'xData', freqs);
                 end
             end
         end
