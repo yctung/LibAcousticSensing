@@ -18,24 +18,24 @@ We notice there are various platform-dependent challenges that might prevent new
 ![LibAS Idea](Resource/figures/intro_idea.png?raw=true "LibAS idea")
 
 
-# Usage: Remote Mode (a.k.a. Easy Mode for Demo)
-In this mode, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our [DevApp](DevApp) to your device and this app will automatically streams what ever signal needed for acoustic senisng controlled by a remote Matlab server.
+# Remote Mode (a.k.a. Easy Mode)
+In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our prebuilt DevApp to your device and this app will automatically streams what ever signal needed for acoustic senisng controlled by a remote Matlab server.
 
 ## Install
 
 ### Prerequisites
 - Matlab (I am using 2016a)
-- Our DevApp for Android/iOS/Tizen installed in your device
-- Network connections between your Matlab machine and your Android/iOS/Tizen device
+- LibAS DevApp: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp), [Apple App Store](https://TODO-not-yet), [Tizen Store](https://TODO-not-yet) or build it from the [DevApp source code](DevApp)
+- Network connections between your Matlab machine and your DevApp-installed device
 
-### Your Mobile Device (or Any Android/Tizen/iOS Device)
+### DevApps (Android/iOS/Tizen)
 You can download our prebuild DevApp here:
 
-- Android: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp)
-- iOS (TODO: update it)
-- Tizen (TODO: update it)
+-- Android: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp)
+-- iOS (TODO: update it)
+-- Tizen (TODO: update it)
 
-### Your Laptop with Matlab Installed
+### Matlab
 Let's use the XXX application as an example. In this example, you will be able to ask your device to play a frequency sweep and record the sweep in Matlab. To do so, let's go to your Matlab command window and first navigate to the directory of:
 
 ```
