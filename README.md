@@ -18,7 +18,7 @@ We notice there are various platform-dependent challenges that might prevent new
 ![LibAS Idea](Resource/figures/intro_idea.png?raw=true "LibAS idea")
 
 
-# Remote Mode (a.k.a. Easy Mode)
+# Remote Mode (Easy for New Users)
 In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our prebuilt DevApp to your device and this app will automatically streams what ever signal needed for acoustic senisng controlled by a remote Matlab server.
 
 ## Install
@@ -73,9 +73,8 @@ Please refer to [the project's README](Utility/XXX) for code explainnation.
 - If you see some errors related to ```preamble is not synced```, which menas the current setting to find the start of sensing audio is not applicalbe to your device. Please change the speaker/microphone issues and test again and feel free to file an issue if you can't solve it.
 - If you can't hear any sound being played (the sound should be audible for this FreqRespAnalysis example), please check if your app has the permission to play/record sounds or if your device is muted.
 
-# Usage: Standalone Mode (a.k.a. Real App for Product)
-
-
+# Standalone Mode (Build Your App for Product)
+***NOT COMPLETE YET***
 ## Troubleshooting
 - If Android tell you ```Error:Execution failed for task ':libacousticsensing:compileReleaseNdk'. NDK not configured.``` you need to update your ```local.properties``` file to include your ndk path. For example, mine is: ```sdk.dir=/Users/yctung/Library/Android/ndk```
 
@@ -85,12 +84,10 @@ Please refer to [the project's README](Utility/XXX) for code explainnation.
 In theory, LibAS should be compatible to all Android/Tizen/iOS/Linux devices with microphone/speaker installed.
 However, it might need to customized settings for certain devices.
 Followings include the devices we have used and tested in LibAS:
-- Android
-> Samsung Galaxy S4/5/6/7/8, Note 4, Nexus 6P, Nexus 5X, HTC One, ASUS Zen Watch 3
-- iOS
-> iPhone 5c, iPhone 6s
-- Tizen
-> Samsung Gear S3
+
+- Android: Samsung Galaxy S4/5/6/7/8, Note 4, Nexus 6P, Nexus 5X, HTC One, ASUS Zen Watch 3
+- iOS: iPhone 5c, iPhone 6s
+- Tizen: Samsung Gear S3
 
 
 # License
