@@ -36,7 +36,7 @@ In this mode, you don't need to know anything about real-time audio recording/pl
 ### Your Mobile Device (or Any Android/Tizen/iOS Device)
 You can download our prebuild DevApp here:
 
-- Android (TODO: update it)
+- Android: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp)
 - iOS (TODO: update it)
 - Tizen (TODO: update it)
 
