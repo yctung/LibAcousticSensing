@@ -13,7 +13,7 @@ In short, acoustic sensing can turn your device (such as a smartphone) into a *s
 Various interesting applications (like [this](https://youtu.be/Wn3sRmQteY8) and [this](https://youtu.be/CQ-AirK7wLY)) can be implemented and deployed with acoustic sensing.
 
 ### Why We Need LibAS?
-We notice there are various platform-dependent challenges that might prevent new developers from implementing their exciting acoustic sensing ideas. For example, it is non-trivial to learn a new programming language (like Java for Android and Obj-C for iOS), especially use them to deal the real-time audio recording. Moreover, it is also challenging to prototype/validate your sensing algorithm directly by these programming languages. So we design LibAS to **hide** these technical programming details from the developers. The following figure shows the different workflows to design acoustic sensing algorithms with/without LibAS:
+We notice there are various platform-dependent challenges that might prevent new developers from implementing their exciting acoustic sensing ideas. For example, it is non-trivial to learn a new programming language (like Java for Android and Obj-C for iOS), especially to deal with the real-time audio recording. Moreover, it is also challenging to prototype/validate your sensing algorithm directly by these system programming languages. So we design LibAS to **hide** most technical programming details from the developers. The following figure shows the difference of designing acoustic sensing algorithms with or without LibAS:
 
 ![LibAS Idea](Resource/figures/intro_idea.png?raw=true "LibAS idea")
 
