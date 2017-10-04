@@ -15,8 +15,10 @@ global AlreadyProcessed;
 
 %PS.downPass = [1000 1200];
 %PS.upPass = [1500 1700];
-PS.downPass = [1000 1200];
-PS.upPass = [1000 1200];
+%PS.downPass = [1000 1200];
+%PS.upPass = [1000 1200];
+PS.upPass = [19000 22000]; % 2k - 6k is the paper
+PS.downPass = [19000 22000]; % 2k - 6k
 
 [upChirp, upSignal] = Helper_CreateSignal('up');
 [downChirp, downSignal] = Helper_CreateSignal('down');
@@ -62,7 +64,8 @@ function StartSensingServer (upas, downas)
     pause(1.0);
     
     %analysisFunction = @Helper_DoAggregatePeaks;
-    analysisFunction = @Helper_DistanceCalc;
+    %analysisFunction = @Helper_DistanceCalc;
+    analysisFunction = @BufferCallback_DistanceExperiments;
     
     pss = SensingServer(50005, CallbackFactory_FillUpIndices(1,2,analysisFunction), SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
     pss.startSensingAfterConnectionInit = 0; 
