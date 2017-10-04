@@ -72,6 +72,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 - (void) startSensingNow {
     ac = [[AcousticController alloc] initWithAudioSource:audioSource andCaller:self];
     [ac startSurvey];
+    [caller sensingStarted];
 }
 
 - (void) stopSensingNow {
@@ -80,6 +81,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         [ac release];
         ac = NULL;
     }
+    [caller sensingFinished];
 }
 
 - (BOOL) isSensing {
@@ -87,6 +89,13 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         return YES;
     }
     return NO;
+}
+
+- (id<AcousticSensingControllerCallerDelegate>)getDelegate {
+    return caller;
+}
+- (void)setDelegate:(id<AcousticSensingControllerCallerDelegate>)delegate {
+    caller = delegate;
 }
 
 // fucntion to show the customized dialog for initialization

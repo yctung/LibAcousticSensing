@@ -37,6 +37,8 @@
 - (void) startSensingNow;
 - (void) stopSensingNow;
 - (BOOL) isSensing;
+- (id<AcousticSensingControllerCallerDelegate>)getDelegate;
+- (void)setDelegate:(id<AcousticSensingControllerCallerDelegate>)delegate;
 @end
 
 #endif /* AcousticSensingController_h */

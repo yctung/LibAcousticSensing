@@ -11,6 +11,7 @@
 #import <LibAcousticSensingFramework/AcousticSensingSettingEditorDelegate.h>
 #import <LibAcousticSensingFramework/AcousticSensingController.h>
 #import <LibAcousticSensingFramework/AcousticSensingControllerCallerDelegate.h>
+#import "RemoteSensingViewController.h"
 
 typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagUndefined,

@@ -264,8 +264,9 @@
         case CellTagResetToDefault:
             [ass resetToDefaultSetting];
             break;
-        case CellTagStart:
+        case CellTagStart: {
             [asc setSensingSetting:ass];
+        }
             break;
         default:
             break;
@@ -317,6 +318,17 @@
 
 - (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message {
     NSLog(@"readyToSense: %d, message = %@", isReadyToSense, message);
+    if (isReadyToSense) {
+        RemoteSensingViewController *vc = [[RemoteSensingViewController alloc] initWithAcousticSensingController:asc];
+        [[self navigationController] pushViewController:vc animated:YES];
+    }
+}
+
+- (void)sensingStarted {
+    
+}
+- (void)sensingFinished {
+    
 }
 
 @end
