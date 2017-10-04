@@ -13,13 +13,13 @@ In short, acoustic sensing can turn your device (such as a smartphone) into a *s
 Various interesting applications (like [this](https://youtu.be/Wn3sRmQteY8) and [this](https://youtu.be/CQ-AirK7wLY)) can be implemented and deployed with acoustic sensing.
 
 ### Why We Need LibAS?
-We notice there are various platform-dependent challenges that might prevent new developers from implementing their exciting acoustic sensing ideas. For example, it is non-trivial to learn a new programming language (like Java for Android and Obj-C for iOS), especially use them to deal the real-time audio recording. Moreoever, it is also challenging to prototype/validate your sensing algorithm directly by these programming languages. So we design LibAS to **hide** these technical programming details from the developers. The following figure shows the different workflows to design acoustic sensing algorithms with/without LibAS:
+We notice there are various platform-dependent challenges that might prevent new developers from implementing their exciting acoustic sensing ideas. For example, it is non-trivial to learn a new programming language (like Java for Android and Obj-C for iOS), especially use them to deal the real-time audio recording. Moreover, it is also challenging to prototype/validate your sensing algorithm directly by these programming languages. So we design LibAS to **hide** these technical programming details from the developers. The following figure shows the different workflows to design acoustic sensing algorithms with/without LibAS:
 
 ![LibAS Idea](Resource/figures/intro_idea.png?raw=true "LibAS idea")
 
 
 # Remote Mode (Easy for New Users)
-In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is downloading one of our prebuilt DevApp to your device and this app will automatically stream whatever signal needed for acoustic sensing to a remote Matlab server. You can easily design your sensing alogrithm in Matlab and control the connected device to sense.
+In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our prebuilt DevApp to your device and this app will automatically stream whatever signal needed for acoustic sensing to a remote Matlab server. You can easily design your sensing algorithm in Matlab and control the connected device to sense.
 
 ## Install
 
@@ -29,7 +29,7 @@ In LibAS's **remote mode**, you don't need to know anything about real-time audi
 - Network connections between your Matlab machine and your DevApp-installed device
 
 ### Setup
-Let's use our [Utility/FreqRespAnalysis](Utility/FreqRespAnalysis) as an example. In this example, Matlab server is programmed to ask the connected device to play several frequency sweeps for analyzing the frequency response between the device speakers and microphones. To setup this Matlab server, let's navigate to the example directory in your Matlab command window:
+Let's use our [Utility/FreqRespAnalysis](Utility/FreqRespAnalysis) as an example. In this example, Matlab server is programmed to ask the connected device to play several frequency sweeps for analyzing the frequency response between the device speakers and microphones. To set up this Matlab server, let's navigate to the example directory in your Matlab command window:
 
 ```
 >> cd Utility/FreqRespAnalysis/Matlab
@@ -46,15 +46,15 @@ And then call the Setup.m function
 ```
 >> [WARNING]: JavaClassPath is not added yet!
 >> Add this path will restart the Matlab.
->> Do you wanto do this now?
+>> Do you want to do this now?
 >> (Y/N): Y
 ```
 
-You are all set and can start runing your fancy sensing algorithms with LibAS :)
+You are all set and can start running your fancy sensing algorithms with LibAS :)
 
 ## Usage
 
-You know can use Matlab to control the connected device to sense by the four steps shown i the following figure:
+You now can use Matlab to control the connected device to sense by the four steps shown in the following figure:
 ![Demo Freq Resp](Resource/figures/demo_freq_resp.png?raw=true "Demo Freq Resp")
 
 You can also change the sound to play easily by editing the ```AudioSource``` class in the  ```FreqRespAnalysisMain.m```. Please refer to the example's [README](Utility/FreqRespAnalysis) for knowing how the code works.
@@ -75,13 +75,13 @@ You can also change the sound to play easily by editing the ```AudioSource``` cl
 
 
 # Compatible devices
-In theory, LibAS should be compatible to all Android/Tizen/iOS/Linux devices with microphone/speaker installed.
-However, it might need to customized settings for certain devices.
+In theory, LibAS should be compatible with all Android, iOS, Tizen devices with microphone/speaker installed.
+However, it might need to customized settings for different devices.
 Followings include the devices we have used and tested in LibAS:
 
-- Android: Samsung Galaxy S4/5/6/7/8, Note 4, Nexus 6P, Nexus 5X, HTC One, ASUS Zen Watch 3
-- iOS: iPhone 5c, iPhone 6s
-- Tizen: Samsung Gear S3
+- Android: ```Samsung Galaxy S4/5/6/7/8, Note 4, Nexus 6P, Nexus 5X, HTC One, ASUS Zen Watch 3```
+- iOS: ```iPhone 5c, iPhone 6s```
+- Tizen: ```Samsung Gear S3```
 
 
 # License
