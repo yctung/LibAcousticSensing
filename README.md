@@ -25,7 +25,7 @@ In LibAS's **remote mode**, you don't need to know anything about real-time audi
 
 ### Prerequisites
 - Matlab (I am using 2016a)
-- LibAS DevApp: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp), [Apple App Store](https://TODO-not-yet), [Tizen Store](https://TODO-not-yet) or build it from the [DevApp source code](DevApp)
+- LibAS DevApp: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp), [Apple App Store](https://itunes.apple.com/us/app/libas-devapp/id1292387567?ls=1&mt=8), [Tizen Store](https://TODO-not-yet) or build it from the [DevApp source code](DevApp)
 - Network connections between your Matlab machine and your DevApp-installed device
 
 ### Setup
