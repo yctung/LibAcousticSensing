@@ -19,7 +19,7 @@ We notice there are various platform-dependent challenges that might prevent new
 
 
 # Remote Mode (Easy for New Users)
-In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our prebuilt DevApp to your device and this app will automatically streams what ever signal needed for acoustic senisng controlled by a remote Matlab server.
+In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is downloading one of our prebuilt DevApp to your device and this app will automatically stream whatever signal needed for acoustic sensing to a remote Matlab server. You can easily design your sensing alogrithm in Matlab and control the connected device to sense.
 
 ## Install
 
@@ -28,50 +28,44 @@ In LibAS's **remote mode**, you don't need to know anything about real-time audi
 - LibAS DevApp: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp), [Apple App Store](https://TODO-not-yet), [Tizen Store](https://TODO-not-yet) or build it from the [DevApp source code](DevApp)
 - Network connections between your Matlab machine and your DevApp-installed device
 
-### DevApps (Android/iOS/Tizen)
-You can download our prebuild DevApp here:
-
--- Android: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp)
--- iOS (TODO: update it)
--- Tizen (TODO: update it)
-
-### Matlab
-Let's use the XXX application as an example. In this example, you will be able to ask your device to play a frequency sweep and record the sweep in Matlab. To do so, let's go to your Matlab command window and first navigate to the directory of:
+### Setup
+Let's use our [Utility/FreqRespAnalysis](Utility/FreqRespAnalysis) as an example. In this example, Matlab server is programmed to ask the connected device to play several frequency sweeps for analyzing the frequency response between the device speakers and microphones. To setup this Matlab server, let's navigate to the example directory in your Matlab command window:
 
 ```
-cd Utility/XXX
+>> cd Utility/FreqRespAnalysis/Matlab
 ```
 
 And then call the Setup.m function
 
 ```
-Setup
+>> Setup
 ```
 
-***WARN: For the first using this app, you will see the following message after calling the*** ```Setup```. Please type Y and to add the path and then ***restart*** your Matlab. (It is necessary because Matlab loads customized Java class on boot)
+***WARN: For the first using this app, you will see the following message after calling the*** ```Setup```. Please type Y and then restart your Matlab. (It is necessary for Matlab to load our customized java classes):
 
 ```
-[WARNING]: JavaClassPath is not added yet!
-Add this path will restart the Matlab.
-Do you wanto do this now?
-(Y/N): Y
+>> [WARNING]: JavaClassPath is not added yet!
+>> Add this path will restart the Matlab.
+>> Do you wanto do this now?
+>> (Y/N): Y
 ```
 
-Once you finish this step you can start explore the utility of LibAS :)
+You are all set and can start runing your fancy sensing algorithms with LibAS :)
 
 ## Usage
 
-Once you have both app installed you can following 4 steps to let
+You know can use Matlab to control the connected device to sense by the four steps shown i the following figure:
 ![Demo Freq Resp](Resource/figures/demo_freq_resp.png?raw=true "Demo Freq Resp")
 
-Please refer to [the project's README](Utility/XXX) for code explainnation.
+You can also change the sound to play easily by editing the ```AudioSource``` class in the  ```FreqRespAnalysisMain.m```. Please refer to the example's [README](Utility/FreqRespAnalysis) for knowing how the code works.
 
 
 ## Troubleshooting
-- If you can't make the connection, try to ping your devices (e.g., adb shell ping xxx.xxx.xxx.xxx) and ensure there is no firewall between your devices
+- If you can't build the connection in DevApp, try to ping your Matlab machine (e.g., adb shell ping 10.0.0.1) and ensure there is no firewall between your Matlab server and device
 - If you keep seeing this Matlab error message ```'SensingServer' not found``` you might need to manually call ```import edu.umich.cse.yctung.*``` before using any ```SensingServer``` class
-- If you see some errors related to ```preamble is not synced```, which menas the current setting to find the start of sensing audio is not applicalbe to your device. Please change the speaker/microphone issues and test again and feel free to file an issue if you can't solve it.
 - If you can't hear any sound being played (the sound should be audible for this FreqRespAnalysis example), please check if your app has the permission to play/record sounds or if your device is muted.
+- If you see some errors related to ```preamble is not synced```, which menas LibAS's current setting to find the start of sensing audio fails. Please use the other microphone/speaker to and test again. Feel free to file an issue if you can't solve it.
+
 
 # Standalone Mode (Build Your App for Product)
 ***NOT COMPLETE YET***
