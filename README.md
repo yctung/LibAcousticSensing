@@ -67,7 +67,7 @@ Once you finish this step you can start explore the utility of LibAS :)
 ## Usage
 
 Once you have both app installed you can following 4 steps to let
-![Demo Freq Resp][Resource/figures/demo_freq_resp.png?raw=true "Demo Freq Resp"]
+![Demo Freq Resp](Resource/figures/demo_freq_resp.png?raw=true "Demo Freq Resp")
 
 Please refer to [the project's README](Utility/XXX) for code explainnation.
 
