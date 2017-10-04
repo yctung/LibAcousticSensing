@@ -74,7 +74,7 @@
 }
 
 - (void)connectFailAndCleanUp {
-    NSLog(@"connectFailAndCleanUp, isConnected = %d", isConnected);
+    NSLog(@"connectFailAndCleanUp is checked when isConnected = %d", isConnected);
     if (!isConnected) { // failed to connect -> clean up
         [self closeSocketStreams];
         [refCaller isConnected:NO withResp:@"Connect timeout"];

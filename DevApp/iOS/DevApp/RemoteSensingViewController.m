@@ -78,6 +78,7 @@
     NSLog(@"readyToSense: %d, message = %@", isReadyToSense, message);
     if (!isReadyToSense) {
         // server might be closed remotely
+        [originalDelegate updateDebugStatus:@"Server is closed remotely"];
         [[self navigationController] popViewControllerAnimated:YES];
     }
 }

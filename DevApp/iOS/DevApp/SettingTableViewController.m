@@ -21,6 +21,7 @@
         // TODO: init preference
         [self setTitle:@"Sening Setting"];
         
+        debugStatus = [[NSMutableString alloc] init];
         ass = [[AcousticSensingSetting alloc] initWithEditorDelegate:self];
         asc = [[AcousticSensingController alloc] initWithCaller:self];
         
@@ -83,6 +84,15 @@
                     break;
             }
             break;
+        case 3: // debug section
+            switch (row) {
+                case 0:
+                    return CellTagDebug;
+                    break;
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }
@@ -100,20 +110,19 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 4;
 }
 
 - (NSString *)tableView: (UITableView *)tableView titleForHeaderInSection:(NSInteger) section {
     switch (section) {
         case 0:
             return @"Mode";
-            break;
         case 1:
             return @"Audio";
-            break;
         case 2:
             return @"Action";
-            break;
+        case 3:
+            return @"Status";
         default:
             return nil;
             break;
@@ -127,6 +136,8 @@
         return 2;
     } else if (section == 2) { // action section
         return 2;
+    } else if (section == 3) { // status section
+        return 1;
     }
     //NSLog(@"[WARN]: undefined section number = %ld", (long)section);
     return 0;
@@ -201,6 +212,12 @@
             break;
         case CellTagStart:
             cell.textLabel.text = @"Start";
+            break;
+        // ---------------
+        //  status cells
+        // ---------------
+        case CellTagDebug:
+            cell.textLabel.text = debugStatus;
             break;
         default:
             cell.textLabel.text = @"Undefined";
@@ -294,6 +311,12 @@
 }
 */
 
+- (void)updateAndRefreshDebugStatus:(NSString *)status {
+    [debugStatus setString:status];
+    UITableView *tv = (UITableView *)[self view];
+    [tv reloadData];
+}
+
 - (void)modeChanged {
     [ass setMode: [modeSegmentControl titleForSegmentAtIndex:[modeSegmentControl selectedSegmentIndex]]];
 }
@@ -310,10 +333,10 @@
 //==================================================================================================
 - (void)updateDebugStatus:(NSString *)status {
     NSLog(@"updateDebugStatus: %@", status);
-    //[debugStatus setText:status];
+    [self updateAndRefreshDebugStatus:status];
 }
 - (void)unexpectedEnd:(int)code withReason:(NSString *)reason {
-    
+    [self updateAndRefreshDebugStatus:reason];
 }
 
 - (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message {
@@ -321,6 +344,8 @@
     if (isReadyToSense) {
         RemoteSensingViewController *vc = [[RemoteSensingViewController alloc] initWithAcousticSensingController:asc];
         [[self navigationController] pushViewController:vc animated:YES];
+    } else {
+        [self updateAndRefreshDebugStatus:message];
     }
 }
 

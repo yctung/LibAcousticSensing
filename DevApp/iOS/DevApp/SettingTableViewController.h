@@ -21,13 +21,15 @@ typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagMicSource,
     CellTagSpeakerSource,
     CellTagResetToDefault,
-    CellTagStart
+    CellTagStart,
+    CellTagDebug
 };
 
 @interface SettingTableViewController : UITableViewController <AcousticSensingSettingEditorDelegate, AcousticSensingControllerCallerDelegate> {
     AcousticSensingSetting *ass;
     AcousticSensingController *asc;
     UISegmentedControl *modeSegmentControl;
+    NSMutableString *debugStatus;
 }
 
 
