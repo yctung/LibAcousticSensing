@@ -28,6 +28,10 @@
         modeSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_MODE_REMOTE, LIBAS_SETTING_MODE_STANDALONE, nil]];
         [modeSegmentControl setFrame:CGRectMake(0, 0, 200, 30)];
         [modeSegmentControl addTarget:self action:@selector(modeChanged) forControlEvents:UIControlEventValueChanged];
+        
+        micSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_RECORDER_MIC_BACK, LIBAS_SETTING_RECORDER_MIC_FRONT, LIBAS_SETTING_RECORDER_MIC_BOTTOM, nil]];
+        [micSegmentControl setFrame:CGRectMake(0, 0, 250, 30)];
+        [micSegmentControl addTarget:self action:@selector(micChanged) forControlEvents:UIControlEventValueChanged];
     }
     return self;
 }
@@ -204,6 +208,18 @@
             cell.textLabel.text = @"Server Port";
             cell.detailTextLabel.text = [ass getServerPort];
             break;
+        case CellTagMicSource:
+            cell.textLabel.text = @"Mic";
+            cell.accessoryView = micSegmentControl;
+            // TODO: try to get index directly from the array of titles in the micSegmentControl (so more robust even when we change the name)
+            if ([[ass getRecorderMic] isEqualToString:LIBAS_SETTING_RECORDER_MIC_BACK]) {
+                [micSegmentControl setSelectedSegmentIndex:0];
+            } else if ([[ass getRecorderMic] isEqualToString:LIBAS_SETTING_RECORDER_MIC_FRONT]) {
+                [micSegmentControl setSelectedSegmentIndex:1];
+            } else if ([[ass getRecorderMic] isEqualToString:LIBAS_SETTING_RECORDER_MIC_BOTTOM]) {
+                [micSegmentControl setSelectedSegmentIndex:2];
+            }
+            break;
         // ---------------
         //  action cells
         // ---------------
@@ -319,6 +335,10 @@
 
 - (void)modeChanged {
     [ass setMode: [modeSegmentControl titleForSegmentAtIndex:[modeSegmentControl selectedSegmentIndex]]];
+}
+
+- (void)micChanged {
+    [ass setRecorderMic:[micSegmentControl titleForSegmentAtIndex:[micSegmentControl selectedSegmentIndex]]];
 }
 
 // will be called after finish select in select views

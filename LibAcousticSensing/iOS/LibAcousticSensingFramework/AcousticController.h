@@ -16,6 +16,7 @@
 #import "NetworkController.h"
 #import "TraceSaver.h"
 #import "TraceSaverCallerDelegate.h"
+#import "RecordSetting.h"
 
 @interface AcousticController : NSObject <AudioRecorderCallerDelegate, TraceSaverCallerDelegate, AVAudioPlayerDelegate>{
     AVAudioPlayer *avAudioPlayer;
@@ -30,11 +31,11 @@
 //@property (retain, nonatomic) AudioSource *audioSource;
 
 //- (id)initAudioToPlay:(NSString *)audioSourceName WithCaller:(id<AcousticControllerCallerDelegate>) caller withNetworkController:(NetworkController*) networkController;
-- (id)initWithAudioSource: (AudioSource*)audioSource andCaller:(id<AcousticControllerCallerDelegate>) caller;
+- (id)initWithAudioSource: (AudioSource*)audioSource recordSetting:(RecordSetting *)recordSetting andCaller:(id<AcousticControllerCallerDelegate>) caller;
 - (void)startSurveyButDontPlaySound;
 - (void)startSurvey;
 - (void)stopSurvey; // force to stop survey
 - (BOOL)isSensing;
 - (void)finalizeSurvey; // finalize the acoustic controller
-
++ (BOOL)setAudioSessionWithAudioSource:(AudioSource *)audioSource andRecordSetting:(RecordSetting *)recordSetting;
 @end

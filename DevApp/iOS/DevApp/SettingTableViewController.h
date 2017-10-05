@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, CellTagType) {
     AcousticSensingSetting *ass;
     AcousticSensingController *asc;
     UISegmentedControl *modeSegmentControl;
+    UISegmentedControl *micSegmentControl;
     NSMutableString *debugStatus;
 }
 

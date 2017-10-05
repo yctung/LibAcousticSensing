@@ -21,9 +21,11 @@
 #import "AcousticController.h"
 #import "NetworkController.h"
 #import "NetworkControllerCallerDelegate.h"
+#import "RecordSetting.h"
 
 @interface AcousticSensingController : NSObject<UIAlertViewDelegate, NetworkControllerCallerDelegate, AcousticControllerCallerDelegate> {
     AcousticSensingSetting *setting;
+    RecordSetting *recordSetting;
     id<AcousticSensingControllerCallerDelegate> caller;
     int audioMode;
     AudioSource* audioSource;

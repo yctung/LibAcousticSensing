@@ -21,6 +21,11 @@ NSString * const LIBAS_SETTING_MODE_REMOTE = @"Remote";
 NSString * const LIBAS_SETTING_MODE_STANDALONE = @"Standalone";
 NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
 
+NSString * const LIBAS_SETTING_RECORDER_MIC_KEY = @"LIBAS_SETTING_RECORDER_MIC_KEY";
+NSString * const LIBAS_SETTING_RECORDER_MIC_BACK = @"Back";
+NSString * const LIBAS_SETTING_RECORDER_MIC_FRONT = @"Front";
+NSString * const LIBAS_SETTING_RECORDER_MIC_BOTTOM = @"Bottom";
+NSString * const LIBAS_SETTING_RECORDER_MIC_DEFAULT = @"Back";
 
 - (id)initWithEditorDelegate: (id<AcousticSensingSettingEditorDelegate>) callerIn {
     self = [super init];
@@ -76,6 +81,14 @@ NSString * const LIBAS_SETTING_MODE_DEFAULT = @"Remote";
 
 - (void)setServerPort: (NSString *)port {
     [[NSUserDefaults standardUserDefaults] setObject:port forKey:LIBAS_SETTING_SERVER_PORT_KEY];
+}
+
+- (NSString *)getRecorderMic {
+    return [self getStringFromPerf:LIBAS_SETTING_RECORDER_MIC_KEY defaultValue:LIBAS_SETTING_RECORDER_MIC_DEFAULT];
+}
+
+- (void)setRecorderMic: (NSString *)mic {
+    [[NSUserDefaults standardUserDefaults] setObject:mic forKey:LIBAS_SETTING_RECORDER_MIC_KEY];
 }
 
 // Utility to get pref
