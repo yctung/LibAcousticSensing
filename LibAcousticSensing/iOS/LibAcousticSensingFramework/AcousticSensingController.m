@@ -72,6 +72,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 }
 
 - (void) startSensingNow {
+    [audioSource applyDeviceSensingSetting:setting];
     ac = [[AcousticController alloc] initWithAudioSource:audioSource recordSetting:recordSetting andCaller:self];
     [ac startSurvey];
     [caller sensingStarted];

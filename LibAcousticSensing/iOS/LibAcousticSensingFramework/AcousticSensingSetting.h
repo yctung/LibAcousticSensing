@@ -28,9 +28,10 @@ extern NSString * const LIBAS_SETTING_RECORDER_MIC_FRONT;
 extern NSString * const LIBAS_SETTING_RECORDER_MIC_BOTTOM;
 extern NSString * const LIBAS_SETTING_RECORDER_MIC_DEFAULT;
 
-
-
-
+extern NSString * const LIBAS_SETTING_PLAY_SPEAKER_KEY;
+extern NSString * const LIBAS_SETTING_PLAY_SPEAKER_TOP;
+extern NSString * const LIBAS_SETTING_PLAY_SPEAKER_BOTTOM;
+extern NSString * const LIBAS_SETTING_PLAY_SPEAKER_DEFAULT;
 
 
 @interface AcousticSensingSetting : NSObject {
@@ -54,5 +55,8 @@ extern NSString * const LIBAS_SETTING_RECORDER_MIC_DEFAULT;
 
 - (NSString *)getRecorderMic;
 - (void)setRecorderMic: (NSString *)mic;
+
+- (NSString *)getPlaySpeaker;
+- (void)setPlaySpeaker: (NSString *)speaker;
 
 @end

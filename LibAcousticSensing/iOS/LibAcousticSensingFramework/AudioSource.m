@@ -19,8 +19,17 @@
         [self setRepeatCnt:repeatCntIn];
         [self setPreamble:preambleIn];
         [self setSignal:signalIn];
+        [self setUseBottomSpeaker:NO]; // default
     }
     return self;
+}
+
+- (void)applyDeviceSensingSetting:(AcousticSensingSetting *)setting {
+    if ([[setting getPlaySpeaker] isEqualToString:LIBAS_SETTING_PLAY_SPEAKER_BOTTOM]) {
+        [self setUseBottomSpeaker:YES];
+    } else {
+        [self setUseBottomSpeaker:NO];
+    }
 }
 
 @end

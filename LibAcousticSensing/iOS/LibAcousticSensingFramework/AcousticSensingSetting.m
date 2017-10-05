@@ -27,6 +27,11 @@ NSString * const LIBAS_SETTING_RECORDER_MIC_FRONT = @"Front";
 NSString * const LIBAS_SETTING_RECORDER_MIC_BOTTOM = @"Bottom";
 NSString * const LIBAS_SETTING_RECORDER_MIC_DEFAULT = @"Back";
 
+NSString * const LIBAS_SETTING_PLAY_SPEAKER_KEY = @"LIBAS_SETTING_PLAY_SPEAKER_KEY";
+NSString * const LIBAS_SETTING_PLAY_SPEAKER_TOP = @"Top";
+NSString * const LIBAS_SETTING_PLAY_SPEAKER_BOTTOM = @"Bottom";
+NSString * const LIBAS_SETTING_PLAY_SPEAKER_DEFAULT = @"Top";
+
 - (id)initWithEditorDelegate: (id<AcousticSensingSettingEditorDelegate>) callerIn {
     self = [super init];
     if (self) {
@@ -91,6 +96,14 @@ NSString * const LIBAS_SETTING_RECORDER_MIC_DEFAULT = @"Back";
     [[NSUserDefaults standardUserDefaults] setObject:mic forKey:LIBAS_SETTING_RECORDER_MIC_KEY];
 }
 
+- (NSString *)getPlaySpeaker {
+    return [self getStringFromPerf:LIBAS_SETTING_PLAY_SPEAKER_KEY defaultValue:LIBAS_SETTING_PLAY_SPEAKER_DEFAULT];
+}
+
+- (void)setPlaySpeaker: (NSString *)speaker {
+    [[NSUserDefaults standardUserDefaults] setObject:speaker forKey:LIBAS_SETTING_PLAY_SPEAKER_KEY];
+}
+
 // Utility to get pref
 - (NSString *)getStringFromPerf:(NSString *)key defaultValue:(NSString *) defaultValue {
     NSUserDefaults *pref = [NSUserDefaults standardUserDefaults];
@@ -99,6 +112,8 @@ NSString * const LIBAS_SETTING_RECORDER_MIC_DEFAULT = @"Back";
     }
     return [pref stringForKey:key];
 }
+
+
 
 // Utility input alert controller creations
 - (void)showAlertEditForNumber: (NSString *) key andTitle: (NSString *) title {

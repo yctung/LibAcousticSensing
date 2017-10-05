@@ -331,10 +331,17 @@
     
     // setup speaker (optional)
     //set the audioSession override
-    if (C_PLAYER_USE_BOTTOM_SPEAKER) {
-        NSLog(@"[WARN]: sound is played by bottom speaker -> might not fit my original setting");
+    if ([audioSource useBottomSpeaker]) {
+        NSLog(@"sound is played by bottom speaker -> might not fit my original setting");
         if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
             NSLog(@"setup speaker failed");
+            return NO;
+        }
+    } else {
+        NSLog(@"sound is played by top speaker");
+        if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error]) {
+            NSLog(@"setup speaker failed");
+            return NO;
         }
     }
     
