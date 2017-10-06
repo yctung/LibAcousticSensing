@@ -74,7 +74,7 @@
 }
 
 - (void)connectFailAndCleanUp {
-    NSLog(@"connectFailAndCleanUp, isConnected = %d", isConnected);
+    NSLog(@"connectFailAndCleanUp is checked when isConnected = %d", isConnected);
     if (!isConnected) { // failed to connect -> clean up
         [self closeSocketStreams];
         [refCaller isConnected:NO withResp:@"Connect timeout"];
@@ -216,7 +216,10 @@
     byteToSend += currentDataToSendOffset; // shift data to the current offset
     NSUInteger dataLength = [dataToSend length];
     NSUInteger lengthOfDataToWrite = (dataLength - currentDataToSendOffset >= BYTE_LENGTH_TO_WRITE_EACH_TIME) ? BYTE_LENGTH_TO_WRITE_EACH_TIME : (dataLength - currentDataToSendOffset);
+    
+    NSLog(@"Socket going to write...");
     NSInteger bytesWritten = [outputStream write:byteToSend maxLength:lengthOfDataToWrite];
+    NSLog(@"Socket write %d bytes", (int)bytesWritten);
     
     if (bytesWritten > 0) {
         currentDataToSendOffset += bytesWritten;
@@ -235,7 +238,8 @@
     const static int REACTION_SET_MEDIA 	= 1;
     const static int REACTION_ASK_SENSING   = 2;
     const static int REACTION_SET_RESULT 	= 3;
-    const static int REACTION_STOP_SENSING   = 4;
+    const static int REACTION_STOP_SENSING  = 4;
+    const static int REACTION_SERVER_CLOSED = 5;
     
     const int OFFSET_INT = 4; // 4 bytes int
     const int OFFSET_CHECK = 1; // 1 byte check
@@ -320,10 +324,24 @@
             }
             case REACTION_SET_RESULT: {
                 // TODO: handle this
+                NSRange rangeToRemove = NSMakeRange(0, 1);
+                [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
                 break;
             }
-            default:
+            case REACTION_SERVER_CLOSED: {
+                // TODO: handle the event when the server is closed
+                [refCaller isConnected:NO withResp:@"Server closed"];
+                
+                NSRange rangeToRemove = NSMakeRange(0, 1);
+                [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
                 break;
+            }
+            default: {
+                // NOTE: even we can't hanlde it, we still need to remove the action byte
+                NSRange rangeToRemove = NSMakeRange(0, 1);
+                [receivedData replaceBytesInRange:rangeToRemove withBytes:NULL length:0];
+                break;
+            }
         }
     }
 }
@@ -359,7 +377,9 @@
                 }
                 
                 uint8_t buffer[1024];
+                NSLog(@"Socket going to read...");
                 NSInteger len = [inputStream read:buffer maxLength:sizeof(buffer)];
+                NSLog(@"Socket read %d bytes", (int)len);
                 if (len > 0) {
                     [receivedData appendBytes:buffer length:len];
                     [self parseReceivedData];

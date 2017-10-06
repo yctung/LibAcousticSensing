@@ -37,9 +37,11 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
     self = [super init];
     if (self) {
         caller = callerIn;
-        [self updateDebugStatus:@"initWithCaller"];
+        [self updateDebugStatus:@"AcousticSensingController is created"];
         
         nc = [[NetworkController alloc] initWithCaller: self];
+        recordSetting = [[RecordSetting alloc] init];
+        
         // init my acoustic controller
         // ac = [[AcousticController alloc] initAudioToPlay:[NSString stringWithFormat:@"%@%@%@",C_AUDIO_SOURCE_PREFIX,C_AUDIO_SOURCE,C_AUDIO_SOURCE_SUFFIX ] WithCaller:self withNetworkController:nc];
         
@@ -49,7 +51,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 
 - (BOOL) setSensingSetting: (AcousticSensingSetting *)settingIn {
     setting = settingIn;
-    
+    [recordSetting applyDeviceSensingSetting:setting];
     if ([[setting getMode] isEqualToString:LIBAS_SETTING_MODE_REMOTE]) {
         return [self setAsRemoteModeWithServerIp:[setting getServerAddress] andPort:[[setting getServerPort] intValue]];
     }
@@ -70,8 +72,10 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
 }
 
 - (void) startSensingNow {
-    ac = [[AcousticController alloc] initWithAudioSource:audioSource andCaller:self];
+    [audioSource applyDeviceSensingSetting:setting];
+    ac = [[AcousticController alloc] initWithAudioSource:audioSource recordSetting:recordSetting andCaller:self];
     [ac startSurvey];
+    [caller sensingStarted];
 }
 
 - (void) stopSensingNow {
@@ -80,6 +84,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         [ac release];
         ac = NULL;
     }
+    [caller sensingFinished];
 }
 
 - (BOOL) isSensing {
@@ -87,6 +92,13 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         return YES;
     }
     return NO;
+}
+
+- (id<AcousticSensingControllerCallerDelegate>)getDelegate {
+    return caller;
+}
+- (void)setDelegate:(id<AcousticSensingControllerCallerDelegate>)delegate {
+    caller = delegate;
 }
 
 // fucntion to show the customized dialog for initialization
@@ -158,7 +170,7 @@ static int const AUDIO_MODE_DEFAULT=-1; // TODO: update this property if need
         */
     } else {
         //[labelStatus setText:[NSString stringWithFormat:@"Fail to connect: %@", resp]];
-        [caller readyToSense:NO message:@"Failed to connect remote server"];
+        [caller readyToSense:NO message:resp];
     }
 }
 

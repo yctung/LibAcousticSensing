@@ -11,6 +11,7 @@
 #import <LibAcousticSensingFramework/AcousticSensingSettingEditorDelegate.h>
 #import <LibAcousticSensingFramework/AcousticSensingController.h>
 #import <LibAcousticSensingFramework/AcousticSensingControllerCallerDelegate.h>
+#import "RemoteSensingViewController.h"
 
 typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagUndefined,
@@ -20,13 +21,17 @@ typedef NS_ENUM(NSInteger, CellTagType) {
     CellTagMicSource,
     CellTagSpeakerSource,
     CellTagResetToDefault,
-    CellTagStart
+    CellTagStart,
+    CellTagDebug
 };
 
 @interface SettingTableViewController : UITableViewController <AcousticSensingSettingEditorDelegate, AcousticSensingControllerCallerDelegate> {
     AcousticSensingSetting *ass;
     AcousticSensingController *asc;
     UISegmentedControl *modeSegmentControl;
+    UISegmentedControl *micSegmentControl;
+    UISegmentedControl *speakerSegmentControl;
+    NSMutableString *debugStatus;
 }
 
 

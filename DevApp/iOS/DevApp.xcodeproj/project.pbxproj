@@ -15,6 +15,8 @@
 		13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13099BD41E300915006D8A06 /* LaunchScreen.storyboard */; };
 		13099BE11E300915006D8A06 /* DevAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BE01E300915006D8A06 /* DevAppTests.m */; };
 		13099BEC1E300915006D8A06 /* DevAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BEB1E300915006D8A06 /* DevAppUITests.m */; };
+		1327E2171F85451400CFAC53 /* RemoteSensingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1327E2151F85451400CFAC53 /* RemoteSensingViewController.m */; };
+		1327E2181F85451400CFAC53 /* RemoteSensingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1327E2161F85451400CFAC53 /* RemoteSensingViewController.xib */; };
 		135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49A71F80AD4900D2961C /* SettingTableViewController.m */; };
 		135B49AA1F80AD4900D2961C /* SettingTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 135B49A81F80AD4900D2961C /* SettingTableViewController.xib */; };
 		135B49CB1F816FA700D2961C /* AppConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 135B49CA1F816FA700D2961C /* AppConstant.m */; };
@@ -90,6 +92,9 @@
 		13099BE71E300915006D8A06 /* DevAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DevAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		13099BEB1E300915006D8A06 /* DevAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevAppUITests.m; sourceTree = "<group>"; };
 		13099BED1E300915006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1327E2141F85451400CFAC53 /* RemoteSensingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteSensingViewController.h; sourceTree = "<group>"; };
+		1327E2151F85451400CFAC53 /* RemoteSensingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteSensingViewController.m; sourceTree = "<group>"; };
+		1327E2161F85451400CFAC53 /* RemoteSensingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RemoteSensingViewController.xib; sourceTree = "<group>"; };
 		135B49A61F80AD4900D2961C /* SettingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingTableViewController.h; sourceTree = "<group>"; };
 		135B49A71F80AD4900D2961C /* SettingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingTableViewController.m; sourceTree = "<group>"; };
 		135B49A81F80AD4900D2961C /* SettingTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingTableViewController.xib; sourceTree = "<group>"; };
@@ -174,6 +179,9 @@
 				135B49CA1F816FA700D2961C /* AppConstant.m */,
 				135B49DF1F83D9F400D2961C /* Utils.h */,
 				135B49E01F83D9F400D2961C /* Utils.m */,
+				1327E2141F85451400CFAC53 /* RemoteSensingViewController.h */,
+				1327E2151F85451400CFAC53 /* RemoteSensingViewController.m */,
+				1327E2161F85451400CFAC53 /* RemoteSensingViewController.xib */,
 			);
 			path = DevApp;
 			sourceTree = "<group>";
@@ -342,6 +350,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1327E2181F85451400CFAC53 /* RemoteSensingViewController.xib in Resources */,
 				13C919A01EC74EF500A4D1FA /* latestAudioToEstimateFreqResp.wav in Resources */,
 				13C919A41EC767AE00A4D1FA /* latestAudioToCheckAGC.wav in Resources */,
 				13099BD61E300915006D8A06 /* LaunchScreen.storyboard in Resources */,
@@ -375,6 +384,7 @@
 				13099BCB1E300914006D8A06 /* AppDelegate.m in Sources */,
 				135B49CB1F816FA700D2961C /* AppConstant.m in Sources */,
 				13099BC81E300914006D8A06 /* main.m in Sources */,
+				1327E2171F85451400CFAC53 /* RemoteSensingViewController.m in Sources */,
 				135B49A91F80AD4900D2961C /* SettingTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -519,7 +529,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = DevApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevApp;
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.LibAS.DevApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -534,7 +544,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = DevApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = yctung.DevApp;
+				PRODUCT_BUNDLE_IDENTIFIER = yctung.LibAS.DevApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";

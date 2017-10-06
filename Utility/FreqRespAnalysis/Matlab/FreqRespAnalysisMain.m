@@ -11,8 +11,10 @@ JavaSensingServer.closeAll(); % close all previous open socket
 pause(1.0);
 
 % 2. build frequency sweep AudioSource for analyzing the frequency resposne
+global PS;
+PS.FS = 48000; % sample rate
 as = AudioSource(); % default audio source
-time = 0:1/48000:4;
+time = 0:1/PS.FS:4;
 signal = chirp(time, 0, time(end), 24000);
 signal = signal./max(abs(signal));
 signal = signal'; 

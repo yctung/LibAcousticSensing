@@ -10,6 +10,7 @@
 #define AudioSource_h
 
 #import <Foundation/Foundation.h>
+#import "AcousticSensingSetting.h"
 
 @interface AudioSource : NSObject {
     
@@ -17,10 +18,13 @@
 @property int FS;
 @property int chCnt;
 @property int repeatCnt;
+@property BOOL useBottomSpeaker;
 @property (retain, nonatomic) NSData* preamble;
 @property (retain, nonatomic) NSData* signal;
 
+
 -(id) initWithFS:(int) FS andChCnt:(int) chCnt andRepeatCnt:(int) repeatCnt andPreamble: (NSData*) preamble andSignal: (NSData*) signal;
+- (void)applyDeviceSensingSetting:(AcousticSensingSetting *)setting;
 @end
 
 #endif /* AudioSource_h */

@@ -21,12 +21,21 @@
         // TODO: init preference
         [self setTitle:@"Sening Setting"];
         
+        debugStatus = [[NSMutableString alloc] init];
         ass = [[AcousticSensingSetting alloc] initWithEditorDelegate:self];
         asc = [[AcousticSensingController alloc] initWithCaller:self];
         
         modeSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_MODE_REMOTE, LIBAS_SETTING_MODE_STANDALONE, nil]];
         [modeSegmentControl setFrame:CGRectMake(0, 0, 200, 30)];
         [modeSegmentControl addTarget:self action:@selector(modeChanged) forControlEvents:UIControlEventValueChanged];
+        
+        micSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_RECORDER_MIC_BACK, LIBAS_SETTING_RECORDER_MIC_FRONT, LIBAS_SETTING_RECORDER_MIC_BOTTOM, nil]];
+        [micSegmentControl setFrame:CGRectMake(0, 0, 250, 30)];
+        [micSegmentControl addTarget:self action:@selector(micChanged) forControlEvents:UIControlEventValueChanged];
+        
+        speakerSegmentControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:LIBAS_SETTING_PLAY_SPEAKER_TOP, LIBAS_SETTING_PLAY_SPEAKER_BOTTOM, nil]];
+        [speakerSegmentControl setFrame:CGRectMake(0, 0, 200, 30)];
+        [speakerSegmentControl addTarget:self action:@selector(speakerChanged) forControlEvents:UIControlEventValueChanged];
     }
     return self;
 }
@@ -83,6 +92,15 @@
                     break;
             }
             break;
+        case 3: // debug section
+            switch (row) {
+                case 0:
+                    return CellTagDebug;
+                    break;
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }
@@ -100,20 +118,19 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 4;
 }
 
 - (NSString *)tableView: (UITableView *)tableView titleForHeaderInSection:(NSInteger) section {
     switch (section) {
         case 0:
             return @"Mode";
-            break;
         case 1:
             return @"Audio";
-            break;
         case 2:
             return @"Action";
-            break;
+        case 3:
+            return @"Status";
         default:
             return nil;
             break;
@@ -127,6 +144,8 @@
         return 2;
     } else if (section == 2) { // action section
         return 2;
+    } else if (section == 3) { // status section
+        return 1;
     }
     //NSLog(@"[WARN]: undefined section number = %ld", (long)section);
     return 0;
@@ -193,6 +212,36 @@
             cell.textLabel.text = @"Server Port";
             cell.detailTextLabel.text = [ass getServerPort];
             break;
+        case CellTagMicSource: {
+            cell.textLabel.text = @"Mic";
+            cell.accessoryView = micSegmentControl;
+            // TODO: try to get index directly from the array of titles in the micSegmentControl (so more robust even when we change the name)
+            NSString *mic = [ass getRecorderMic];
+            if ([mic isEqualToString:LIBAS_SETTING_RECORDER_MIC_BACK]) {
+                [micSegmentControl setSelectedSegmentIndex:0];
+            } else if ([mic isEqualToString:LIBAS_SETTING_RECORDER_MIC_FRONT]) {
+                [micSegmentControl setSelectedSegmentIndex:1];
+            } else if ([mic isEqualToString:LIBAS_SETTING_RECORDER_MIC_BOTTOM]) {
+                [micSegmentControl setSelectedSegmentIndex:2];
+            } else {
+                NSLog(@"[ERROR]: undefined mic = %@", mic);
+            }
+            break;
+        }
+        case CellTagSpeakerSource: {
+            cell.textLabel.text = @"Speaker";
+            cell.accessoryView = speakerSegmentControl;
+            // TODO: try to get index directly from the array of titles in the micSegmentControl (so more robust even when we change the name)
+            NSString *speaker = [ass getPlaySpeaker];
+            if ([speaker isEqualToString:LIBAS_SETTING_PLAY_SPEAKER_TOP]) {
+                [speakerSegmentControl setSelectedSegmentIndex:0];
+            } else if ([speaker isEqualToString:LIBAS_SETTING_PLAY_SPEAKER_BOTTOM]) {
+                [speakerSegmentControl setSelectedSegmentIndex:1];
+            } else {
+                NSLog(@"[ERROR]: undefined speaker = %@", speaker);
+            }
+            break;
+        }
         // ---------------
         //  action cells
         // ---------------
@@ -201,6 +250,12 @@
             break;
         case CellTagStart:
             cell.textLabel.text = @"Start";
+            break;
+        // ---------------
+        //  status cells
+        // ---------------
+        case CellTagDebug:
+            cell.textLabel.text = debugStatus;
             break;
         default:
             cell.textLabel.text = @"Undefined";
@@ -264,8 +319,9 @@
         case CellTagResetToDefault:
             [ass resetToDefaultSetting];
             break;
-        case CellTagStart:
+        case CellTagStart: {
             [asc setSensingSetting:ass];
+        }
             break;
         default:
             break;
@@ -293,8 +349,22 @@
 }
 */
 
+- (void)updateAndRefreshDebugStatus:(NSString *)status {
+    [debugStatus setString:status];
+    UITableView *tv = (UITableView *)[self view];
+    [tv reloadData];
+}
+
 - (void)modeChanged {
     [ass setMode: [modeSegmentControl titleForSegmentAtIndex:[modeSegmentControl selectedSegmentIndex]]];
+}
+
+- (void)micChanged {
+    [ass setRecorderMic:[micSegmentControl titleForSegmentAtIndex:[micSegmentControl selectedSegmentIndex]]];
+}
+
+- (void)speakerChanged {
+    [ass setPlaySpeaker:[speakerSegmentControl titleForSegmentAtIndex:[speakerSegmentControl selectedSegmentIndex]]];
 }
 
 // will be called after finish select in select views
@@ -309,14 +379,27 @@
 //==================================================================================================
 - (void)updateDebugStatus:(NSString *)status {
     NSLog(@"updateDebugStatus: %@", status);
-    //[debugStatus setText:status];
+    [self updateAndRefreshDebugStatus:status];
 }
 - (void)unexpectedEnd:(int)code withReason:(NSString *)reason {
-    
+    [self updateAndRefreshDebugStatus:reason];
 }
 
 - (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message {
     NSLog(@"readyToSense: %d, message = %@", isReadyToSense, message);
+    if (isReadyToSense) {
+        RemoteSensingViewController *vc = [[RemoteSensingViewController alloc] initWithAcousticSensingController:asc];
+        [[self navigationController] pushViewController:vc animated:YES];
+    } else {
+        [self updateAndRefreshDebugStatus:message];
+    }
+}
+
+- (void)sensingStarted {
+    
+}
+- (void)sensingFinished {
+    
 }
 
 @end

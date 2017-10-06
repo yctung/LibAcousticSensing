@@ -66,7 +66,11 @@
 }
 */
 
-- (id)initWithAudioSource:(AudioSource*) audioSource andCaller:(id<AcousticControllerCallerDelegate>) caller{
+- (id)initWithAudioSource:(AudioSource *)audioSource recordSetting:(RecordSetting *)recordSetting andCaller:(id<AcousticControllerCallerDelegate>) caller{
+    if (![AcousticController setAudioSessionWithAudioSource:audioSource andRecordSetting:recordSetting]) {
+        return nil; // failed to init the current setting
+    }
+    
     self = [super init];
     if (self) {
         // 1. connect refernece
@@ -88,19 +92,16 @@
         }
         */
         
-        // 3. config audio session
-        [self setUpSession];
-        
-        // 4. init audio player
+        // 3. init audio player
         audioPlayer = [[AudioPlayer alloc] initWithAudioSource:audioSource];
         
         //[audioPlayer setVolume:C_PLAYER_VOL];
         
         
-        // 5. init audio recorder
+        // 4. init audio recorder
         audioRecorder = [[[AudioRecorder alloc] initWithCaller:self] retain];
         
-        // 6. init audio trace saver (optional)
+        // 5. init audio trace saver (optional)
         if(C_TRACE_SAVE_TO_FILE){
             NSString *audioTraceFilePath = [surveyBaseFolderPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@audio.txt", C_TRACE_AUDIO_PREFIX] ];
             audioTraceSaver = [[[TraceSaver alloc] initWithFilePath:audioTraceFilePath] retain];
@@ -229,7 +230,134 @@
 //====================================================================================================
 // Start of audio related functions
 //====================================================================================================
-- (void) setUpSession {
++ (BOOL)setAudioSessionWithAudioSource:(AudioSource *)audioSource andRecordSetting:(RecordSetting *)recordSetting {
+    // Init audio with record capability
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    //[audioSession setCategory:AVAudioSessionCategoryRecord error:nil];
+    NSError *error = nil;
+    
+    if(![audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:&error]){
+        NSLog(@"[ERROR]: setCategory failed");
+        return NO;
+    }
+    NSLog(@"setUpSession: category = %@", [audioSession category]);
+    
+    
+    // use AVAudioSession
+    // ref: http://stackoverflow.com/questions/21682502/audiosessionsetproperty-deprecated-in-ios-7-0-so-how-set-kaudiosessionproperty-o
+    /*
+     if (![session setCategory:AVAudioSessionCategoryPlayback
+     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+     error:&setCategoryError]) {
+     // handle error
+     }*/
+    // disable gain controller
+    NSLog(@"before set -> mode:%@",audioSession.mode);
+    if(![audioSession setMode:AVAudioSessionModeMeasurement error:&error]){
+        NSLog(@"[ERROR]: set mode:%@ failed",audioSession.mode);
+        return NO;
+    }
+    NSLog(@"after set -> mode:%@",audioSession.mode);
+    
+    // NOTE: seems unable to set input gain -> always 1
+    NSLog(@"before set -> gain:%f", audioSession.inputGain);
+    if(![audioSession setInputGain:0.9 error:&error]){
+        NSLog(@"[ERROR]: set mode:%@ failed",audioSession.mode);
+        return NO;
+    }
+    NSLog(@"before set -> gain:%f", audioSession.inputGain);
+    
+    NSLog(@"preferredInputNumberOfChannels: %ld", (long)audioSession.preferredInputNumberOfChannels);
+    NSLog(@"preferredSampleRate: %f", audioSession.preferredSampleRate);
+    
+    // tuning microphone
+    NSArray* inputs = [audioSession availableInputs];
+    // Locate the Port corresponding to the built-in microphone.
+    AVAudioSessionPortDescription* builtInMicPort = nil;
+    for (AVAudioSessionPortDescription* port in inputs)
+    {
+        NSLog(@"portType = %@", port.portType);
+        if ([port.portType isEqualToString:AVAudioSessionPortBuiltInMic])
+        {
+            builtInMicPort = port;
+            break;
+        }
+    }
+    
+    NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
+    NSLog(@"%@", builtInMicPort.dataSources);
+    
+    AVAudioSessionDataSourceDescription* dataSource = nil;
+    for (AVAudioSessionDataSourceDescription* source in builtInMicPort.dataSources)
+    {
+        NSLog(@"source.orientation = %@", source.orientation);
+        // change here to select the target port
+        //if ([source.orientation isEqual:AVAudioSessionOrientationFront]){
+        if ([source.orientation isEqual:[recordSetting getMicDataSource]]){
+            //if ([source.orientation isEqual:AVAudioSessionOrientationBottom]){
+            dataSource = source;
+            break;
+        }
+    } // end data source iteration
+    if (dataSource) {
+        NSLog(@"Currently selected source is \"%@\" for port \"%@\"", builtInMicPort.selectedDataSource.dataSourceName, builtInMicPort.portName);
+        NSLog(@"Attempting to select source \"%@\" on port \"%@\"", dataSource, builtInMicPort.portName);
+        // Set a preference for the front data source.
+        if(![builtInMicPort setPreferredDataSource:dataSource error:&error]){
+            NSLog(@"setPreferredDataSource = %@ failed", dataSource);
+            return NO;
+        }
+    } else {
+        NSLog(@"[ERROR]: failed to find data source = %@", [recordSetting getMicDataSource]);
+        return NO;
+    }
+    
+    // Make sure the built-in mic is selected for input. This will be a no-op if the built-in mic is
+    // already the current input Port.
+    if(![audioSession setPreferredInput:builtInMicPort error:&error]){
+        NSLog(@"setPreferredInput failed");
+    }
+    
+    // setup prefered sample rate
+    double preferredSampleRate = [recordSetting getRecordFS];
+    
+    NSLog(@"before set -> preferredSampleRate:%f", audioSession.preferredSampleRate);
+    if(![audioSession setPreferredSampleRate:preferredSampleRate error:&error]){
+        NSLog (@"error setting sample rate %@", error);
+        return NO;
+    }
+    NSLog(@"after set -> preferredSampleRate:%f", audioSession.preferredSampleRate);
+    
+    
+    // setup speaker (optional)
+    //set the audioSession override
+    if ([audioSource useBottomSpeaker]) {
+        NSLog(@"sound is played by bottom speaker -> might not fit my original setting");
+        if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
+            NSLog(@"setup speaker failed");
+            return NO;
+        }
+    } else {
+        NSLog(@"sound is played by top speaker");
+        if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error]) {
+            NSLog(@"setup speaker failed");
+            return NO;
+        }
+    }
+    
+    // NOTE: this part should be set after all session setting are ALL DONE
+    if(![audioSession setActive:YES error:&error]){
+        NSLog(@"setActive failed");
+        return NO;
+    }
+    
+    return YES; // successfully init
+}
+
+
+// not used anymore, just keep here for a future reference
+/*
+- (void) setUpDefaultSession {
     // Init audio with record capability
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     //[audioSession setCategory:AVAudioSessionCategoryRecord error:nil];
@@ -243,12 +371,12 @@
     
     // use AVAudioSession
     // ref: http://stackoverflow.com/questions/21682502/audiosessionsetproperty-deprecated-in-ios-7-0-so-how-set-kaudiosessionproperty-o
-    /*
-     if (![session setCategory:AVAudioSessionCategoryPlayback
-     withOptions:AVAudioSessionCategoryOptionMixWithOthers
-     error:&setCategoryError]) {
+ 
+     //if (![session setCategory:AVAudioSessionCategoryPlayback
+     //withOptions:AVAudioSessionCategoryOptionMixWithOthers
+     //error:&setCategoryError]) {
      // handle error
-     }*/
+     //}
     // disable gain controller
     NSLog(@"before set -> mode:%@",audioSession.mode);
     if(![audioSession setMode:AVAudioSessionModeMeasurement error:&error]){
@@ -304,6 +432,7 @@
             NSLog(@"setPreferredDataSource failed");
         }
     }
+    
     // Make sure the built-in mic is selected for input. This will be a no-op if the built-in mic is
     // already the current input Port.
     if(![audioSession setPreferredInput:builtInMicPort error:&error]){
@@ -334,6 +463,7 @@
         NSLog(@"setActive failed");
     }
 }
+*/
 
 
 @end

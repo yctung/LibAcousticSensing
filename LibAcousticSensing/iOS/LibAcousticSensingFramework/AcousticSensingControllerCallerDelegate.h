@@ -12,4 +12,6 @@
 - (void)updateDebugStatus:(NSString *)status;
 - (void)unexpectedEnd:(int)code withReason:(NSString *)reason;
 - (void)readyToSense:(BOOL)isReadyToSense message:(NSString *)message;
+- (void)sensingStarted;
+- (void)sensingFinished;
 @end

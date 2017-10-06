@@ -1,8 +1,8 @@
 %==========================================================================
 % 2017/01/26: Set paths of local helpers and lib
 %==========================================================================
-libPath = '../../../LibAcousticSensing/Matlab/'
-oriPath = cd(libPath)
+libPath = '../../../LibAcousticSensing/Matlab/';
+oriPath = cd(libPath);
 
 LibSetup; % setup paths for the core LibAcousticSensing
 

@@ -12,6 +12,8 @@
 		13099BB01E3008D5006D8A06 /* LibAcousticSensingFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BAF1E3008D5006D8A06 /* LibAcousticSensingFrameworkTests.m */; };
 		13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 13099BF91E300947006D8A06 /* FrameworkCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		13099BFC1E300947006D8A06 /* FrameworkCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 13099BFA1E300947006D8A06 /* FrameworkCheck.m */; };
+		1327E21C1F85C18000CFAC53 /* RecordSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = 1327E21A1F85C18000CFAC53 /* RecordSetting.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1327E21D1F85C18000CFAC53 /* RecordSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 1327E21B1F85C18000CFAC53 /* RecordSetting.m */; };
 		134F9F991EDE86AC003B382B /* AudioSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 134F9F971EDE86AC003B382B /* AudioSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		134F9F9A1EDE86AC003B382B /* AudioSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 134F9F981EDE86AC003B382B /* AudioSource.m */; };
 		135B49DB1F8188C000D2961C /* AcousticSensingSetting.h in Headers */ = {isa = PBXBuildFile; fileRef = 135B49D91F8188C000D2961C /* AcousticSensingSetting.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -65,6 +67,8 @@
 		13099BB11E3008D5006D8A06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13099BF91E300947006D8A06 /* FrameworkCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameworkCheck.h; sourceTree = "<group>"; };
 		13099BFA1E300947006D8A06 /* FrameworkCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrameworkCheck.m; sourceTree = "<group>"; };
+		1327E21A1F85C18000CFAC53 /* RecordSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordSetting.h; sourceTree = "<group>"; };
+		1327E21B1F85C18000CFAC53 /* RecordSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordSetting.m; sourceTree = "<group>"; };
 		134F9F971EDE86AC003B382B /* AudioSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioSource.h; sourceTree = "<group>"; };
 		134F9F981EDE86AC003B382B /* AudioSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioSource.m; sourceTree = "<group>"; };
 		135B49D91F8188C000D2961C /* AcousticSensingSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcousticSensingSetting.h; sourceTree = "<group>"; };
@@ -194,6 +198,8 @@
 				1367D8C31EDD268B00C89823 /* AudioPlayer.m */,
 				134F9F971EDE86AC003B382B /* AudioSource.h */,
 				134F9F981EDE86AC003B382B /* AudioSource.m */,
+				1327E21A1F85C18000CFAC53 /* RecordSetting.h */,
+				1327E21B1F85C18000CFAC53 /* RecordSetting.m */,
 			);
 			name = Audio;
 			sourceTree = "<group>";
@@ -237,6 +243,7 @@
 			files = (
 				13C919931EC710C900A4D1FA /* AcousticSensingControllerCallerDelegate.h in Headers */,
 				13BF18E71E48F48D008CB0AE /* AcousticControllerCallerDelegate.h in Headers */,
+				1327E21C1F85C18000CFAC53 /* RecordSetting.h in Headers */,
 				13099BFB1E300947006D8A06 /* FrameworkCheck.h in Headers */,
 				13BF18E61E48F48D008CB0AE /* AcousticController.h in Headers */,
 				13E0F23A1F0053B0000B5E34 /* TestAudioPlayerController.h in Headers */,
@@ -366,6 +373,7 @@
 				13E0F23B1F0053B0000B5E34 /* TestAudioPlayerController.m in Sources */,
 				134F9F9A1EDE86AC003B382B /* AudioSource.m in Sources */,
 				13BF18EB1E48F49F008CB0AE /* AcousticController.m in Sources */,
+				1327E21D1F85C18000CFAC53 /* RecordSetting.m in Sources */,
 				135B49DC1F8188C000D2961C /* AcousticSensingSetting.m in Sources */,
 				13BF18EF1E48F4B3008CB0AE /* NetworkController.m in Sources */,
 				1367D8C51EDD268B00C89823 /* AudioPlayer.m in Sources */,
