@@ -3,7 +3,7 @@ function BufferCallback_DistanceExperiments ()
     global PS CallbackCounter StartTime;    
     global FillUpBuffer FillUpPointers AlreadyProcessed;
     global detailsHandles aggregateDetails;
-    global savedData;
+    global savedData doRecord;
     
     if any(FillUpPointers <= AlreadyProcessed)
         return;
@@ -18,6 +18,7 @@ function BufferCallback_DistanceExperiments ()
         createUI();
         CallbackCounter = -1;
         StartTime = -1;
+        doRecord = 0;
     else
         AlreadyProcessed = AlreadyProcessed + 1;
         
@@ -40,7 +41,7 @@ function BufferCallback_DistanceExperiments ()
         
         for chNum=1:4
             [PeakUp(chNum), PeakDown(chNum), PeakDiff(chNum)] = drawChannel(chNum, FillUpBuffer(:,AlreadyProcessed,chNum));
-            set(detailsHandles(chNum), 'string', sprintf('Channel %d: Up:%d, Down:%d, Diff:%d', chNum, PeakUp(chNum), PeakDown(chNum), PeakDiff(chNum)));  
+            set(detailsHandles(chNum), 'string', sprintf('Channel %d: Up:%d, Down:%d, Diff:%d', chNum, PeakUp(chNum), PeakDown(chNum), PeakDiff(chNum)));
         end
         
         
@@ -61,9 +62,9 @@ function BufferCallback_DistanceExperiments ()
         
         
         % If we are saving data, we will save these
-        toggleButton = findobj('tag', 'recordtoggle');
-        if (toggleButton.Value)
-            savedData = [savedData; d13 d14 d23 d24];
+        %toggleButton = findobj('tag', 'recordtoggle');
+        if (doRecord)
+            savedData = [savedData; PeakUp PeakDown PeakDiff d13 d14 d23 d24];
             size(savedData)
         end
         
@@ -71,19 +72,21 @@ function BufferCallback_DistanceExperiments ()
 end
 
 function recordToggleCallback (hObject, ~, ~)
-    global savedData;
-    button_state = get(hObject,'Value')
+    global savedData doRecord; 
+    button_state = get(hObject,'Value');
     expLabel = findobj('tag', 'explabel');
+    buttonName = get(hObject, 'string');
     if button_state == get(hObject, 'Max')
         % Reset data
-        'Call back pressed'
         savedData = [];
+        doRecord = 1;
     %elseif button_state == get(hObject, 'Min')
     else
         % Download the data
-        'Saving file'
-        saveName = get(expLabel, 'String');
+        prefix = get(expLabel, 'String');
+        saveName = sprintf('experiments/%s-%s', prefix, buttonName);
         save(saveName, 'savedData');
+        doRecord = 0;
         savedData = [];
     end
 end
@@ -111,18 +114,17 @@ function [peakUp, peakDown, peakDiff] = drawChannel (channelIdx, onechannel)
     % First band pass the data
     
 
-    upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
-    downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
+    %upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
+    %downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
     
     
-    %FilterCutoffs = [PS.upPass(1) - 200 PS.upPass(2) + 200];
-    %[b, a] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
-    %upcorr = abs(convn(filter(b, a, onechannel), PS.upchirp_data, 'same'));
+    FilterCutoffs = [PS.upPass(1) - 200 PS.upPass(2) + 200];
+    [b, a] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
+    upcorr = abs(convn(filter(b, a, onechannel), PS.upchirp_data, 'same'));
     
-    %FilterCutoffs = [PS.downPass(1) - 200 PS.downPass(2) + 200];
-    %[d, c] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
-    %downcorr = abs(convn(filter(d, c, onechannel), PS.downchirp_data, 'same'));
-    
+    FilterCutoffs = [PS.downPass(1) - 200 PS.downPass(2) + 200];
+    [d, c] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
+    downcorr = abs(convn(filter(d, c, onechannel), PS.downchirp_data, 'same'));
     
     line = findobj('tag', sprintf('%d-upcorr-line', channelIdx));
     sctplt = findobj('tag',  sprintf('%d-upcorr-scatter', channelIdx));
@@ -187,7 +189,7 @@ function createUI()
     WIDTH = 250;
     NROWS = 6;
     
-    FONTSIZE = 20;
+    FONTSIZE = 15;
     
     set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
     FigPos = [50,50,3*WIDTH+2*PADDING,PADDING*4+WIDTH*3];
@@ -218,8 +220,26 @@ function createUI()
 
     %% Experiment recording panel
     h_panel2 = uipanel('Parent', gcf, 'Units', 'normal', 'Position', [0.5  (NROWS - 1)/NROWS 0.5 1/NROWS]); 
-    uicontrol(h_panel2, 'tag', 'explabel', 'style','edit','units','normal','position',[0.1 0.6 0.8 0.3], 'String', 'default' ,'FontSize', FONTSIZE);
-    uicontrol(h_panel2, 'tag', 'recordtoggle', 'style', 'togglebutton', 'units', 'normal', 'position', [0.1 0.1 0.8 0.3], 'string', 'save', 'fontsize', FONTSIZE,  'Callback', @recordToggleCallback);
+    uicontrol(h_panel2, 'tag', 'explabel', 'style','edit','units','normal','position',[0.1 0.1 0.3 0.8], 'String', 'default' ,'FontSize', FONTSIZE);
+    
+    % Create 10 cases. 2x5
+    for i=1:10
+        if i < 6
+            xcoord = 0.3 + i*0.1;
+            ycoord = 0.5;
+        else
+            xcoord = 0.3 + (i-5)*0.1;
+            ycoord = 0.1;
+        end
+        uicontrol(h_panel2, ...
+            'tag', 'recordtoggle', ...
+            'style', 'togglebutton', ...
+            'units', 'normal', ...
+            'position', [xcoord ycoord 0.1 0.4], ...
+            'string', sprintf('%dcm', i*10), ...
+            'fontsize', FONTSIZE,  ...
+            'Callback', @recordToggleCallback);
+    end
     
     
     %% Draw peak charts

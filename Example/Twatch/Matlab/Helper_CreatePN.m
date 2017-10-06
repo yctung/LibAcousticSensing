@@ -9,7 +9,7 @@ function [ chirpSignal, playSignal ] = Helper_CreatePN( direction )
     
     FS = 48000;
     PERIOD = 24000; %2400;
-    CHIRP_LEN = 2400;%1200;
+    CHIRP_LEN = 1200;%1200;
     FADING_RATIO = 0.5;
     
     PS.FS = FS;
