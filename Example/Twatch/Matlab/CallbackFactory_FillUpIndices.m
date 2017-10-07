@@ -2,7 +2,6 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
      callback = @FillUpCallback;
      
      
-     
      %  has three dimensions. It is filled up as:
      %        < Data , Chirp Number, Fill Up Buffer Index >
      % This is called PER DEVICE (i.e., 2 microphones)
@@ -20,6 +19,7 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
     
         
         if (size(size(data), 2) == 2)
+            size(data)
             return
         end
         
@@ -34,6 +34,7 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
             end
             
             % If enough data has filled up, we will look for peaks.
+            
             if all(FillUpPointers > AlreadyProcessed)
                 %Helper_DoAggregatePeaks();
                 CallOnceFull();

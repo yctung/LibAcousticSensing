@@ -11,28 +11,30 @@ function [] =  Callback_Simple ( obj, type, data )
     % parse audio data
     if type == obj.CALLBACK_TYPE_DATA
         if obj.userfig == -1 % need to create a new UI window
-            createUI(obj, FIGTAG, data);
+            createUI(obj, data);
         else
             % Plot a simplified version of the data
             C1 = data(:,1,1);
             C2 = data(:,1,2);
             all(C1 == C2)
-            
-            line = findobj('Tag', sprintf('%sline',FIGTAG));
-            %upcons = abs(convn(data, PS.upsignalToCorrelate,'same'));
-            %set(convPlot, 'yData', upcons(:, end, 1));
+
             downsampled = downsample(data, 50);
             dataToPlot = downsampled;
-            set(line, 'yData', dataToPlot (:, end, 1));
-
+            
+            set(findobj('tag', 'mic1'), 'yData', dataToPlot(:,end,1));
+            set(findobj('tag', 'mic2'), 'yData', dataToPlot(:,end,2));
+            
+            line = findobj('Tag', 'mic2');
+            set(line, 'yData', dataToPlot (:, end, 2));
+            
             % Save it if the toggle button is pressed
-            toggleButton = findobj('Tag', sprintf('%srecordToggleButton', FIGTAG));
-            if (toggleButton.Value)
-                % Save it
-                savename = sprintf('%s/%s', SAVE_FOLDER, datestr(now, 'MM-SS-FFF'));
-                save(savename, 'data');
-                %save('saved/', 'data');
-            end
+            toggleButton = findobj('Tag', 'recordtoggle');
+            %if (toggleButton.Value)
+            %    % Save it
+            %    savename = sprintf('%s/%s', SAVE_FOLDER, datestr(now, 'MM-SS-FFF'));
+            %    save(savename, 'data');
+            %    %save('saved/', 'data');
+            %end
 
         end
     elseif type == obj.CALLBACK_TYPE_USER
@@ -55,29 +57,41 @@ function [] =  Callback_Simple ( obj, type, data )
     end
 end 
 
-function createUI(obj, figTag, data)
+function createUI(obj, data)
     % lineCnts is the number of lines per figure
     PADDING = 50;
     WIDTH = 250;
+    PLOTHEIGHT = 100;
     BUTTON_HEIGHT = 50;
     RANGE_FONT_SIZE = 15;
-
+    
     set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
-    FigPos = [50,50,WIDTH+2*PADDING,PADDING*3+WIDTH+BUTTON_HEIGHT];
-    obj.userfig = figure('Position', FigPos,'Toolbar','none','MenuBar','none','Tag',figTag);
+    FigPos = [PADDING,PADDING,WIDTH+2*PADDING,PADDING*4+PLOTHEIGHT*2+BUTTON_HEIGHT];
+    obj.userfig = figure('Position', FigPos,'Toolbar','none','MenuBar','none');
     set(obj.userfig,'UserData',obj); % attached the obj to fig property for future reference 
     
-    PlotPos = [PADDING, PADDING*2 + BUTTON_HEIGHT, WIDTH, WIDTH];
-    obj.axe = axes('Units','pixels','Position',PlotPos);
-    plot(obj.axe, data(:,1), ...
-        'Tag', sprintf('%sline',figTag),...
+    % Mic 1
+    PlotPos = [PADDING, PADDING + BUTTON_HEIGHT + PADDING, WIDTH, PLOTHEIGHT];
+    ax1 = axes('Units','pixels','Position',PlotPos);
+    title(ax1, 'Mic channel 2');
+    plot(ax1, data(:,1), ...
+        'Tag', 'mic2',...
         'linewidth',2); % only show the 1st ch
-    %set(findobj(gcf, 'type','axes'), 'Visible','off')
-    set(gca,'xtick',[],'ytick',[]);
-
+    set(ax1,'xtick',[],'ytick',[]);
+    
+    % Mic 2
+    PlotPos = [PADDING, PADDING + BUTTON_HEIGHT + PADDING + PLOTHEIGHT + PADDING, WIDTH, PLOTHEIGHT];
+    ax2 = axes('Units','pixels','Position',PlotPos);
+    title(ax2, 'Mic channel 1');
+    plot(ax2, data(:,1), ...
+        'Tag', 'mic1',...
+        'linewidth',2); % only show the 1st ch
+    set(ax2,'xtick',[],'ytick',[]);
+    
+    % Button
     ButPos = [PADDING, PADDING, WIDTH, BUTTON_HEIGHT];
     uicontrol(...
-                'Tag', sprintf('%srecordToggleButton', figTag), ...
+                'Tag', 'recordtoggle', ...
                 'style', 'togglebutton', ...
                 'position', ButPos, ...
                 'String', 'Record', ...

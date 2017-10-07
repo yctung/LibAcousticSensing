@@ -8,6 +8,7 @@ save('chirp', 'upChirp');
 upas = SetupAudioSource(upSignal);
 StartSensingServer(upas);
 
+
 function upas = SetupAudioSource (signal)
     %% Allocate audio sources and sensing servers
     import edu.umich.cse.yctung.*;
@@ -41,7 +42,7 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     import edu.umich.cse.yctung.*;
     
     FS = 48000;
-    PERIOD = 2400; %2400;
+    PERIOD = 48000; %2400;
     CHIRP_LEN = 1200;%1200;
     CHIRP_FREQ_START = 1400;%18000;
     CHIRP_FREQ_END = 1800; %24000;
