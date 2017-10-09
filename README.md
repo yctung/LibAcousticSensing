@@ -24,7 +24,7 @@ In LibAS's **remote mode**, you don't need to know anything about real-time audi
 ## Install
 
 ### Prerequisites
-- Matlab (I am using 2016a)
+- Matlab 2014b or later (see [uicontrol compatibility](compatibility) for an earlier version)
 - LibAS DevApp: [Google Play Store](https://play.google.com/store/apps/details?id=umich.cse.yctung.devapp), [Apple App Store](https://itunes.apple.com/us/app/libas-devapp/id1292387567?ls=1&mt=8), [Tizen Store](https://TODO-not-yet) or build it from the [DevApp source code](DevApp)
 - Network connections between your Matlab machine and your DevApp-installed device
 
@@ -71,7 +71,6 @@ You can also change the sound to play easily by editing the ```AudioSource``` cl
 ***NOT COMPLETE YET***
 ## Troubleshooting
 - If Android tell you ```Error:Execution failed for task ':libacousticsensing:compileReleaseNdk'. NDK not configured.``` you need to update your ```local.properties``` file to include your ndk path. For example, mine is: ```sdk.dir=/Users/yctung/Library/Android/ndk```
-
 
 
 # Compatible devices
