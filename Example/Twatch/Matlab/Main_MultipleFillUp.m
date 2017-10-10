@@ -15,27 +15,52 @@ global AlreadyProcessed;
 
 %PS.downPass = [2000 6000];
 
-PS.upPass = [2000 6000];
-PS.downPass = [8000 12000];
-%PS.upPass = [1000 1200];
-%PS.upPass = [19000 22000]; % 2k - 6k is the paper
-%PS.downPass = [19000 22000]; % 2k - 6k
 %PS.upPass = [2000 6000];
-%PS.downPass = [2000 6000];
 %PS.downPass = [8000 12000];
 
-[upChirp, upSignal] = Helper_CreateSignal('up');
-[downChirp, downSignal] = Helper_CreateSignal('down');
-%[upChirp, upSignal] = Helper_CreatePN('up');
-%[downChirp, downSignal] = Helper_CreatePN('down');
-%[upChirp, upSignal] = Helper_CreateBandedPN('up');
-%[downChirp, downSignal] = Helper_CreateBandedPN('down');
 
-NUMSOURCES = 3;
+SOUNDTYPE = 'ch3';
+
+%PS.upPass = [1000 1200];
+
+if strcmp(SOUNDTYPE, 'ch1')
+    PS.bandpassFilter = 0;
+    PS.downPass = [8000 12000]; PS.upPass = [2000 6000];
+    [upChirp, upSignal] = Helper_CreateSignal('up');
+    [downChirp, downSignal] = Helper_CreateSignal('down');    
+elseif strcmp(SOUNDTYPE, 'ch2')
+    PS.bandpassFilter = 1;
+    PS.downPass = [8000 12000]; PS.upPass = [2000 6000];
+    [upChirp, upSignal] = Helper_CreateSignal('up');
+    [downChirp, downSignal] = Helper_CreateSignal('down');    
+elseif strcmp(SOUNDTYPE, 'ch3')
+    PS.bandpassFilter = 0;
+    PS.downPass = [2000 6000]; PS.upPass = [2000 6000];
+    [upChirp, upSignal] = Helper_CreateSignal('up');
+    [downChirp, downSignal] = Helper_CreateSignal('down');    
+elseif strcmp(SOUNDTYPE, 'ch4')
+    PS.bandpassFilter = 0;
+    PS.downPass = [16000 17000];
+    PS.upPass = [18000 19000];
+    [upChirp, upSignal] = Helper_CreateSignal('up');
+    [downChirp, downSignal] = Helper_CreateSignal('down');
+elseif strcmp(SOUNDTYPE, 'pn1')
+    PS.bandpassFilter = 0;
+    [upChirp, upSignal] = Helper_CreatePN('up');
+    [downChirp, downSignal] = Helper_CreatePN('down');
+elseif strcmp(SOUNDTYPE, 'pn2')
+    PS.bandpassFilter = 1;
+    PS.downPass = [8000 12000]; PS.upPass = [2000 6000];
+    [upChirp, upSignal] = Helper_CreateBandedPN('up');
+    [downChirp, downSignal] = Helper_CreateBandedPN('down');
+end
+
+
+
+NUMSOURCES = 2;
 FillUpBuffer = zeros(PS.PERIOD, 2000, NUMSOURCES*2);
 FillUpPointers = zeros(1, NUMSOURCES*2);
 AlreadyProcessed = 0;
-
 
 PS.upchirp_data = upChirp;
 PS.downchirp_data = downChirp;
@@ -79,6 +104,7 @@ function StartSensingServer (audioSources)
     %analysisFunction = @Helper_DoAggregatePeaks;
     %analysisFunction = @Helper_DistanceCalc;
     analysisFunction = @BufferCallback_DistanceExperiments;
+    %analysisFunction = @BufferCallback_VarianceAnalysis;
     
     clear sensingServers;
     for asIdx=1:length(audioSources)

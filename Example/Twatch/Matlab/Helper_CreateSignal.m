@@ -27,9 +27,9 @@ function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
                                         PS.upPass(2));
     else
         playSignal(1:CHIRP_LEN) = chirp(  time, ...
-                                PS.downPass(2), ...
-                                time(end), ...
-                                PS.downPass(1));
+                                    PS.downPass(2), ...
+                                    time(end), ...
+                                    PS.downPass(1));
 
     end
     
@@ -45,7 +45,7 @@ function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
     w(1:length(winStart)) = winStart;
     w(end-length(winEnd)+1:end) = winEnd;
     % apply fadding to the sync signal
-
+    
     playSignal(1:CHIRP_LEN) = playSignal(1:CHIRP_LEN).*w;
     playSignal = playSignal./max(abs(playSignal));
     playSignal = playSignal(:);

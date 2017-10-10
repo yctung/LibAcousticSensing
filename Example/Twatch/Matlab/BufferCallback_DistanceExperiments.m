@@ -54,7 +54,7 @@ function BufferCallback_DistanceExperiments ()
         AllInterMicDistances = zeros(1, nchoosek(NumDevices, 2)*2);
         LocationIndex = 1;
         for Dev1=1:NumDevices
-            for Dev2=Dev1:NumDevices
+            for Dev2=Dev1+1:NumDevices
                 d13 = calcDistance(PeakDown, PeakUp, Dev1*2-1, Dev2*2-1);
                 d14 = calcDistance(PeakDown, PeakUp, Dev1*2-1, Dev2*2);
                 d23 = calcDistance(PeakDown, PeakUp, Dev1*2, Dev2*2-1);
@@ -65,7 +65,7 @@ function BufferCallback_DistanceExperiments ()
             end
         end
         
-        set(aggregateDetails, 'string', sprintf('Avg = %fcm', mean(AllInterMicDistances)*100));
+        set(aggregateDetails, 'string', sprintf('#%d. Avg = %fcm.', AlreadyProcessed, mean(AllInterMicDistances)*100));
         
         % Draw the distances
         dplot = findobj('tag',  'distancePlot');
@@ -118,67 +118,67 @@ function [d] = calcDistance (PeakDown, PeakUp, ch1Num, ch2Num)
     d = C*d/(2*FS) + MIC_DISTANCE_CONSTANT;
 end
 
-function [peakUp, peakDown, peakDiff] = drawChannel (channelIdx, onechannel)
-    global PS; % user parse setting
-    global plotHandles;
-    
-    
-    % First band pass the data
-    %upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
-    %downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
-    
-    FilterCutoffs = [PS.upPass(1) - 200 PS.upPass(2) + 200];
-    [b, a] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
-    upcorr = abs(convn(filter(b, a, onechannel), PS.upchirp_data, 'same'));
-    
-    FilterCutoffs = [PS.downPass(1) - 200 PS.downPass(2) + 200];
-    [d, c] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
-    downcorr = abs(convn(filter(d, c, onechannel), PS.downchirp_data, 'same'));
+
+
+function peakLocation = plotPeaks (channelIdx, xcorr)
+    DOWNFACTOR = 10;
+    MAXONLYTOP = 10;
     
     line = findobj('tag', sprintf('%d-upcorr-line', channelIdx));
     sctplt = findobj('tag',  sprintf('%d-upcorr-scatter', channelIdx));
     maxpk = findobj('tag', sprintf('%d-upcorr-maxpeak', channelIdx));
-
     
-    DOWNFACTOR = 10;
-    MAXONLYTOP = 10;
-    
-    
-    newx = downsample(1:size(upcorr(:,end,1)), DOWNFACTOR);
+    newx = downsample(1:size(xcorr(:,end,1)), DOWNFACTOR);
     set(line, 'xData', newx);
-    set(line, 'yData', downsample(upcorr(:,end,1), DOWNFACTOR));
-    [upPks, locs] = findpeaks(upcorr);
-    [topPks, topPksIdx] = sort(upPks, 'descend');
+    set(line, 'yData', downsample(xcorr(:,end,1), DOWNFACTOR));
+    
+    [pks, locs] = findpeaks(xcorr);
+    [topPks, topPksIdx] = sort(pks, 'descend');
     ONLYTOP = min(length(topPks), MAXONLYTOP);
     set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
     set(sctplt, 'yData', topPks(1:ONLYTOP));
-    [maxPk, peakUp] = max(upPks);
-    set(maxpk, 'xData', locs(peakUp));
-    set(maxpk, 'yData', maxPk);
-
-    line = findobj('tag', sprintf('%d-downcorr-line', channelIdx));
-    sctplt = findobj('tag',  sprintf('%d-downcorr-scatter', channelIdx));
-    maxpk = findobj('tag', sprintf('%d-downcorr-maxpeak', channelIdx));
-
-    set(line, 'xData', newx);
-    set(line, 'yData', downsample(downcorr(:,end,1), DOWNFACTOR));
-    [downPks, locs] = findpeaks(downcorr);
-    [topPks, topPksIdx] = sort(downPks, 'descend');
-    ONLYTOP = min(length(topPks), MAXONLYTOP);
-    set(sctplt, 'xData', locs(topPksIdx(1:ONLYTOP)));
-    set(sctplt, 'yData', topPks(1:ONLYTOP));
-    [maxPk, peakDown] = max(downPks);
-    set(maxpk, 'xData', locs(peakDown));
+    
+    [maxPk, maxPkIdx] = max(pks);
+    set(maxpk, 'xData', locs(maxPkIdx));
     set(maxpk, 'yData', maxPk);
     
+    % Need to index back into the input array
+    peakLocation = locs(maxPkIdx);
+end
+
+function [peakUp, peakDown, peakDiff] = drawChannel (channelIdx, onechannel)
+     global PS; % user parse setting
+    global plotHandles;
+    
+    
+    % First band pass the data
+    if PS.bandpassFilter
+        FilterCutoffs = [PS.upPass(1) - 200 PS.upPass(2) + 200];
+        [b, a] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
+        upcorr = abs(convn(filter(b, a, onechannel), PS.upchirp_data, 'same'));
+
+        FilterCutoffs = [PS.downPass(1) - 200 PS.downPass(2) + 200];
+        [d, c] = butter(2, FilterCutoffs/(PS.FS/2), 'bandpass');
+        downcorr = abs(convn(filter(d, c, onechannel), PS.downchirp_data, 'same'));
+    else
+        upcorr = abs(convn(onechannel, PS.upchirp_data, 'same'));
+        downcorr = abs(convn(onechannel, PS.downchirp_data, 'same'));
+    end
+    
+    
+   
+    
+    peakUp = plotPeaks(channelIdx, upcorr);
+    peakDown = plotPeaks(channelIdx, downcorr);
     peakDiff = peakDown - peakUp;
-    
-    setYBound(plotHandles(channelIdx), [upPks; downPks]);
+        
+    %[ channelIdx size(plotHandles) ]
+    setYBound(plotHandles(channelIdx), max(upcorr(peakUp), downcorr(peakDown)));
 end
 
 
-function setYBound (chnlAx, pks)
-    maxY = max(pks)+max(pks)*0.1;
+function setYBound (chnlAx, maxY)
+    %maxY = max(pks)+max(pks)*0.1;
     %'--------------'
     %[size(pks); size(maxY)]
     maxY = max(maxY, 1);
@@ -204,7 +204,7 @@ function createUI()
     NROWS = 2 + NUMCHANNELS;
     
     
-    FONTSIZE = 10;
+    FONTSIZE = 20;
     
     set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
     %FigPos = [50,50,1000,1000];
@@ -215,7 +215,7 @@ function createUI()
     
     
     %% Draw the details texts
-    h_panel = uipanel('Parent', gcf, 'Units', 'normal', 'Position', [0  (NUMROWS - 1)/NROWS 0.5 1/NROWS]);  %top row
+    h_panel = uipanel('Parent', gcf, 'Units', 'normal', 'Position', [0  (NROWS - 1)/NROWS 0.5 1/NROWS]);  %top row
     for chNum=1:NUMCHANNELS
         detailsHandles(chNum) = uicontrol(h_panel, ...
                 'Style','text',...
@@ -274,6 +274,10 @@ function createUI()
         title(sprintf('Channel %d', chNum));
         hold off;
     end
+    
+    
+    %'Created UI!!!!!!'
+    %size(plotHandles)
     
     
     %% Draw distance graph
