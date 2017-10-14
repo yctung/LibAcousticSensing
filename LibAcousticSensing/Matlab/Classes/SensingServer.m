@@ -142,7 +142,7 @@ classdef SensingServer < handle
             elseif ~isempty(obj.masterServer), 
                 fprintf(2, '[ERROR]: unable to add a slave server to a server that is also slave (add the wrong server as master?)\n');
             else
-                obj.slaveServers = serverToAdd;
+                obj.slaveServers = [obj.slaveServers serverToAdd];
                 serverToAdd.masterServer = obj;
                 serverToAdd.updateUI(); % update UI to adapt to the slave mode
             end

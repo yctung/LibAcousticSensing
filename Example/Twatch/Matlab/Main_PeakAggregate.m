@@ -17,8 +17,12 @@ global AlreadyProcessed;
 %PS.upPass = [1500 1700];
 %PS.downPass = [1000 1200];
 %PS.upPass = [1000 1200];
-PS.upPass = [19000 22000]; % 2k - 6k is the paper
-PS.downPass = [19000 22000]; % 2k - 6k
+%PS.upPass = [19000 22000]; % 2k - 6k is the paper
+%PS.downPass = [19000 22000]; % 2k - 6k
+
+PS.upPass = [2000 6000];
+%PS.downPass = [2000 6000];
+PS.downPass = [8000 12000];
 
 [upChirp, upSignal] = Helper_CreateSignal('up');
 [downChirp, downSignal] = Helper_CreateSignal('down');

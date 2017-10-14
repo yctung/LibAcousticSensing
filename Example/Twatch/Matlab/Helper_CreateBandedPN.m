@@ -1,4 +1,4 @@
-function [ chirpSignal, playSignal ] = Helper_CreatePN( direction )
+function [ chirpSignal, playSignal ] = Helper_CreateBandedPN( direction )
 %HEPLPER_CREATEPN Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,7 +9,7 @@ function [ chirpSignal, playSignal ] = Helper_CreatePN( direction )
     
     FS = 48000;
     PERIOD = 24000; %2400;
-    CHIRP_LEN = 2400;%1200;
+    CHIRP_LEN = 1200;%1200;
     FADING_RATIO = 0.5;
     
     PS.FS = FS;
@@ -22,15 +22,16 @@ function [ chirpSignal, playSignal ] = Helper_CreatePN( direction )
     playSignal(1:CHIRP_LEN) = rand(length(time), 1); 
     
     
-    PS.downPass = [1000 1200];
-    PS.upPass = [1500 1700];
     if strcmp(direction, 'up'), FC = PS.upPass;
     else, FC = PS.downPass;
     end
     
-    [b, a] = butter(6, FC/(FS/2), 'bandpass');
+    
+    
+    FilterCutoffs = FC; %[FC(1) - 200, FC(2) + 200];
+    [b, a] = butter(2, FilterCutoffs/(FS/2), 'bandpass');
     playSignal(1:CHIRP_LEN) = filter(b, a, playSignal(1:CHIRP_LEN));
-
+    
     
     % add hamming window
     FADDING_WIN_SIZE = floor(CHIRP_LEN*FADING_RATIO);
