@@ -18,7 +18,7 @@ In the *ObjectDetector* example, the former is a 50ms chirp signal defined in th
 How to install and set up LibAS's remote mode has been introduced in the whole project's [README](/README.md). Specifically, you will need our pre-built DevApp installed on your Android/iOS/Tizen devices, then use this app to connect the remote Matlab server.
 
 ## Main.m
-In your main function. You need to firstly decide which signal to send. For the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, you can do:
+In your Matlab main function. You need to firstly decide which signal to send. For the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, the sent signal is:
 
 ```Matlab
 % ... some signal settings ...
@@ -32,7 +32,8 @@ as = AudioSource('objectDetectSound', signal, FS, REPEAT_CNT, SIGNAL_GAIN);
 ```
 
 Once the AudioSource has been set, we can start create the ```SensingServer```. But remember to import our customized java classes and clean the previously established socket:
-```
+
+```Matlab
 import edu.umich.cse.yctung.*
 JavaSensingServer.closeAll(); % close all previous open socket
 
@@ -42,18 +43,25 @@ ss.startSensingAfterConnectionInit = 0; % disable auto sensing
 ```
 
 Note the ```YourCallback``` argument should be replaced by your own real callback function. In the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, it should be assigned by ```@ObjectDetectorCallback```.
-For most sensing apps, we assign ```startSensingAfterConnectionInit``` to 0 to let developers manually click the ```Start Sensing``` button in the GUI. Setting ```startSensingAfterConnectionInit``` to 1 will automatically send the sensing sounds when the device is connected.
+For most sensing apps, we assign ```startSensingAfterConnectionInit = 0;``` to let developers manually click the ```Start Sensing``` button in the GUI. Setting ```startSensingAfterConnectionInit = 1;``` will automatically send the sensing sounds when the device is connected.
 
 ## Callback.m
-The callback function signature should be consistent as:
+The callback function signature should be consistent with:
 ```
 function [] = ObjectDetectorCallback( server, type, data )
 ```
-where the ```server``` argument is the reference to your sensing server of this callback, ```type``` argument can be either the ```SensingServer.CALLBACK_TYPE_DATA``` or ```SensingServer.CALLBACK_TYPE_USER```.
-Note when ```type == SensingServer.CALLBACK_TYPE_USER```, the callback function need to handle some customized events defined based on the application. This is the way to enable the extension of customized behavior of processing functions.
+where the ```server``` argument is the reference to your sensing server of this callback,
+which is useful when you want to get some information of the sensing server.
+
+The ```type``` argument can be either the ```SensingServer.CALLBACK_TYPE_DATA``` or ```SensingServer.CALLBACK_TYPE_USER```.
+- ```type == SensingServer.CALLBACK_TYPE_USER```: the callback function need to handle some customized events defined based on the application. This is the way to enable the extension of customized behavior of processing functions.
 For example, you can use LibAS's Android API to send this customized event to the sensing server for triggering some special processing if you want (e.g., change the sensing mode...etc).
 
-On the other hand, if ```type == SensingServer.CALLBACK_TYPE_DATA```, it is the time to process the recorded sensing signal contained in the ```data``` argument. The ```data``` will be set as a matrix of size ```SIGNAL_LEN * TRACE_CNT * CH_CNT``` where the first dimension equals to length of your sensing signal, the second dimension represents how many repetition you need to process this time (usually 1), and the last dimension represents how many channels are recorded (usually 2 in Android, 1 in iOS and other wearables).
+- ```type == SensingServer.CALLBACK_TYPE_DATA```, it is the time to process the recorded sensing signal contained in the ```data``` argument.
+
+The ```data``` argument is a 3-dimension matrix including the recorded sensing signals. The size of ```data``` equals to ```SIGNAL_LEN * TRACE_CNT * CH_CNT``` where the first dimension equals to length of your sensing signal, the second dimension represents how many repetitions of sensing signal are received and wait to process this time (usually 1), and the last dimension represents how many channels are recorded (usually 2 in Android, 1 in iOS and other wearables).
+
+
 
 
 # Remote to Standalone
