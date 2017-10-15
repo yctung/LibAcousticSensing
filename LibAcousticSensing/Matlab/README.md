@@ -11,7 +11,7 @@ In LibAS's remote mode, you just need to focus on designing two things:
 - What signal to be sent for sensing? (in this example, is )
 - How to process the the receive of each sent signal? (in this example, is applying a matched filter)
 
-In the *ObjectDetector* example, the former is a 50ms chirp signal defined in the [ObjectDetectMain.m](Example/ObjectDetector/Matlab/ObjectDetectorMain.m) while the later is a matched filter specified in the [ObjectDetectorCallback.m](Example/ObjectDetector/Matlab/ObjectDetectorCallback.m)
+In the *ObjectDetector* example, the former is a 50ms chirp signal defined in the [ObjectDetectMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) while the later is a matched filter specified in the [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m)
 
 ## Setup
 Set up Remote Mode has been introduced in the README file of the whole project. Specifically, you will need to install our pre-built [DevApp]() on your Android/iOS/Tizen devices, then use this app to connect the setup Matlab server.
