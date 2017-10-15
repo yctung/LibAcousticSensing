@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -25,8 +25,7 @@
         <activity
             android:name="umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSettingActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

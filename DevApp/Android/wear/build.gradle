@@ -22,6 +22,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.android.support:wearable:2.0.0-alpha2'
+    compile project(':libacousticsensing')
     compile 'com.google.android.gms:play-services-wearable:9.2.1'
+    //provided 'com.google.android.wearable:wearable:1.0.0'
+    provided 'com.google.android.wearable:wearable:2.0.0'
+    compile 'com.google.android.support:wearable:2.0.0'
 }

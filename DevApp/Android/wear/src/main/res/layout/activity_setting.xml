@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="umich.cse.yctung.wear.SettingActivity"
+    tools:deviceIds="wear">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_box="all">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.8">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textServerAddr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IP:"
+                    app:layout_box="all"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editTextServerAddr"
+                    android:layout_gravity="center"
+                    android:inputType="number"
+                    android:digits="0123456789."
+                    android:ems="10"
+                    android:imeOptions="actionDone"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textServerPort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Port:"
+                    app:layout_box="all"/>
+
+                <EditText
+                    android:id="@+id/editTextServerPort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:inputType="number"
+                    android:ems="7"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:text="Done"
+            android:layout_gravity="center_horizontal"
+            app:layout_box="all"
+            android:layout_weight="0.2"
+            />
+
+    </LinearLayout>
+
+</android.support.wearable.view.BoxInsetLayout>

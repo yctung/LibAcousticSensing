@@ -1,11 +1,13 @@
 package umich.cse.yctung.wear;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -14,6 +16,7 @@ import java.util.Locale;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 
 
 public class MainActivity extends WearableActivity implements AcousticSensingControllerListener {
@@ -22,10 +25,11 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
             new SimpleDateFormat("HH:mm", Locale.US);
 
     private BoxInsetLayout mContainerView;
-    private TextView mTextView;
-    private TextView mClockView;
+    private TextView textDebug, textInfo;
     private Button buttonStart;
+    private ImageButton buttonSetting;
 
+    AcousticSensingSetting ass;
     AcousticSensingController asc;
 
     @Override
@@ -35,8 +39,8 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         setAmbientEnabled();
 
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);
-        mTextView = (TextView) findViewById(R.id.text);
-        mClockView = (TextView) findViewById(R.id.clock);
+        textDebug = (TextView) findViewById(R.id.textDebug);
+        textInfo = (TextView) findViewById(R.id.textInfo);
 
         buttonStart = (Button) findViewById(R.id.buttonStart);
         buttonStart.setOnClickListener(new View.OnClickListener() {
@@ -46,8 +50,20 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
             }
         });
 
+        buttonSetting = (ImageButton) findViewById(R.id.buttonSetting);
+        buttonSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSettingActivity();
+            }
+        });
 
-        asc=new AcousticSensingController(this,this);
+
+
+        ass = new AcousticSensingSetting(this);
+        asc = new AcousticSensingController(this,this);
+
+        updateDisplay();
     }
 
     void onStartOrStopClicked() {
@@ -55,11 +71,17 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         Dialog dialog = asc.createInitModeDialog(this, "35.2.141.147", 50005);
         dialog.show();
         */
-        boolean result = asc.initAsSlaveMode("192.168.0.108",50005);
-        if (!result) asc.updateDebugStatus("Init fails");
+        //boolean result = asc.initAsSlaveMode("192.168.0.108",50005);
+        boolean result = asc.init(ass);
+        if (!result) updateDebugStatus(false, "Init fails");
         else {
             asc.startSensingWhenPossible();
         }
+    }
+
+    void showSettingActivity() {
+        Intent intent = new Intent(this, SettingActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -81,17 +103,10 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
     }
 
     private void updateDisplay() {
-        if (isAmbient()) {
-            mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
-            mTextView.setTextColor(getResources().getColor(android.R.color.white));
-            mClockView.setVisibility(View.VISIBLE);
 
-            mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
-        } else {
-            mContainerView.setBackground(null);
-            mTextView.setTextColor(getResources().getColor(android.R.color.black));
-            mClockView.setVisibility(View.GONE);
-        }
+        // update textInfo based on the current setting
+        String info = "Server=" + ass.getServerAddr() + ":" + ass.getServerPort();
+        textInfo.setText(info);
     }
 
 //=================================================================================================
@@ -102,7 +117,7 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mTextView.setText(stringToShow);
+                textDebug.setText(stringToShow);
             }
         });
     }
@@ -139,6 +154,11 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 
     @Override
     public void dataJNICallback(long retAddr) {
+
+    }
+
+    @Override
+    public void isConnected(boolean success, String resp) {
 
     }
 
