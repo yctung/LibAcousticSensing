@@ -112,11 +112,35 @@ end
   as = AudioSource('exampleSoundName', sin(1./[1:48000]*pi), 48000, 100, 0.9);
 ```
 
-## SensingServer
+##＃ SensingServer
+SensingServer is the main controller to for LibAS device API to connect:
 
-## TraceParser
+#### Constructor
+```Matlab
+  function obj = SensingServer(port, callback, deviceAudioMode, audioSource)
+```
+
+#### Properties (only useful properties listed)
+```Matlab
+properties
+    audioSource;                      % reference of AudioSource object
+    traceParser;                      % reference of TraceParser object
+    jss;                              % reference of JavaSensingServer object
+    startSensingAfterConnectionInit;  % flag to allow sensing starts automatically
+    % ...
+end
+```
+
+#### Example
+```Matlab
+  ss = SensingServer(50005, @YourCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, AudioSource('YourAudioSource', signal));
+```
+
+##＃ TraceParser
+
 
 ## Internal API
 Here are some API that I use internally. You might wanna check it if you like to change our LibAS code:
+
 ## Preamble Detection
 TODO: add this part
