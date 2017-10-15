@@ -3,15 +3,15 @@ classdef AudioSource < handle
     %   Detailed explanation goes here
     
     properties
-        name;
-        preambleSource;
-        preambleGain;
+        name;             % a name/label for AudioSource
+        signal;           % signal, in the form of [# of samples, # of channels]
+        FS;               % sample rate
+        repeatCnt;        % how many times to play the signal
+        chCnt;            % number of channel of the signal
+        signalGain;       % the signal to be played = signal * signalGain
         
-        FS;
-        repeatCnt;
-        chCnt;
-        signal;
-        signalGain;
+        preambleSource;   % preamble to know the start of signal
+        preambleGain;     % gain to play the preamble
     end
     
     methods

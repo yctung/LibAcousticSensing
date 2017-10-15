@@ -55,20 +55,35 @@ Note the ```YourCallback``` function assinged to your SensingServer is the one w
 
 
 # Remote to Standalone
-TODO: add this part of guide
+TODO: add this part
 
 # LibAS Matlab API
 ## Open API
-
+Here are the common API you might need to build your remote sensing app with LibAS:
 ### AudioSource
 AudioSource is a wrapper to let LibAS know what kind of sound and how it should be sent.
 
 #### Constructor
-```
+```Matlab
   function obj = AudioSource(name, signal, FS, repeatCnt, signalGain, preambleSource)
 ```
-#### Example
+If you skip some arguments, the default value will be used. For example, most of the time, you would not need to specify your own ```preambleSource```.
+
+#### Properties
+```Matlab
+name;             % a name/label for AudioSource
+        signal;           % signal, in the form of [# of samples, # of channels]
+        FS;               % sample rate
+        repeatCnt;        % how many times to play the signal
+        chCnt;            % number of channel of the signal
+        signalGain;       % the signal to be played = signal * signalGain
+
+        preambleSource;   % preamble to know the start of signal
+        preambleGain;     % gain to play the preamble
 ```
+
+#### Example
+```Matlab
   as = AudioSource('exampleSoundName', sin(1./[1:48000]*pi), 48000, 100, 0.9);
 ```
 
@@ -77,5 +92,6 @@ AudioSource is a wrapper to let LibAS know what kind of sound and how it should 
 ## TraceParser
 
 ## Internal API
-
+Here are some API that I use internally. You might wanna check it if you like to change our LibAS code:
 ## Preamble Detection
+TODO: add this part
