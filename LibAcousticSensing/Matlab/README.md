@@ -87,18 +87,18 @@ Here are the common API you might need to build your remote sensing app with Lib
 ### AudioSource.m
 AudioSource is a wrapper to let LibAS know what kind of sound and how it should be sent.
 
-#### Constructor
+- Constructor:
 ```Matlab
   function obj = AudioSource(name, signal, FS, repeatCnt, signalGain, preambleSource)
 ```
 If you skip some arguments, the default value will be used. For example, most of the time, you would not need to specify your own ```preambleSource```.
 
-#### Example
+- Example:
 ```Matlab
   as = AudioSource('exampleSoundName', sin(1./[1:48000]*pi), 48000, 100, 0.9);
 ```
 
-#### Properties
+- Properties:
 ```Matlab
 properties
     name;             % a name/label for AudioSource
@@ -140,7 +140,7 @@ Note you can access the whole recorded audio by ```ss.traceParser.audioBuf```
 ## Internal API
 Here are some API that I use internally. You might wanna check it if you like to change our LibAS code:
 
-### TraceParser
+### TraceParser.m
 TraceParser is an internal class preprocessing the recorded sensing signals for the user-defined callback.
 
 #### Properties
