@@ -84,7 +84,7 @@ TODO: add this part
 # LibAS Matlab API
 ## Open API
 Here are the common API you might need to build your remote sensing app with LibAS:
-### AudioSource
+### AudioSource.m
 AudioSource is a wrapper to let LibAS know what kind of sound and how it should be sent.
 
 #### Constructor
@@ -92,6 +92,11 @@ AudioSource is a wrapper to let LibAS know what kind of sound and how it should 
   function obj = AudioSource(name, signal, FS, repeatCnt, signalGain, preambleSource)
 ```
 If you skip some arguments, the default value will be used. For example, most of the time, you would not need to specify your own ```preambleSource```.
+
+#### Example
+```Matlab
+  as = AudioSource('exampleSoundName', sin(1./[1:48000]*pi), 48000, 100, 0.9);
+```
 
 #### Properties
 ```Matlab
@@ -107,17 +112,16 @@ properties
 end
 ```
 
-#### Example
-```Matlab
-  as = AudioSource('exampleSoundName', sin(1./[1:48000]*pi), 48000, 100, 0.9);
-```
-
-##＃ SensingServer
+### SensingServer.m
 SensingServer is the main controller to for LibAS device API to connect:
 
 #### Constructor
 ```Matlab
   function obj = SensingServer(port, callback, deviceAudioMode, audioSource)
+```
+#### Example
+```Matlab
+  ss = SensingServer(50005, @YourCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, AudioSource('YourAudioSource', signal));
 ```
 
 #### Properties (only useful properties listed)
@@ -131,16 +135,22 @@ properties
 end
 ```
 
-#### Example
-```Matlab
-  ss = SensingServer(50005, @YourCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, AudioSource('YourAudioSource', signal));
-```
-
-##＃ TraceParser
-
+Note you can access the whole recorded audio by ```ss.traceParser.audioBuf```
 
 ## Internal API
 Here are some API that I use internally. You might wanna check it if you like to change our LibAS code:
+
+### TraceParser
+TraceParser is an internal class preprocessing the recorded sensing signals for the user-defined callback.
+
+#### Properties
+```Matlab
+properties
+    audioBuf;           % the whole recorded audio buffer
+    audioBufEnd;        % the end index of the recorded audio buffer
+    % ...
+end
+```
 
 ## Preamble Detection
 TODO: add this part
