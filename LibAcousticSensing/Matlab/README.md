@@ -31,13 +31,6 @@ end
 as = AudioSource('objectDetectSound', signal, FS, REPEAT_CNT, SIGNAL_GAIN);
 ```
 
-After this, you can assign your own signal to the LibAS's ```AudioSource``` class and add some other properties:
-```
-as = AudioSource(signal, FS);
-as.repeatCount = 100; // repeat the 50ms tone for 100 times
-as.signalGain = 0.8; // gain to multiple on the signal when it is played
-```
-
 Once the AudioSource has been set, we can start create the ```SensingServer```. But remember to import our customized java classes and clean the previously established socket:
 ```
 import edu.umich.cse.yctung.*
@@ -48,10 +41,19 @@ ss = SensingServer(SERVER_PORT, @YourCallback, SensingServer.DEVICE_AUDIO_MODE_P
 ss.startSensingAfterConnectionInit = 0; % disable auto sensing
 ```
 
-Note the ```YourCallback``` function assinged to your SensingServer is the one will be responsible to process the reception of each 50ms sound.
-
+Note the ```YourCallback``` argument should be replaced by your own real callback function. In the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, it should be assigned by ```@ObjectDetectorCallback```.
+For most sensing apps, we assign ```startSensingAfterConnectionInit``` to 0 to let developers manually click the ```Start Sensing``` button in the GUI. Setting ```startSensingAfterConnectionInit``` to 1 will automatically send the sensing sounds when the device is connected.
 
 ## Callback.m
+The callback function signature should be consistent as:
+```
+function [] = ObjectDetectorCallback( server, type, data )
+```
+where the ```server``` argument is the reference to your sensing server of this callback, ```type``` argument can be either the ```SensingServer.CALLBACK_TYPE_DATA``` or ```SensingServer.CALLBACK_TYPE_USER```.
+Note when ```type == SensingServer.CALLBACK_TYPE_USER```, the callback function need to handle some customized events defined based on the application. This is the way to enable the extension of customized behavior of processing functions.
+For example, you can use LibAS's Android API to send this customized event to the sensing server for triggering some special processing if you want (e.g., change the sensing mode...etc).
+
+On the other hand, if ```type == SensingServer.CALLBACK_TYPE_DATA```, it is the time to process the recorded sensing signal contained in the ```data``` argument. The ```data``` will be set as a matrix of size ```SIGNAL_LEN * TRACE_CNT * CH_CNT``` where the first dimension equals to length of your sensing signal, the second dimension represents how many repetition you need to process this time (usually 1), and the last dimension represents how many channels are recorded (usually 2 in Android, 1 in iOS and other wearables).
 
 
 # Remote to Standalone

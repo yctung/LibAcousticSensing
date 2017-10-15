@@ -1,4 +1,4 @@
-function [] = ObjectDetectorCallback( obj, type, data )
+function [] = ObjectDetectorCallback( server, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
     global USER_FIG_TAG; USER_FIG_TAG = 'USER_FIG_TAG';
     global PS; % user parse setting
@@ -15,17 +15,17 @@ function [] = ObjectDetectorCallback( obj, type, data )
     global userStartsEnd;
     global userEndsEnd;
     
-    if type == obj.CALLBACK_TYPE_ERROR,
+    if type == server.CALLBACK_TYPE_ERROR,
         fprintf(2, '[ERROR]: get the error callback data = %s', data);
         return;
     end
 
     % parse audio data
-    if type == obj.CALLBACK_TYPE_DATA,
+    if type == server.CALLBACK_TYPE_DATA,
 %--------------------------------------------------------------------------
 % 1. init GUI
 %--------------------------------------------------------------------------
-        if obj.userfig == -1, % need to create a new UI window
+        if server.userfig == -1, % need to create a new UI window
             % very large buffer to save all results
             
             DOWNSAMPLE_FACTOR = 4;
@@ -49,7 +49,7 @@ function [] = ObjectDetectorCallback( obj, type, data )
             
             needToUpdateXLine2 = 1;
             LINE_CNTS = [2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-            createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
+            createUI(server, USER_FIG_TAG, data, LINE_CNTS);
 %--------------------------------------------------------------------------
 % 2. data processing and update figures
 %--------------------------------------------------------------------------
@@ -97,7 +97,7 @@ function [] = ObjectDetectorCallback( obj, type, data )
 %    in this example, click the user button in device will set a tag to
 %    remember the location
 %--------------------------------------------------------------------------
-    elseif type == obj.CALLBACK_TYPE_USER,
+    elseif type == server.CALLBACK_TYPE_USER,
         data.code
         % parse user data
         % must be 'pse' in this app
@@ -114,7 +114,7 @@ end
 %==========================================================================
 % Followings are just some UI help functions
 %==========================================================================
-function createUI(obj, figTag, data, lineCnts)
+function createUI(server, figTag, data, lineCnts)
     % lineCnts is the number of lines per figure
     global PS;
     
@@ -122,15 +122,15 @@ function createUI(obj, figTag, data, lineCnts)
     PLOT_AXE_OUT_WIDTH = 290;
     PLOT_AXE_CNT = length(lineCnts);
     
-    obj.userfig = figure(...
+    server.userfig = figure(...
                     'Name', 'Callback', ...
                     'Position',[50,50,550+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),330], ...
                     'Toolbar','none', ...
                     'MenuBar','none', ...
                     'Tag',figTag);
-    set(obj.userfig,'UserData',obj); % attached the obj to fig property for future reference 
+    set(server.userfig, 'UserData', server); % attached the server object to fig property for future reference 
     
-    h_panel2 = uipanel(obj.userfig,'Units','pixels','Position',[15,15,520+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),300]);
+    h_panel2 = uipanel(server.userfig,'Units','pixels','Position',[15,15,520+PLOT_AXE_OUT_WIDTH*(PLOT_AXE_CNT-1),300]);
     textIntro = uicontrol(h_panel2,'Style','text','Position',[10,255,180,30],'String','Control the sensing response');
     
     RANGE_Y = 200;
@@ -146,10 +146,10 @@ function createUI(obj, figTag, data, lineCnts)
     for i = 1:PLOT_AXE_CNT,
         uicontrol(h_panel2, 'Style','checkbox','String',UPDATE_LABELS{i},'Value',0,'Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),280,200,20], 'Tag',sprintf('check%02d',i));
         
-        obj.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),30,270,250]);
+        server.axe = axes('Parent',h_panel2,'Units','pixels','Position',[220+PLOT_AXE_OUT_WIDTH*(i-1),30,270,250]);
         hold on;
         for j = 1:lineCnts(i),
-            plot(obj.axe, data(:,1),'Tag',sprintf('line%02d_%02d',i,j),'linewidth',2); % only show the 1st ch
+            plot(server.axe, data(:,1),'Tag',sprintf('line%02d_%02d',i,j),'linewidth',2); % only show the 1st ch
         end
         hold off;
         xlabel(X_LABELS{i})
@@ -158,7 +158,7 @@ function createUI(obj, figTag, data, lineCnts)
 end
 
 % apply ui control to parse value
-function buttonApplyCallback(obj,event)
+function buttonApplyCallback(obj, event)
     global PS;
     editRangeStart = findobj('Tag','editRangeStart');
     editRangeEnd = findobj('Tag','editRangeEnd');

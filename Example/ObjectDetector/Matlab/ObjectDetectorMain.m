@@ -2,10 +2,10 @@
 % 2017/03/29: An example to detect nearby objects by sounds
 %           : it can estiamte the distance to the object as well
 %==========================================================================
-SERVER_PORT = 50005; % remember to diable firewall for this port
 close all;
 import edu.umich.cse.yctung.*
 JavaSensingServer.closeAll(); % close all previous open socket
+SERVER_PORT = 50005; % remember to diable firewall for this port
 
 %--------------------------------------------------------------------------
 % 1. signal settings
