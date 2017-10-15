@@ -20,7 +20,7 @@ How to install and set up LibAS's remote mode has been introduced in the whole p
 ## Main.m
 In your main function. You need to firstly decide which signal to send. For the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, you can do:
 
-```
+```Matlab
 % ... some signal settings ...
 signal = zeros(PERIOD, 1);
 time = (0:CHIRP_LEN-1)./FS;
