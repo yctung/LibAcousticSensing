@@ -29,7 +29,7 @@ signal(1:CHIRP_LEN) = chirp(time, CHIRP_FREQ_START, time(end), CHIRP_FREQ_END);
 if APPLY_FADING_TO_SIGNAL == 1, % add fadding if necessary (make it inaudible but lose some SNR)
     signal(1:CHIRP_LEN) = ApplyFadingInStartAndEndOfSignal(signal(1:CHIRP_LEN), FADING_RATIO);
 end
-as = AudioSource('objectDetectSound', signal, FS, REPEAT_CNT, SIGNAL_GAIN); % default audio source
+as = AudioSource('objectDetectSound', signal, FS, REPEAT_CNT, SIGNAL_GAIN);
 
 %--------------------------------------------------------------------------
 % 3. parse settings (later used in ObjectDetectorCallback)

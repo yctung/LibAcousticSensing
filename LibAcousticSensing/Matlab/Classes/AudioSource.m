@@ -27,7 +27,7 @@ classdef AudioSource < handle
 %             obj.signalGain=0.9;
 %         end
         
-        function obj=AudioSource(name, signal, FS, repeatCnt, signalGain, preambleSource)
+        function obj = AudioSource(name, signal, FS, repeatCnt, signalGain, preambleSource)
             if exist('name', 'var')
                 obj.name = name;
             else
