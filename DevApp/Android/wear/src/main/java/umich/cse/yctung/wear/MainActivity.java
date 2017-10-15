@@ -62,7 +62,6 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 
         ass = new AcousticSensingSetting(this);
         asc = new AcousticSensingController(this,this);
-
         updateDisplay();
     }
 
@@ -82,6 +81,12 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
     void showSettingActivity() {
         Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateDisplay();
     }
 
     @Override
