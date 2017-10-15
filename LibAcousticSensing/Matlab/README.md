@@ -1,8 +1,8 @@
 # LibAS Matlab Support
 This guide will introduce how to use the Matlab support of LibAS. Specifically, we will include the following topics:
-- How to design your remote sensing code?
+- How to design your remote Matlab code?
 - How to transfer remote mode to standalone mode?
-- LibAS Matlab documents
+- LibAS Matlab API documents
 
 # How to Deign Your Remote Sensing Code
 This guide uses the *ObjectDetector* example to illustrate how to design your sensing algorithms with LibAS's Remote Matlab mode. Our *ObjectDetector* is a simple example to turn your smartphone into sonar-like devices that estimate the distance of nearby obstacles. Please check the example [README](/Example/ObjectDetector) file for more details for any further information.
@@ -12,20 +12,23 @@ In LibAS's remote mode, you just need to focus on designing two things:
 - How to process the the receive of each sent signal? (in this example, is applying a matched filter)
 while the reset of processing, like how the sounds being played/recorded in real-time or how to know which segment of recorded sounds is the sound you just sent, will be handled by LibAS.
 
-In the *ObjectDetector* example, the former is a 50ms chirp signal defined in the [ObjectDetectMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) while the later is a matched filter specified in the [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m)
+In the *ObjectDetector* example, the former is a 50ms chirp signal defined in the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) while the later is a matched filter specified in the [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m)
 
 ## Setup
 How to install and set up LibAS's remote mode has been introduced in the whole project's [README](/README.md). Specifically, you will need our pre-built DevApp installed on your Android/iOS/Tizen devices, then use this app to connect the remote Matlab server.
 
 ## Main.m
-In your main function. You need to firstly decide which signal to send. For example, you can assign:
+In your main function. You need to firstly decide which signal to send. For the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, you can do:
 
 ```
-FS = 48000; // Sample rate
-period = 0.05; // 50ms
-signalDuration = 0.001 // 1ms signal duration (i.e., 49mins remain silent)
-time = 0:1/PS.FS:4;
-signal = chirp(time, 0, time(end), 24000);
+% ... some signal settings ...
+signal = zeros(PERIOD, 1);
+time = (0:CHIRP_LEN-1)./FS;
+signal(1:CHIRP_LEN) = chirp(time, CHIRP_FREQ_START, time(end), CHIRP_FREQ_END);
+if APPLY_FADING_TO_SIGNAL == 1, % add fadding if necessary (make it inaudible but lose some SNR)
+    signal(1:CHIRP_LEN) = ApplyFadingInStartAndEndOfSignal(signal(1:CHIRP_LEN), FADING_RATIO);
+end
+as = AudioSource('objectDetectSound', signal, FS, REPEAT_CNT, SIGNAL_GAIN);
 ```
 
 After this, you can assign your own signal to the LibAS's ```AudioSource``` class and add some other properties:
