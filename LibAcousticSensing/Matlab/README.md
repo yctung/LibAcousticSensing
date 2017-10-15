@@ -5,7 +5,7 @@ This guide will introduce how to use the Matlab support of LibAS. Specifically, 
 - LibAS Matlab documents
 
 # How to Deign Your Remote Sensing Code
-This guide uses the *ObjectDetection* example to illustrate how to design your sensing algorithms with LibAS's Remote Matlab mode. Our *ObjectDetection* is a simple example to turn your smartphone into sonar-like devices that estimate the distance of nearby obstacles. Please check the example README file for more details for any further information.
+This guide uses the *ObjectDetection* example to illustrate how to design your sensing algorithms with LibAS's Remote Matlab mode. Our *ObjectDetection* is a simple example to turn your smartphone into sonar-like devices that estimate the distance of nearby obstacles. Please check the example [README](/README.md) file for more details for any further information.
 
 In LibAS's remote mode, you just need to focus on designing two things:
 - What signal to be sent for sensing? (in this example, is )
