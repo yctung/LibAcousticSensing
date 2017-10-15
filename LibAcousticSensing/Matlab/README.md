@@ -57,12 +57,26 @@ The ```type``` argument can be either the ```SensingServer.CALLBACK_TYPE_DATA```
 - ```type == SensingServer.CALLBACK_TYPE_USER```: the callback function need to handle some customized events defined based on the application. This is the way to enable the extension of customized behavior of processing functions.
 For example, you can use LibAS's Android API to send this customized event to the sensing server for triggering some special processing if you want (e.g., change the sensing mode...etc).
 
-- ```type == SensingServer.CALLBACK_TYPE_DATA```, it is the time to process the recorded sensing signal contained in the ```data``` argument.
+- ```type == SensingServer.CALLBACK_TYPE_DATA```: it is the time to process the recorded sensing signal contained in the ```data``` argument.
 
 The ```data``` argument is a 3-dimension matrix including the recorded sensing signals. The size of ```data``` equals to ```SIGNAL_LEN * TRACE_CNT * CH_CNT``` where the first dimension equals to length of your sensing signal, the second dimension represents how many repetitions of sensing signal are received and wait to process this time (usually 1), and the last dimension represents how many channels are recorded (usually 2 in Android, 1 in iOS and other wearables).
+For example, if you want to know what is the first 50~100 samples of sensing signal being latest recorded in channel 2, you should access it by ```data(50:100, end, 2)```.
 
+While there are many GUI codes that might be confusing in the example of [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m),
+the core processing block of this callback is only applying a matched filter
+to identify the reflection of the sensing signal as shown in the following:
 
+```Matlab
+  % find detected objects by matched filter
+  % where the PS.signalToCorrelate is the reverse of sensing signal
+  % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
+  cons = convn(data, PS.signalToCorrelate, 'same');
+  detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
+```
 
+After the processing is done, it is optional to return the result as a matrix.
+This matrix will be returned to the connected device, thus facilitating the design
+of real user experience of your applications via the remote mode.
 
 # Remote to Standalone
 TODO: add this part

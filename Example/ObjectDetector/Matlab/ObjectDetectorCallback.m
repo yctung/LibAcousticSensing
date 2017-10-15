@@ -55,6 +55,8 @@ function [] = ObjectDetectorCallback( server, type, data )
 %--------------------------------------------------------------------------
         else
             % find detected objects by matched filter
+            % where the PS.signalToCorrelate is the reverse of sensing signal
+            % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
             cons = convn(data, PS.signalToCorrelate, 'same');
             detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
             traceCnt = size(detects, 2);
