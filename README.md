@@ -54,10 +54,14 @@ You are all set and can start running your fancy sensing algorithms with LibAS :
 
 ## Usage
 
-You now can use Matlab to control the connected device to sense by the four steps shown in the following figure:
+You now can use Matlab to control the connected device to sense by the following four steps as shown in the figure:
+- (1) Execute ```Setup.m``` and ```FreqRespAnalysisMain.m```
+- (2) Edit your server's address and port in the DevApp and click the connect button (you should see the red texts showing ```--- ACTION_CONNECT ---``` in Matlab when the connection is successful)
+- (3) Click the ```Start Sensing``` button in the Matlab GUI
+- (4) Now you hear screaming sound being played and see the the frequency response of your device being plotted
 ![Demo Freq Resp](Resource/figures/demo_freq_resp.png?raw=true "Demo Freq Resp")
 
-You can also change the sound to play easily by editing the ```AudioSource``` class in the  ```FreqRespAnalysisMain.m```. Please refer to the example's [README](Utility/FreqRespAnalysis) for knowing how the code works.
+You can also change the sound to play easily by editing the ```AudioSource``` class in the  ```FreqRespAnalysisMain.m```. Please refer to [LibAS's Matlab README](/LibAcousticSensing/Matlab/) for knowing how the code works.
 
 
 ## Troubleshooting
