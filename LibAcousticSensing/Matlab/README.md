@@ -1,26 +1,26 @@
 # LibAS Matlab Support
-This guide will introduce how to use the Matlab support of LibAS. Specifically, we will include the following topics:
+This guide will introduce how to use the Matlab support of LibAS. Specifically, we will cover the following topics:
 - How to design your remote Matlab code?
 - How to transfer remote mode to standalone mode?
 - LibAS Matlab API documents
 
 # How to Deign Your Remote Sensing Code
-This guide uses the *ObjectDetector* example to illustrate how to design your sensing algorithms with LibAS's Remote Matlab mode. Our *ObjectDetector* is a simple example to turn your smartphone into sonar-like devices that estimate the distance of nearby obstacles. Please check the example [README](/Example/ObjectDetector) file for more details for any further information.
+This guide uses the *ObjectDetector* example to illustrate how to design your sensing algorithms with LibAS's Matlab **remote mode**. Our *ObjectDetector* is a simple example to turn your smartphone into a sonar-like device that can estimate the distance toward nearby obstacles. Please check the example [README](/Example/ObjectDetector) file for any further information.
 
-In LibAS's remote mode, you just need to focus on designing two things:
-- What signal to be sent for sensing? (in this example, is )
-- How to process the the receive of each sent signal? (in this example, is applying a matched filter)
+In LibAS's **remote mode**, you just need to focus on designing two things:
+- What signal to be sent for sensing?
+- How to process the the receive of each sent signal?
 while the reset of processing, like how the sounds being played/recorded in real-time or how to know which segment of recorded sounds is the sound you just sent, will be handled by LibAS.
 
-In the *ObjectDetector* example, the former is a 50ms chirp signal defined in the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) while the later is a matched filter specified in the [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m)
+For the *ObjectDetector* example, the former is a 50ms chirp signal defined in the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) while the later is a matched filter specified in the [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m)
 
 ## Setup
-How to install and set up LibAS's remote mode has been introduced in the whole project's [README](/README.md). Specifically, you will need our pre-built DevApp installed on your Android/iOS/Tizen devices, then use this app to connect the remote Matlab server.
+How to install and set up LibAS's remote mode has been introduced in the whole project's [README](/README.md). Specifically, you will need our pre-built DevApp installed on your Android/iOS/Tizen devices, then use the installed app to connect your Matlab remote server.
 
 ## Main.m
-In your Matlab main function. You need to firstly decide which signal to send. For the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, the sent signal is:
+In your Matlab main function. You need to firstly decide which signal to send. For the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, the sent signal is defined as:
 
-```Matlab
+```
 % ... some signal settings ...
 signal = zeros(PERIOD, 1);
 time = (0:CHIRP_LEN-1)./FS;
@@ -31,19 +31,19 @@ end
 as = AudioSource('objectDetectSound', signal, FS, REPEAT_CNT, SIGNAL_GAIN);
 ```
 
-Once the AudioSource has been set, we can start create the ```SensingServer```. But remember to import our customized java classes and clean the previously established socket:
+Once the AudioSource has been set, we can start create the ```SensingServer```, but remember to import our customized java classes and clean the previously established socket first:
 
-```Matlab
+```
 import edu.umich.cse.yctung.*
 JavaSensingServer.closeAll(); % close all previous open socket
 
 SERVER_PORT = 50005;
 ss = SensingServer(SERVER_PORT, @YourCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
-ss.startSensingAfterConnectionInit = 0; % disable auto sensing
+ss.startSensingAfterConnectionInit = 0; % disable auto sensing when connected
 ```
 
-Note the ```YourCallback``` argument should be replaced by your own real callback function. In the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, it should be assigned by ```@ObjectDetectorCallback```.
-For most sensing apps, we assign ```startSensingAfterConnectionInit = 0;``` to let developers manually click the ```Start Sensing``` button in the GUI. Setting ```startSensingAfterConnectionInit = 1;``` will automatically send the sensing sounds when the device is connected.
+Note the ```@YourCallback``` argument should be replaced by your real callback function. In the [ObjectDetectorMain.m](/Example/ObjectDetector/Matlab/ObjectDetectorMain.m) example, the callback is assinged to ```@ObjectDetectorCallback```.
+For most sensing apps, we usually assign ```startSensingAfterConnectionInit = 0;``` to let developers manually click the ```Start Sensing``` button in the GUI. Setting ```startSensingAfterConnectionInit = 1;``` will automatically send the sensing sounds when the device is connected.
 
 ## Callback.m
 The callback function signature should be consistent with:
@@ -54,19 +54,19 @@ where the ```server``` argument is the reference to your sensing server of this 
 which is useful when you want to get some information of the sensing server.
 
 The ```type``` argument can be either the ```SensingServer.CALLBACK_TYPE_DATA``` or ```SensingServer.CALLBACK_TYPE_USER```.
-- ```type == SensingServer.CALLBACK_TYPE_USER```: the callback function need to handle some customized events defined based on the application. This is the way to enable the extension of customized behavior of processing functions.
+- ```type == SensingServer.CALLBACK_TYPE_USER```: the callback function need to handle some customized events defined based on your application. This is the way to enable the customized behavior of in the callback functions.
 For example, you can use LibAS's Android API to send this customized event to the sensing server for triggering some special processing if you want (e.g., change the sensing mode...etc).
 
 - ```type == SensingServer.CALLBACK_TYPE_DATA```: it is the time to process the recorded sensing signal contained in the ```data``` argument.
 
-The ```data``` argument is a 3-dimension matrix including the recorded sensing signals. The size of ```data``` equals to ```SIGNAL_LEN * TRACE_CNT * CH_CNT``` where the first dimension equals to length of your sensing signal, the second dimension represents how many repetitions of sensing signal are received and wait to process this time (usually 1), and the last dimension represents how many channels are recorded (usually 2 in Android, 1 in iOS and other wearables).
+The ```data``` argument is a 3-dimension matrix including the recorded sensing signals. The size of ```data``` equals to ```SIGNAL_LEN * TRACE_CNT * CH_CNT``` where the first dimension equals to length of your sensing signal, the second dimension represents how many repetitions of sensing signal are received and need to process this time (usually 1), and the last dimension represents how many channels are recorded (usually 2 in Android, 1 in iOS and other wearables).
 For example, if you want to know what is the first 50~100 samples of sensing signal being latest recorded in channel 2, you should access it by ```data(50:100, end, 2)```.
 
 While there are many GUI codes that might be confusing in the example of [ObjectDetectorCallback.m](/Example/ObjectDetector/Matlab/ObjectDetectorCallback.m),
 the core processing block of this callback is only applying a matched filter
 to identify the reflection of the sensing signal as shown in the following:
 
-```Matlab
+```
   % find detected objects by matched filter
   % where the PS.signalToCorrelate is the reverse of sensing signal
   % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
@@ -85,7 +85,7 @@ TODO: add this part
 ## Open API
 Here are the common API you might need to build your remote sensing app with LibAS:
 ### AudioSource.m
-AudioSource is a wrapper to let LibAS know what kind of sound and how it should be sent.
+AudioSource is a wrapper to let LibAS know what kind of sound and how the sound should be sent.
 
 - Constructor:
 ```
