@@ -19,7 +19,7 @@ We notice there are various platform-dependent challenges that might prevent new
 
 
 # Remote Mode (Easy for New Users)
-In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our prebuilt DevApp to your device and this app will automatically stream whatever signal needed for acoustic sensing to a remote Matlab server. You can easily design your sensing algorithm in Matlab and control the connected device to sense.
+In LibAS's **remote mode**, you don't need to know anything about real-time audio recording/playing on devices. What you need to do is download one of our prebuilt DevApp to your device and this app will automatically stream whatever signal needed for acoustic sensing to a remote Matlab server. You can easily design your sensing algorithm in Matlab and control the connected device to sense. Please read the [LibAS's Matlab README](/LibAcousticSensing/Matlab/) for knowing the API details and its usage.
 
 ## Install
 
