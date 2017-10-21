@@ -78,6 +78,31 @@ After the processing is done, it is optional to return the result as a matrix.
 This matrix will be returned to the connected device, thus facilitating the design
 of real user experience of your applications via the remote mode.
 
+## Save and Replay
+
+
+## Use of Customized Preamble
+***Preamble*** set in the ```AudioSource``` is a critical component for LibAS
+to know when the sensing sounds are played, thus able to segment the correct parts
+in the recorded signals.
+However, You might notice the preamble detection fails. It is common,
+since each device might have different behaviors depending on the which microphone, speaker,
+or even the sensing signal are used. This section shows how to customize your preamble to avoid this issue.
+Further details can be found in the [Utility/PreambleSyncTuning](/Utility/PreambleSyncTuning):
+```
+PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
+PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
+PREAMBLE_LENS = [500, 1000];        % [length of real signals, length of single repeatition]
+PREAMBLE_FS = 48000;                % sample rate (should be consistent to the sensing signals)
+PREAMBLE_REPEAT_CNT = 10;           % number of sync to be played
+PREAMBLE_START_OFFSET = 4800;       % number of silent samples before the preamble is played
+PREAMBLE_END_OFFSET = 4800;         % number of silent samples after the preamble is played
+PREAMBLE_FADING_RATIO = -1;         % -1 menas no fading
+preamble = PreambleBuilder(PREAMBLE_TYPE, PREAMBLE_FREQS, PREAMBLE_LENS, PREAMBLE_FS, PREAMBLE_REPEAT_CNT, PREAMBLE_START_OFFSET, PREAMBLE_END_OFFSET, PREAMBLE_FADING_RATIO);
+% ... some signal setting ...
+as = AudioSource('dummySound', signal, FS, REPEAT_CNT, SIGNAL_GAIN, preamble);
+```
+
 # Remote to Standalone
 TODO: add this part
 

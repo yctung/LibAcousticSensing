@@ -1,4 +1,4 @@
-function [ ps ] = PreambleBuilder( type, freqs, lens, FS, repeatCnt, endOffset, startOffset, fadingRatio )
+function [ ps ] = PreambleBuilder( type, freqs, lens, FS, repeatCnt, startOffset, endOffset, fadingRatio )
 % 2017/03/28: This is a helper class to build preamble
 %           : I keep the definition of type, freqs, lens open for future
 %           : possible preamble typle to use
