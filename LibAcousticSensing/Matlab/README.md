@@ -78,17 +78,17 @@ After the processing is done, it is optional to return the result as a matrix.
 This matrix will be returned to the connected device, thus facilitating the design
 of real user experience of your applications via the remote mode.
 
-## Save and Replay
+## (Optional) Save and Replay
 
 
-## Use of Customized Preamble
+## (Optional) Customized Preamble
 ***Preamble*** set in the ```AudioSource``` is a critical component for LibAS
 to know when the sensing sounds are played, thus able to segment the correct parts
 in the recorded signals.
 However, You might notice the preamble detection fails. It is common,
 since each device might have different behaviors depending on the which microphone, speaker,
 or even the sensing signal are used. This section shows how to customize your preamble to avoid this issue.
-Further details can be found in the [Utility/PreambleSyncTuning](/Utility/PreambleSyncTuning):
+Further details can be found in the [Utility/PreambleSyncTuning](/Utility/PreambleSyncTuning/Matlab):
 ```
 PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
 PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
