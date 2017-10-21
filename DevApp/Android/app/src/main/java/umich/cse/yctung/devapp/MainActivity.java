@@ -397,6 +397,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     @Override
     public void serverClosed() {
+        // TODO: remote server is closed by some reason -> need to stop and clean everything
 
     }
 

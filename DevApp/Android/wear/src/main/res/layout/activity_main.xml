@@ -24,9 +24,10 @@
 
         <TextView
             android:id="@+id/textInfo"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Info:"
+            android:text="Info.........................."
+            android:textColor="@color/black"
             android:layout_gravity="center"
             app:layout_box="all"/>
 
@@ -37,7 +38,7 @@
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_setting"
             android:background="?android:selectableItemBackground"
-            android:layout_gravity="bottom|end"
+            android:layout_gravity="bottom|start"
             app:layout_box="all"
             />
 
@@ -45,7 +46,7 @@
             android:id="@+id/buttonStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
+            android:layout_gravity="bottom|end"
             android:text="Start"
             app:layout_box="all"
             />

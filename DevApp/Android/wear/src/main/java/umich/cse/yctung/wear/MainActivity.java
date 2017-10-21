@@ -1,18 +1,16 @@
 package umich.cse.yctung.wear;
 
-import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.wearable.activity.WearableActivity;
-import android.support.wearable.view.BoxInsetLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
@@ -20,14 +18,14 @@ import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 
 
 public class MainActivity extends WearableActivity implements AcousticSensingControllerListener {
-
-    private static final SimpleDateFormat AMBIENT_DATE_FORMAT =
-            new SimpleDateFormat("HH:mm", Locale.US);
-
-    private BoxInsetLayout mContainerView;
+    private final static String TAG = "MainActivity";
+    private final static String AUTO_CONNECT_KEY = "DEVAPP_AUTO_CONNECT_KEY";
+    final static int RETRY_WAIT = 1000; // ms
     private TextView textDebug, textInfo;
-    private Button buttonStart;
+    private Button buttonConnect;
     private ImageButton buttonSetting;
+
+    private SharedPreferences sharedPref;
 
     AcousticSensingSetting ass;
     AcousticSensingController asc;
@@ -38,15 +36,15 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
 
-        mContainerView = (BoxInsetLayout) findViewById(R.id.container);
+        sharedPref = getPreferences(Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
         textDebug = (TextView) findViewById(R.id.textDebug);
         textInfo = (TextView) findViewById(R.id.textInfo);
 
-        buttonStart = (Button) findViewById(R.id.buttonStart);
-        buttonStart.setOnClickListener(new View.OnClickListener() {
+        buttonConnect = (Button) findViewById(R.id.buttonStart);
+        buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onStartOrStopClicked();
+                onInitOrFinalizeClicked();
             }
         });
 
@@ -59,23 +57,61 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         });
 
 
-
         ass = new AcousticSensingSetting(this);
         asc = new AcousticSensingController(this,this);
-        updateDisplay();
+        updateUI();
     }
 
     void onStartOrStopClicked() {
-        /*
-        Dialog dialog = asc.createInitModeDialog(this, "35.2.141.147", 50005);
-        dialog.show();
-        */
-        //boolean result = asc.initAsSlaveMode("192.168.0.108",50005);
         boolean result = asc.init(ass);
         if (!result) updateDebugStatus(false, "Init fails");
         else {
             asc.startSensingWhenPossible();
         }
+    }
+
+    void onInitOrFinalizeClicked() {
+        if (asc == null || !asc.isReadyToSense()) {
+            initIfPossible();
+        } else {
+            finalzeIfPossible();
+        }
+        updateUI();
+    }
+
+    void initIfPossible() {
+        if (asc == null || asc.isReadyToSense()) {
+            Log.e(TAG, "Unable to init when the sensing controller has be initialized");
+            return;
+        }
+
+        // TODO: init by setting
+        boolean initResult = asc.init(ass);
+
+        if (!initResult) {
+            textDebug.setText("Init fails");
+            return;
+        }
+        //progressConnecting.show();
+    }
+
+    void retryInitIfNeed() {
+        // If auto start, then call the click function again after some time
+        Boolean autostart = sharedPref.getBoolean(AUTO_CONNECT_KEY, false);
+        if (autostart) {
+            Log.v(TAG, "Attempting to auto start.");
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    initIfPossible();
+                }
+            }, RETRY_WAIT);
+        }
+    }
+
+    void finalzeIfPossible() {
+        // TODO: finialize the sensing controller
     }
 
     void showSettingActivity() {
@@ -86,32 +122,48 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
     @Override
     public void onResume() {
         super.onResume();
-        updateDisplay();
+        updateUI();
     }
 
     @Override
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
-        updateDisplay();
+        updateUI();
     }
 
     @Override
     public void onUpdateAmbient() {
         super.onUpdateAmbient();
-        updateDisplay();
+        updateUI();
     }
 
     @Override
     public void onExitAmbient() {
-        updateDisplay();
+        updateUI();
         super.onExitAmbient();
     }
 
-    private void updateDisplay() {
+    private void updateUI() {
 
-        // update textInfo based on the current setting
-        String info = "Server=" + ass.getServerAddr() + ":" + ass.getServerPort();
-        textInfo.setText(info);
+
+
+        if (asc == null || !asc.isReadyToSense()) {
+            // not ready to sense yet
+            String serverInfo = "Server=" + ass.getServerAddr() + ":" + ass.getServerPort();
+            textInfo.setText(serverInfo);
+            buttonConnect.setText("Connect");
+            buttonConnect.setEnabled(true);
+        } else {
+            // ok to sense
+            buttonConnect.setText("Disconnect");
+            if (asc != null && asc.isSensing()) {
+                textInfo.setText("Sensing...");
+                buttonConnect.setEnabled(false);
+            } else {
+                textInfo.setText("Connected");
+                buttonConnect.setEnabled(true);
+            }
+        }
     }
 
 //=================================================================================================
@@ -134,12 +186,22 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 
     @Override
     public void sensingEnd() {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
     }
 
     @Override
     public void sensingStarted() {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
     }
 
     @Override
@@ -164,7 +226,12 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 
     @Override
     public void isConnected(boolean success, String resp) {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
     }
 
 }
