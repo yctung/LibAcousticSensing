@@ -1,9 +1,9 @@
-function BufferCallback_DistanceExperiments ()
+function BufferCallback_GenericExperiments ()
 
     global PS CallbackCounter StartTime;    
     global FillUpBuffer FillUpPointers AlreadyProcessed;
     global detailsHandles aggregateDetails;
-    global savedData doRecord;
+    global savedData doRecord savedRawData;
     
     
     NUMCHANNELS = length(FillUpPointers);
@@ -59,11 +59,16 @@ function BufferCallback_DistanceExperiments ()
                 d14 = calcDistance(PeakDown, PeakUp, Dev1*2-1, Dev2*2);
                 d23 = calcDistance(PeakDown, PeakUp, Dev1*2, Dev2*2-1);
                 d24 = calcDistance(PeakDown, PeakUp, Dev1*2, Dev2*2);
-                
                 AllInterMicDistances(LocationIndex:LocationIndex+3) = [d13 d14 d23 d24];
                 LocationIndex  = LocationIndex + 4;
             end
         end
+        
+        % Indices 1 and 2 are from channels 1 and 2 of the Galaxy S5. 
+        % This means, the those are the important channels. We can pick
+        % either one of the other device.
+        %[x y] = calculateXY(AllInterMicDistances(1), AllInterMicDistances(3));
+        %[x y]
         
         set(aggregateDetails, 'string', sprintf('#%d. Avg = %fcm.', AlreadyProcessed, mean(AllInterMicDistances)*100));
         
@@ -75,33 +80,59 @@ function BufferCallback_DistanceExperiments ()
         
         % If we are saving data, we will save these
         %toggleButton = findobj('tag', 'recordtoggle');
+         % If we are saving data, we will save these
+        %toggleButton = findobj('tag', 'recordtoggle');
         if (doRecord)
-            savedData = [savedData; PeakUp PeakDown PeakDiff AllInterMicDistances];
-            size(savedData)
+            nextIdx = length(savedData)+1;
+            savedData(nextIdx).peakUp = PeakUp;
+            savedData(nextIdx).peakDown = PeakDown;
+            savedData(nextIdx).peakDiff = PeakDiff;
+            savedData(nextIdx).interMicDistances = AllInterMicDistances;
+            %savedData(nextIdx).xm1 = xm1;
+            %savedData(nextIdx).ym1 = ym1;
+            %savedData(nextIdx).xm2 = xm2;
+            %savedData(nextIdx).ym2 = ym2;
+            
+            savedRawData(:, nextIdx, :) = FillUpBuffer(:, AlreadyProcessed, :);
         end
         
    end
 end
 
 function recordToggleCallback (hObject, ~, ~)
-    global savedData doRecord; 
+    global savedData doRecord savedRawData FillUpBuffer;
+    
     button_state = get(hObject,'Value');
     expLabel = findobj('tag', 'explabel');
     buttonName = get(hObject, 'string');
     if button_state == get(hObject, 'Max')
         % Reset data
         savedData = [];
+        [PeriodSize, ~, NumChannels] = size(FillUpBuffer);
+        savedRawData = zeros(PeriodSize, 0, NumChannels);
         doRecord = 1;
-    %elseif button_state == get(hObject, 'Min')
-    else
+    else 
         % Download the data
         prefix = get(expLabel, 'String');
         saveName = sprintf('experiments/%s-%s', prefix, buttonName);
-        save(saveName, 'savedData');
+        save(saveName, 'savedData', 'savedRawData');
         doRecord = 0;
         savedData = [];
+        %savedRawData = zeros(PeriodSize, 0, NumChannels);
     end
 end
+    
+
+function [x, y] = calculateXY(r1, r2)
+    D = 0.142; % Mic to speaker distance -- fixed
+    x = (D^2 - r2^2 + r1^2) / (2*D);
+    if r1^2 - x^2 < 0
+        y = -1;
+    else
+        y = sqrt(r1^2 - x^2);
+    end
+end
+
 
 
 function [d] = calcDistance (PeakDown, PeakUp, ch1Num, ch2Num)
@@ -254,7 +285,7 @@ function createUI()
             'style', 'togglebutton', ...
             'units', 'normal', ...
             'position', [xcoord ycoord 0.1 0.4], ...
-            'string', sprintf('%dcm', i*10), ...
+            'string', sprintf('c%d', i), ...
             'fontsize', FONTSIZE,  ...
             'Callback', @recordToggleCallback);
     end
