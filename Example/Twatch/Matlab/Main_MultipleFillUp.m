@@ -1,5 +1,5 @@
 %==========================================================================
-% 2017/08/17: Just plays and records one sound. No fancy callback or
+% 2017/08/17: Just plays and records one sound. No fancy callback orw
 % anything.
 %==========================================================================
 Setup
@@ -12,12 +12,9 @@ global AlreadyProcessed;
 %% Initialize global variables
 % FillUpBuffer is <Audio signal, Chirp number, Buffer Index>
 %PS.PERIOD = 2400;
-
 %PS.downPass = [2000 6000];
-
 %PS.upPass = [2000 6000];
 %PS.downPass = [8000 12000];
-
 
 SOUNDTYPE = 'ch3';
 
@@ -36,6 +33,7 @@ elseif strcmp(SOUNDTYPE, 'ch2')
 elseif strcmp(SOUNDTYPE, 'ch3')
     PS.bandpassFilter = 0;
     PS.downPass = [2000 6000]; PS.upPass = [2000 6000];
+    %PS.downPass = [17000 20000]; PS.upPass = [17000 20000];
     [upChirp, upSignal] = Helper_CreateSignal('up');
     [downChirp, downSignal] = Helper_CreateSignal('down');    
 elseif strcmp(SOUNDTYPE, 'ch4')
@@ -72,7 +70,8 @@ PS.detectRef = 0;
 % Only one plays up chirp
 % First one plays upSignal
 audioSources(1) = SetupAudioSource(upSignal);
-audioSources(1).preambleGain =1;
+audioSources(1).preambleGain = 1;
+audioSources(1).signalGain = 1;
 for asIdx=2:NUMSOURCES
     audioSources(asIdx) = SetupAudioSource(downSignal);
     audioSources(asIdx).preambleGain = 0;
@@ -103,8 +102,12 @@ function StartSensingServer (audioSources)
     
     %analysisFunction = @Helper_DoAggregatePeaks;
     %analysisFunction = @Helper_DistanceCalc;
-    analysisFunction = @BufferCallback_DistanceExperiments;
+    %analysisFunction = @BufferCallback_DistanceExperiments;
+    %analysisFunction = @BufferCallback_GenericExperiments;
     %analysisFunction = @BufferCallback_VarianceAnalysis;
+    %analysisFunction = @BufferCallback_TWatchXY;
+    %analysisFunction = @BufferCallback_RawData;
+    analysisFunction = @BufferCallback_TWatchExperiment;
     
     clear sensingServers;
     for asIdx=1:length(audioSources)
@@ -114,7 +117,7 @@ function StartSensingServer (audioSources)
                 SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, ...
                 audioSources(asIdx));
         sensingServers(asIdx).startSensingAfterConnectionInit = 0;
-        pause(1.0);
+        pause(0.5);
     end
     
     master = sensingServers(1);

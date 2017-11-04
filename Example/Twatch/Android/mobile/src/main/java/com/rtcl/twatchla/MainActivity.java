@@ -86,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         restartIfAutostart();
     }
 
-
-
     int userDataCodeToSend = 1;
     void onUserDataClicked() {
         if (asc.isReadyToSense()) {
