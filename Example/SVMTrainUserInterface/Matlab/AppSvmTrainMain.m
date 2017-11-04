@@ -12,8 +12,8 @@ pause(1.0);
 as = AudioSource(); % default audio source
 
 FS = 48000;
-PERIOD = 1000;
-CHIRP_LEN = 500;
+PERIOD = 2400;
+CHIRP_LEN = 1200;
 CHIRP_FREQ_START = 18000;
 CHIRP_FREQ_END = 23000;
 APPLY_FADING_TO_SIGNAL = 1;
