@@ -18,11 +18,27 @@ import javax.sound.sampled.TargetDataLine;
 
 
 public class AudioController {
+	
+	public long audioTotalRecordedSampleCnt;
+	
 	float FS=96000.0f; 
-	public AudioController() {
+	public AudioController(AudioControllerListener listener, AudioSource audioSource, RecordSetting recordSetting) {
 		// ref: http://stackoverflow.com/questions/25798200/java-record-mic-to-byte-array-and-play-sound
+		// TODO: init based on the setting
 	}
 	
+	public boolean init(AudioSource audioSource, RecordSetting recordSetting) {
+		// TODO: init based on the setting
+		return true;
+	}
+	
+	public void startSensing() {
+		
+	}
+	
+	public void stopSensing() {
+		
+	}
 	
 	ByteArrayOutputStream out;
 	public void start() {
@@ -123,6 +139,7 @@ public class AudioController {
 		}
 	}
 	
+	/*
 	public static void main(String[] args) {
 		AudioController ac = new AudioController();
 		ac.start();
@@ -130,4 +147,5 @@ public class AudioController {
 		ac.play();
 		System.out.println("Bye bye");
 	}
+	*/
 }

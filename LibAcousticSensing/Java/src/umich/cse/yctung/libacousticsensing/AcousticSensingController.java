@@ -74,7 +74,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             return initAsRemoteMode(setting.getServerAddr(), Integer.parseInt(setting.getServerPort()));
         } else if (setting.getParseMode() == setting.PARSE_MDOE_STANDALONE) {
             // TODO: get these standalone callback setting from the AcousticSensingSetting
-            return initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
+            // return initAsStandaloneMode("audio_source.json", "signal.dat", "preamble.dat", "sync.dat");
         }
         return false;
     }
@@ -128,7 +128,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         recordSetting = new RecordSetting(AUDIO_MODE_DEFAULT);
         recordSetting.applyDeviceSensingSetting(setting);
 
-        ac = new AudioController(context, this, audioSource /* include the playSetting */, recordSetting);
+        ac = new AudioController(this, audioSource /* include the playSetting */, recordSetting);
         if (ac.init(audioSource, recordSetting)) {
             ac.startSensing();
             isSensing = true;

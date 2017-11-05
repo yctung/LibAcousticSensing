@@ -24,7 +24,7 @@ public class Constant {
 
     public static float DEFAULT_VOL = 1.0f;
 
-    public final static String SETTING_JSON_FILE_NAME = "SafeSpeech.json";
+    public final static String SETTING_JSON_FILE_NAME = "LibAS.json";
 
     public static boolean TRACE_SAVE_TO_FILE = false;
     public static boolean TRACE_SEND_TO_NETWORK = true;

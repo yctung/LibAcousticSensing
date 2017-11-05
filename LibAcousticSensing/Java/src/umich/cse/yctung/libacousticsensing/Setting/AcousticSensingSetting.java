@@ -18,7 +18,8 @@ public class AcousticSensingSetting {
     private final static int PARSE_MODE_DEFAULT = PARSE_MODE_REMOTE;
 
     public final static String SERVER_ADDR_KEY = "LIBAS_SERVER_ADDR_KEY";
-    private final static String SERVER_ADDR_DEFAULT = "10.0.0.12"; // my AP in Lab
+    //private final static String SERVER_ADDR_DEFAULT = "10.0.0.12"; // my AP in Lab
+    private final static String SERVER_ADDR_DEFAULT = "35.3.73.7"; // my AP in Lab
 
     public final static String SERVER_IP_KEY = "LIBAS_SERVER_IP_KEY";
     private final static String SERVER_IP_DEFAULT = "50005"; // my AP in Lab
