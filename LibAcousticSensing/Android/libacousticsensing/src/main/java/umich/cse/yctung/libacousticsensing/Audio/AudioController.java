@@ -242,7 +242,7 @@ public class AudioController {
         }).start();
     }
     private void keepAudioRecording() {
-        byte[] byteBuffer = new byte[RECORDER_BUFFER_ELEMENTS* RECORDER_BYTE_PER_ELEMENT];
+        byte[] byteBuffer = new byte[RECORDER_BUFFER_ELEMENTS * RECORDER_BYTE_PER_ELEMENT];
         audioTotalRecordedSampleCnt = 0; // init this log value to 0 for every recording
         audioRecord.startRecording();
 

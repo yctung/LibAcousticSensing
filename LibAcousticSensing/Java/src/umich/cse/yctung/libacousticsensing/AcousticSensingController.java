@@ -176,7 +176,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             listener.updateDebugStatus(false, "Server connect fails, "+resp);
         } else {
             // send init vars (let the server know the config of the device used for sensing)
-            nc.sendSetAction(NetworkController.SET_TYPE_VALUE_STRING, "traceChannelCnt", "2".getBytes()); // TODO: modify it based on device
+            nc.sendSetAction(NetworkController.SET_TYPE_VALUE_STRING, "traceChannelCnt", "1".getBytes()); // TODO: modify it based on device
             nc.sendSetAction(NetworkController.SET_TYPE_STRING, "userDevice", Utils.getDeviceName().getBytes());
             // TODO: update other device property
             nc.sendInitAction(); // tell server that it is ready to start
