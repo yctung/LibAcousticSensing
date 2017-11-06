@@ -34,6 +34,7 @@ public class AudioController {
 	//float FS=96000.0f;
 	float FS=48000.0f;
 	
+	AudioControllerListener listener;
 	AudioSource audioSource;
 	RecordSetting recordSetting;
 	
@@ -41,6 +42,7 @@ public class AudioController {
 	public AudioController(AudioControllerListener listener, AudioSource audioSource, RecordSetting recordSetting) {
 		// ref: http://stackoverflow.com/questions/25798200/java-record-mic-to-byte-array-and-play-sound
 		// TODO: init based on the setting
+		this.listener = listener;
 		this.audioSource = audioSource;
 		this.recordSetting = recordSetting;
 	}
@@ -188,39 +190,31 @@ public class AudioController {
         writeCnt = player.write(audioSource.preambleBytes, 0, audioSource.preambleBytes.length);
         if (writeCnt!=audioSource.preamble.length) Log.e(TAG,"[ERROR]: wrong size of preamble is played by audioTrack, writeCnt="+writeCnt);
 		
-		
-		/*
-		// containing the data
-		try {
-			AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
-			AudioInputStream audioInputStream;
-	        SourceDataLine sourceDataLine;
-			byte audioData[] = out.toByteArray();
-	        InputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
-	        audioInputStream = new AudioInputStream(byteArrayInputStream,format, audioData.length / format.getFrameSize());
-	        DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-			sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-	        sourceDataLine.open(format);
-	        sourceDataLine.start();
-	        int cnt = 0;
-	        byte tempBuffer[] = new byte[10000];
-	        try {
-	            while ((cnt = audioInputStream.read(tempBuffer, 0,tempBuffer.length)) != -1) {
-	                if (cnt > 0) {
-	                    // Write data to the internal buffer of
-	                    // the data line where it will be
-	                    // delivered to the speaker.
-	                    sourceDataLine.write(tempBuffer, 0, cnt);
-	                }// end if
-	            }
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-		} catch (LineUnavailableException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+        // TODO: check if there will be a delay between several audioTrack write executions
+        int playCnt = 0;
+        while (keepSensing) {
+            if (audioSource.repeatCnt > 0 && playCnt >= audioSource.repeatCnt) { // end of repeat audio playing
+                break;
+            }
+            writeCnt = player.write(audioSource.signalBytes, 0, audioSource.signalBytes.length);
+            playCnt++;
+        }
+        isPlaying = false;
+        Log.d(TAG, "Reach the end of keepAudioPlaying()");
+        checkIfSensingEnd();
+	}
+	
+	void checkIfSensingEnd() {
+		if (!isPlaying && !isRecording) {
+			sensingEnd();
 		}
-		*/
+	}
+	
+	void sensingEnd() { // TODO: finalize
+		// TODO: tune the audio record/play to the begin
+        // TODO: move the folder?
+        keepSensing = false;
+        listener.onAudioRecordAndPlayEnd();
 	}
 	
 	/*
