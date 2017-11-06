@@ -1,5 +1,7 @@
 package umich.cse.yctung.libacousticsensing.Audio;
 
+import java.nio.ByteBuffer;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,6 +23,9 @@ public class AudioSource {
     public short[] preamble;
     public short[] sync;
 
+    // used in Java, since it needs the bytes
+    public byte[] signalBytes;
+    public byte[] preambleBytes;
 
     // this is the instructor (incomplete) called in the remote mode
     public AudioSource(short[] preamble, short[] signal, int sampleRate, int chCnt, int repeatCnt) {
@@ -29,8 +34,27 @@ public class AudioSource {
         this.sampleRate = sampleRate;
         this.chCnt = chCnt;
         this.repeatCnt = repeatCnt;
+        
+        // TODO: need to convert it to the big/little endian based on OS (!?)
+        preambleBytes = shortArrayToByteArray(preamble, true /* little endian */);
+        signalBytes = shortArrayToByteArray(signal, true /* little endian */);
     }
 
-    // in the stand alone mode, this class will be initialized by the serialized json file
+    
+    byte[] shortArrayToByteArray(short[] s, boolean isLittleEndian) {
+    	byte[] b = new byte[s.length * 2];
+    	
+    	for (int sIdx = 0, bIdx = 0; sIdx < s.length; sIdx ++, bIdx += 2) {
+    		if (isLittleEndian) {
+    			b[bIdx] = (byte)(s[sIdx] & 0x00FF);
+        		b[bIdx + 1] = (byte)((s[sIdx] & 0xFF00) >> 8);
+    		} else {
+    			b[bIdx] = (byte)((s[sIdx] & 0xFF00) >> 8); 
+        		b[bIdx + 1] = (byte)(s[sIdx] & 0x00FF);
+    		}
+    	}
+    	
+    	return b;
+    }
 }
 

@@ -254,7 +254,7 @@ public class NetworkController {
 						listener.updateDebugStatus(false, "signal loaded fails");
 					}
 
-					AudioSource audioSource = new AudioSource(pilot,signal,FS,chCnt,repeatCnt);
+					AudioSource audioSource = new AudioSource(pilot, signal, FS, chCnt, repeatCnt);
 
 					Log.d(LOG_TAG, "Load audio from server with length="+shortToRead);
 					listener.audioReceivedFromServer(audioSource);

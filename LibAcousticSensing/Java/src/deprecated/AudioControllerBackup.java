@@ -1,4 +1,4 @@
-package umich.cse.yctung.libacousticsensing.Audio;
+package deprecated;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -16,92 +16,15 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
-import umich.cse.yctung.libacousticsensing.Log;
-import umich.cse.yctung.libacousticsensing.Utils;
 
-
-public class AudioController {
-	private final static String TAG = "AudioController"; 
-	public static boolean SHOW_DEBUG_INFO_TIME_MESSAGE = false;
-	
-	// Internal status
-    boolean keepSensing;
-    boolean startAndKeepRecording;
-    boolean isRecording;
-    boolean isPlaying;
-	public long audioTotalRecordedSampleCnt;
-	
-	//float FS=96000.0f;
-	float FS=48000.0f;
-	
-	AudioSource audioSource;
-	RecordSetting recordSetting;
-	
-	SourceDataLine player;
-	public AudioController(AudioControllerListener listener, AudioSource audioSource, RecordSetting recordSetting) {
+public class AudioControllerBackup {
+	float FS=96000.0f; 
+	public AudioControllerBackup() {
 		// ref: http://stackoverflow.com/questions/25798200/java-record-mic-to-byte-array-and-play-sound
-		// TODO: init based on the setting
-		this.audioSource = audioSource;
-		this.recordSetting = recordSetting;
 	}
-	
-	public boolean init(AudioSource audioSource, RecordSetting recordSetting) {
-		// TODO: init based on the setting
-		
-		
-		// init player
-		try {
-			AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
-	        DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-	        player = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-	        player.open(format);
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-			Log.e(TAG, "init player error: " + e.getMessage());
-			return false;
-		}
-		
-		return true;
-	}
-	
-	public void startSensing() {
-		//startRecording();
-		//startPlaying();
-		keepSensing = true;
-        startRecordAndThenPlayAudio();
-	}
-	
-	public void stopSensing() {
-		keepSensing = false; // NOTE: set this flag will enforce the play & recording thread to stop
-        Log.w(TAG, "wait audio playing and recording terminate ...");
-        while (isPlaying||isRecording);
-        Log.w(TAG, "audio playing and recording has terminated!");
-	}
-	
-	
-	
-//=================================================================================================
-//  Internal help functions
-//=================================================================================================
-	
-    private void startRecordAndThenPlayAudio() {
-        // NOTE: it is necessary to ensure the audio is recording before playing the audio
-    	/*
-        if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_AND_RECORD) {
-            startRecording();
-            sensingTimer.sendMessageDelayed(Message.obtain(null, MESSAGE_TO_START_PLAY), DELAY_TO_START_PLAY);
-        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_ONLY) {
-            startPlaying();
-        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_RECORD_ONLY) {
-            startRecording();
-        } else {
-            Log.e(LOG_TAG, "[ERROR]: undefined audioMode="+audioSetting.audioMode);
-        }*/
-    	startPlaying();
-    }
 	
 	ByteArrayOutputStream out;
-	public void startRecording() {
+	public void start() {
 		//AudioFormat format = new AudioFormat(FS, 16, 1, true, true);
 		AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
 		System.out.print("Encodie = "+format.getEncoding());
@@ -166,30 +89,7 @@ public class AudioController {
 		}
 	}
 	
-//=================================================================================================
-//  Audio play related
-//=================================================================================================
-	private void startPlaying() {
-        if(SHOW_DEBUG_INFO_TIME_MESSAGE) Log.d(TAG, "startPlaying() is called" + Utils.getTime());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                isPlaying = true;
-                player.start();
-                keepAudioPlaying();
-            }
-        }).start();
-    }
-	
-	
-	void keepAudioPlaying() {
-		int writeCnt;
-		Log.d(TAG, "player.available() = " + +player.available());
-        writeCnt = player.write(audioSource.preambleBytes, 0, audioSource.preambleBytes.length);
-        if (writeCnt!=audioSource.preamble.length) Log.e(TAG,"[ERROR]: wrong size of preamble is played by audioTrack, writeCnt="+writeCnt);
-		
-		
-		/*
+	void play() {
 		// containing the data
 		try {
 			AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
@@ -220,16 +120,13 @@ public class AudioController {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
 	}
 	
-	/*
 	public static void main(String[] args) {
-		AudioController ac = new AudioController();
+		AudioControllerBackup ac = new AudioControllerBackup();
 		ac.start();
 		System.out.println("Hello World");
 		ac.play();
 		System.out.println("Bye bye");
 	}
-	*/
 }
