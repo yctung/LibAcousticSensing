@@ -24,9 +24,11 @@ public class MainActivity implements AcousticSensingControllerListener {
 		ass = new AcousticSensingSetting();
 		asc = new AcousticSensingController(this);
 		boolean succ = asc.init(ass);
+		/*
 		if (succ) {
 			asc.startSensingWhenPossible();
 		}
+		*/
 	}
 
 	@Override

@@ -19,6 +19,11 @@ import javax.sound.sampled.TargetDataLine;
 
 public class AudioController {
 	
+	// Internal status
+    boolean keepSensing;
+    boolean startAndKeepRecording;
+    boolean isRecording;
+    boolean isPlaying;
 	public long audioTotalRecordedSampleCnt;
 	
 	float FS=96000.0f; 
@@ -33,7 +38,8 @@ public class AudioController {
 	}
 	
 	public void startSensing() {
-		
+		startRecording();
+		startPlaying();
 	}
 	
 	public void stopSensing() {
@@ -41,7 +47,7 @@ public class AudioController {
 	}
 	
 	ByteArrayOutputStream out;
-	public void start() {
+	public void startRecording() {
 		//AudioFormat format = new AudioFormat(FS, 16, 1, true, true);
 		AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
 		System.out.print("Encodie = "+format.getEncoding());
@@ -106,7 +112,7 @@ public class AudioController {
 		}
 	}
 	
-	void play() {
+	void startPlaying() {
 		// containing the data
 		try {
 			AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
