@@ -220,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             editTextServerAddr.setText(ass.getServerAddr());
             editTextServerPort.setText(ass.getServerPort());
         }
-
         if (asc == null || !asc.isReadyToSense()) {
             // not ready to sense yet
             buttonConnect.setEnabled(true);

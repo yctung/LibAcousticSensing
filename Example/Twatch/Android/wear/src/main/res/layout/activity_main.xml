@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="umich.cse.yctung.wear.MainActivity"
+    tools:deviceIds="wear">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        app:layout_box="all">
+
+        <TextView
+            android:id="@+id/textDebug"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="debug info:"
+            app:layout_box="all"/>
+
+        <TextView
+            android:id="@+id/textInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Info.........................."
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            app:layout_box="all"/>
+
+
+        <ImageButton
+            android:id="@+id/buttonSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_setting"
+            android:background="?android:selectableItemBackground"
+            android:layout_gravity="bottom|start"
+            app:layout_box="all"
+            />
+
+        <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:text="Start"
+            app:layout_box="all"
+            />
+
+    </FrameLayout>
+
+</android.support.wearable.view.BoxInsetLayout>

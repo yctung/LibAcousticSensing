@@ -26,4 +26,14 @@
         android:title="@string/pref_automatic"
         android:summary="@string/pref_autostartDescription"
         android:defaultValue="@bool/pref_defaultAutomatic" />
+
+
+    <ListPreference
+        android:key="LIBAS_RECORD_AUDIO_SOURCE_KEY"
+        android:title="@string/pref_audioSource"
+        android:summary="@string/pref_audioSourceDescription"
+        android:dialogTitle="@string/pref_audioSource"
+        android:entries="@array/audio_source_entries"
+        android:entryValues="@array/audio_source_mode_values"
+        android:defaultValue="@string/pref_defaultMic"/>
 </PreferenceScreen>

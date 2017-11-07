@@ -15,7 +15,6 @@ function [chirpSignal, playSignal] = Helper_CreateSignal (direction)
     PS.FS = FS;
     PS.PERIOD = PERIOD;
     
-
     
     time = (0:CHIRP_LEN-1)./FS; 
     

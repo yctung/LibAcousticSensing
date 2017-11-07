@@ -25,6 +25,13 @@
 
         <activity android:name=".SettingsActivity" >
         </activity>
+
+        <activity
+            android:name="umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSettingActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+
     </application>
 
 </manifest>

@@ -128,6 +128,7 @@ classdef SensingServer < handle
             
             % create java sensing server
             obj.jss = edu.umich.cse.yctung.JavaSensingServer.create(port);
+            obj.jss.SHOW_DEBUG_MESSAGE = false;
             set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
             set(obj.jss,'OpDataCallback',@(h,e)obj.onDataCallback(h,e));
             %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);

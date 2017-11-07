@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LibAS DevApp</string>
+    <string name="hello_world">Hello World!</string>
+    <string name="title_activity_setting">SettingActivity</string>
+</resources>

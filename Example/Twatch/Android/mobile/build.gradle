@@ -10,7 +10,15 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+
+        ndk {
+            moduleName = "jni_callback" // module for standalone processing
+            ldLibs "log"
+            stl "stlport_shared"
+            cFlags "-DDEV_NDK=1 -v"
+        }
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -27,5 +35,5 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:support-v4:26.+'
     testCompile 'junit:junit:4.12'
-    compile project(':libacousticsensing-release-mic')
+    compile project(':libacousticsensing')
 }

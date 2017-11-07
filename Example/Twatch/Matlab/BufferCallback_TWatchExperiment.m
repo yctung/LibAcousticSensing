@@ -10,14 +10,15 @@ function BufferCallback_TWatchExperiment ()
     fig = findobj('Tag', 'PeakFig');
     if isempty(fig)
         createUI();
+        savedLabels = [];
     else
         AlreadyProcessed = AlreadyProcessed + 1;
         set(aggregateDetails, 'string', sprintf('#%d', AlreadyProcessed));
         %savedLabels{AlreadyProcessed} = groundLabel;
         if ongoingExperiment
-            savedLabels{AlreadyProcessed} = currentExpStep;
+            savedLabels(AlreadyProcessed) = currentExpStep;
         else
-            savedLabels{AlreadyProcessed} = -1;
+            savedLabels(AlreadyProcessed) = -1;
         end
    end
 end
@@ -58,8 +59,8 @@ function Key_Down(~, event)
         % If we are not currently doing an experiment, start the current
         % experiment and highlight experiment with bold highlight.
         
-        INACTIVE_COLOR = [0.5 0.5 0.5];
-        PREP_COLOR = [1 1 1];
+        INACTIVE_COLOR = [0.6 0.6 0.6];
+        PREP_COLOR = [0 0 0];
         CURRENT_COLOR = [1 0 0];
         
         experimentObjects = findall(expSteps, 'type', 'line');
@@ -71,6 +72,10 @@ function Key_Down(~, event)
         if ongoingExperiment
             ongoingExperiment = 0;
             currentExpStep = currentExpStep + 1;
+            if currentExpStep > length(expSteps) 
+                disp('All done!');
+                return;
+            end
             currStep = expSteps(currentExpStep);
             if strcmp(get(currStep, 'type'), 'line')
                 set(currStep, 'color', PREP_COLOR);
@@ -97,7 +102,7 @@ function createUI()
     % lineCnts is the number of lines per figure
     global aggregateDetails;
     global expSteps currentExpStep expFig ongoingExperiment;
-    currentExpStep = 0;
+    currentExpStep = 1;
     ongoingExperiment = 0;
     
     FONTSIZE = 20;
@@ -167,6 +172,9 @@ function createUI()
     expSteps(20) = scatter(2/5, 1/5);
     expSteps(21) = scatter(3/5, 1/5);
     expSteps(22) = scatter(4/5, 1/5);
+    
+    xlim([-0.1 1.1]);
+    ylim([-0.1 1.1]);
     hold off;
     
     set(expFig, 'KeyPressFcn', @Key_Down);

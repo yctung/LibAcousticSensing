@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion '25.0.0'
+
+    defaultConfig {
+        applicationId "com.rtcl.twatchla.wear"
+        minSdkVersion 23
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':libacousticsensing')
+    compile 'com.google.android.gms:play-services-wearable:9.2.1'
+    //provided 'com.google.android.wearable:wearable:1.0.0'
+    provided 'com.google.android.wearable:wearable:2.0.0'
+    compile 'com.google.android.support:wearable:2.0.0'
+}

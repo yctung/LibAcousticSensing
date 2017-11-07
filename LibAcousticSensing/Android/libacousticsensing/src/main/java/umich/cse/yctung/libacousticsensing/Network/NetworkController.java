@@ -320,6 +320,7 @@ public class NetworkController {
 				try{
 					while(!requestQueue.isEmpty()){
 						NetworkRequest r = requestQueue.peek();
+						Log.d(LOG_TAG, "Sending message type: " + r.action);
 						switch (r.action){
 							case ACTION_INIT:
 								dataOut.write(ACTION_INIT);
@@ -362,6 +363,7 @@ public class NetworkController {
 								Log.e(LOG_TAG, "[ERROR]: undefined action = "+r.action);
 						}
 						requestQueue.poll();
+						Log.d(LOG_TAG, "Finished sending packet.");
 					}
 					dataOut.flush();
 				} catch (IOException e) {

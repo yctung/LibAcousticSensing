@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Basic">
+        <ListPreference
+            android:key="LIBAS_PARSE_MODE_KEY"
+            android:title="@string/pref_mode"
+            android:summary="@string/pref_modeDescription"
+            android:dialogTitle="@string/pref_mode"
+            android:entries="@array/mode_entries"
+            android:entryValues="@array/mode_values"
+            android:defaultValue="0"/>
+
+        <EditTextPreference
+            android:key="LIBAS_SERVER_ADDR_KEY"
+            android:title="@string/pref_server"
+            android:summary="IP %s"
+            android:defaultValue="@string/pref_defaultServer" />
+
+        <EditTextPreference
+            android:key="LIBAS_SERVER_IP_KEY"
+            android:title="@string/pref_port"
+            android:summary="@string/pref_portDescription"
+            android:defaultValue="@string/pref_defaultPort" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Audio">
+        <ListPreference
+            android:key="LIBAS_RECORD_AUDIO_SOURCE_KEY"
+            android:title="@string/pref_audioSource"
+            android:summary="@string/pref_audioSourceDescription"
+            android:dialogTitle="@string/pref_audioSource"
+            android:entries="@array/audio_source_entries"
+            android:entryValues="@array/audio_source_mode_values"
+            android:defaultValue="0"/>
+    </PreferenceCategory>
+</PreferenceScreen>

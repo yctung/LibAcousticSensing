@@ -4,4 +4,16 @@
         <item>Server-client Mode</item>
         <item>Real-time Mode</item>
     </string-array>
+
+
+    <string-array name="audio_source_entries">
+        <item>RECOG (clean signal)</item>>
+        <item>MIC (both mics)</item>>
+        <item>CAM</item>
+    </string-array>>
+    <string-array name="audio_source_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
