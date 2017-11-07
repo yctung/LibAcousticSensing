@@ -6,16 +6,19 @@
     <string name="pref_server">Server</string>
     <string name="pref_port">Port</string>
     <string name="pref_automatic">Autostart</string>
+    <string name="pref_audioSource">Mic source</string>
 
     <string name="pref_modeDescription">Mode of operation</string>
     <string name="pref_serverDescription">The IP address of the server. Use the LAN address if possible.</string>
     <string name="pref_portDescription">Port of the server. Please refer to Matlab script for the port.</string>
     <string name="pref_autostartDescription">If checked, the app will re-establish a connection if it is closed.</string>
+    <string name="pref_audioSourceDescription">Mic source within Android API</string>
 
     <string name="pref_defaultMode">Server-client Mode</string>
     <string name="pref_defaultServer">172.20.10.2</string>
     <string name="pref_defaultPort">50005</string>
     <bool name="pref_defaultAutomatic">false</bool>
+    <string name="pref_defaultMic">0</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavaSensingServer extends Thread {
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
-	private static final boolean SHOW_DEBUG_MESSAGE = false;
+	public static boolean SHOW_DEBUG_MESSAGE = true;
 	
 	// set this flag to volatile because it will be read/write on different thread (ref: http://stackoverflow.com/questions/106591/do-you-ever-use-the-volatile-keyword-in-java)
 	private volatile boolean shutdown; // flag to shutdown the socket reading loop

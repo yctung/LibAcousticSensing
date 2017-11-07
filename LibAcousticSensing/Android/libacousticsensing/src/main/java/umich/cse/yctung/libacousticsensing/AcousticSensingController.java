@@ -35,7 +35,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 //=================================================================================================
 // Constants
 //=================================================================================================
-    private final static String LOG_TAG = "SensingController";
+    private final static String LOG_TAG = "`";
 
 
     public int AUDIO_MODE_DEFAULT= RecordSetting.AUDIO_MODE_PLAY_AND_RECORD;

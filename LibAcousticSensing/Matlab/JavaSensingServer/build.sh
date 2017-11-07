@@ -5,4 +5,4 @@
 # NOTE2: need to use the version compatible to matlab, check "java -version" and matlab's "version -java"
 
 
-javac -d bin $(find . -name '*.java')
+javac -source 1.7 -target 1.7 -d bin $(find . -name '*.java')

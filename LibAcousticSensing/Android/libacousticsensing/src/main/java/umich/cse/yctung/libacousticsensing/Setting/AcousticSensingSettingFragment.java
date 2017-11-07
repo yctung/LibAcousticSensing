@@ -36,6 +36,7 @@ public class AcousticSensingSettingFragment extends PreferenceFragment implement
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); ++i) {
+
             Preference preference = getPreferenceScreen().getPreference(i);
             if (preference instanceof PreferenceGroup) {
                 PreferenceGroup preferenceGroup = (PreferenceGroup) preference;
@@ -69,8 +70,12 @@ public class AcousticSensingSettingFragment extends PreferenceFragment implement
             return;
         }
         SharedPreferences sharedPrefs = getPreferenceManager().getSharedPreferences();
-        preference.setSummary(sharedPrefs.getString(key, "Default"));
+
+        Object val = sharedPrefs.getAll().get(key);
+        if (val instanceof  String) {
+            preference.setSummary((String)val);
+        } else {
+            preference.setSummary("Default");
+        }
     }
-
-
 }

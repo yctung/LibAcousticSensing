@@ -19,9 +19,12 @@ import android.widget.TextView;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
+import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSettingActivity;
 
 
 public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
+    AcousticSensingSetting ass;
     AcousticSensingController asc;
     SharedPreferences sharedPref;
     final String TAG = "MainActivity";
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     // UI elements
     ImageButton buttonStart;
     TextView textViewDebugInfo;
+    JNICallback jc;
 
     // Internal status
     // XXX Who turns this on?
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ass = new AcousticSensingSetting(this);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.simplified_layout);
@@ -59,6 +65,10 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             }
         });
+
+
+
+
 
 
         // Wire user data upload button
@@ -81,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
         //s = (TextView)findViewById(R.id.textDebugInfo);
 
+        jc = new JNICallback();
+        //jc.debugTest();
         asc=new AcousticSensingController(this,this);
         updateStatus(Status.STOPPED);
         restartIfAutostart();
@@ -104,22 +116,21 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             String serverAddr = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER, "");
             String serverPort = sharedPref.getString(SettingsActivity.KEY_PREF_PORT, "");
 
-
             if (mode.equals(modeEntries[0])) { // Server-client mode
-                boolean result = asc.initAsSlaveMode(serverAddr, Integer.parseInt(serverPort));
+                ass.setMode(AcousticSensingSetting.PARSE_MODE_REMOTE);
+                ass.setServerAddr(serverAddr);
+                ass.setServerPort(serverPort);
+                
+
+                //boolean result = asc.initAsSlaveMode(serverAddr, Integer.parseInt(serverPort));
+                boolean result = asc.init(ass);
                 if (!result) {
                     //textViewDebugInfo.setText("Init fails");
                     updateStatus(Status.ERROR);
                     restartIfAutostart();
-                }
-                else {
-                    asc.startSensingWhenPossible();
+                } else {
                     updateStatus(Status.CONNECTING);
-                    isSensing = true;
                 }
-            } else { // real-time mode
-                // Real-time mode is disabled for now.
-                updateStatus(Status.STOPPED);
             }
 
             //buttonStart.setText("Stop");
@@ -173,21 +184,26 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
      * Update the status message. Pass in the enum and update the image of the image button.
      * @param status
      */
-    public void updateStatus (Status status) {
-        if (status == Status.STOPPED)
-            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.stopped));
+    public void updateStatus (final Status status) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run () {
+                if (status == Status.STOPPED)
+                    buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.stopped));
 
-        else if (status == Status.CONNECTING)
-            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.connecting));
+                else if (status == Status.CONNECTING)
+                    buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.connecting));
 
-        else if (status == Status.SENSING)
-            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.running));
+                else if (status == Status.SENSING)
+                    buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.running));
 
-        else if (status == Status.ERROR)
-            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.error));
+                else if (status == Status.ERROR)
+                    buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.error));
 
-        else if (status == Status.WAITING)
-            buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.waiting));
+                else if (status == Status.WAITING)
+                    buttonStart.setImageDrawable(getResources().getDrawable(R.drawable.waiting));
+            }
+        });
     }
 
 
@@ -203,10 +219,10 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                 Log.e(TAG, stringToShow);
                 //updateStatus(Status.WAITING);
                 // This could be caused by error.
-                if (!status) turnOffConnection();
-                else {
-                    updateStatus(Status.WAITING);
-                }
+                //if (!status) turnOffConnection();
+                //else {
+                //    updateStatus(Status.WAITING);
+                //}
             }
         });
     }
@@ -232,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     public void serverClosed () {
         Log.e(TAG, "Server is resetting.");
         turnOffConnection();
-
     }
 
     @Override
@@ -251,7 +266,13 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     @Override
-    public void isConnected(boolean b, String s) {
-
+    public void isConnected(final boolean success, String s) {
+        if (success) {
+            updateStatus(Status.WAITING);
+            //asc.startSensingWhenPossible();
+            isSensing = true;
+        } else {
+            turnOffConnection();
+        }
     }
 }

@@ -1,52 +1,52 @@
-apply plugin: 'com.android.library'
+    apply plugin: 'com.android.library'
 
-android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    android {
+        compileSdkVersion 24
+        buildToolsVersion '25.0.0'
 
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        defaultConfig {
+            minSdkVersion 16
+            targetSdkVersion 24
+            versionCode 1
+            versionName "1.0"
 
-        externalNativeBuild {
-            ndkBuild {
-                targets "standalone"
+            externalNativeBuild {
+                ndkBuild {
+                    targets "standalone"
+                }
+            }
+
+            ndk {
+                // Note sure why, but x86 will have a bug to compile
+                abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            }
+
+            /*
+            ndk {
+                moduleName = "standalone" // module for standalone processing
+                ldLibs "log"
+                stl "gnustl_static"
+                cFlags "-DDEV_NDK=1 -v"
+            }
+            */
+
+        }
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             }
         }
-
-        ndk {
-            // Note sure why, but x86 will have a bug to compile
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-        }
-
-        /*
-        ndk {
-            moduleName = "standalone" // module for standalone processing
-            ldLibs "log"
-            stl "gnustl_static"
-            cFlags "-DDEV_NDK=1 -v"
-        }
-        */
-
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        externalNativeBuild {
+            ndkBuild {
+                path 'src/main/jni/Android.mk'
+            }
         }
     }
-    externalNativeBuild {
-        ndkBuild {
-            path 'src/main/jni/Android.mk'
-        }
-    }
-}
 
-dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.google.code.gson:gson:2.8.0'
-}
+    dependencies {
+        compile fileTree(include: ['*.jar'], dir: 'libs')
+        testCompile 'junit:junit:4.12'
+        compile 'com.android.support:appcompat-v7:24.0.0'
+        compile 'com.google.code.gson:gson:2.8.0'
+    }
