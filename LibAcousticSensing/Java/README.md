@@ -30,13 +30,12 @@ java -jar libas.jar -h
 
 For example, to connect a Matlab server on 192.168.0.1:50001, you can use the following command:
 ```
-java -jar libas.jar -m remote -s 192.168.0.1 50001
+java -jar libas.jar -m remote -s 192.168.0.1:50001
 ```
+Once you have used our libas.jar once, the setting will be kept in the pref.json file. Thus, you might just use ```java -jar libas.jar``` to connect the same server next time.
 
 Note, our Java command-line interface only allows the **remote** sensing mode now.
-So it is required to setup a Matlab server as introduced in [README](/LibAcousticSensing/Matlab) of LibAS Matlab.
-
-Once you have used our libas.jar once, the setting will be kept on the pref.json file. Thus, you might just use ```java -jar libas.jar``` to connect the same server next time.
+So it is required to setup a Matlab server as introduced in [README](/LibAcousticSensing/Matlab) of LibAS Matlab. We will integrate the **standalone** mode soon from our Android implementation.
 
 ## Compile to Your Own Project
 You can also easily integrate this jar library to your own project to use LibAS. Since this LibAS Java is modified from our Android version, most public interface remains the same. The only difference is you don't need to pass the ```Context``` anymore since it is not the Android.
