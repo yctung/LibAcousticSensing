@@ -17,18 +17,26 @@ java -version
 Just download our [release .jar](release) file to your device. Or you can also include this jar library into your own program (just like how our Android/iOS/Tizen LibAS work)
 
 ## Usage
-
+You can find the usage of this .jar file by the ```-h``` option:
 ```
-java -jar libas.jar [mode] [server ip] [server port]
+java -jar libas.jar -h
+
+    usage: LibAS
+     -d,--dump           Dump current setting
+     -h,--help           Help
+     -m,--mode <arg>     Sensing Mode: remote|standalone
+     -s,--server <arg>   Server : address:port
 ```
 
 For example, to connect a Matlab server on 192.168.0.1:50001, you can use the following command:
 ```
-java -jar libas.jar remote 192.168.0.1 50001
+java -jar libas.jar -m remote -s 192.168.0.1 50001
 ```
 
-Note, our Java command-line interface only allows the **remote** sensing mode.
+Note, our Java command-line interface only allows the **remote** sensing mode now.
 So it is required to setup a Matlab server as introduced in [README](/LibAcousticSensing/Matlab) of LibAS Matlab.
+
+Once you have used our libas.jar once, the setting will be kept on the pref.json file. Thus, you might just use ```java -jar libas.jar``` to connect the same server next time.
 
 ## Limitation
 Even though this Java LibAS should be executed on any Java/Javax-supported device,
