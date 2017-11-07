@@ -6,7 +6,7 @@ Thus, this porting theoretically can be executed on any device (Mac/Windows/Linu
 
 ## Prerequisites
 You need to ensure Java is installed and Javax is supported in your device.
-Here is the link to install from the (official Java site)[https://java.com/en/download/].
+Here is the link to install from the [official Java site](https://java.com/en/download/).
 
 You will know Java is installed by executing the following command:
 ```
@@ -25,7 +25,7 @@ java -jar libas.jar -h
      -d,--dump           Dump current setting
      -h,--help           Help
      -m,--mode <arg>     Sensing Mode: remote|standalone
-     -s,--server <arg>   Server : address:port
+     -s,--server <arg>   Server: address:port
 ```
 
 For example, to connect a Matlab server on 192.168.0.1:50001, you can use the following command:
@@ -37,6 +37,9 @@ Note, our Java command-line interface only allows the **remote** sensing mode no
 So it is required to setup a Matlab server as introduced in [README](/LibAcousticSensing/Matlab) of LibAS Matlab.
 
 Once you have used our libas.jar once, the setting will be kept on the pref.json file. Thus, you might just use ```java -jar libas.jar``` to connect the same server next time.
+
+## Compile to Your Own Project
+You can also easily integrate this jar library to your own project to use LibAS. Since this LibAS Java is modified from our Android version, most public interface remains the same. The only difference is you don't need to pass the ```Context``` anymore since it is not the Android.
 
 ## Limitation
 Even though this Java LibAS should be executed on any Java/Javax-supported device,
