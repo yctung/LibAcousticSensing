@@ -242,7 +242,7 @@ public class AudioController {
         }).start();
     }
     private void keepAudioRecording() {
-        byte[] byteBuffer = new byte[RECORDER_BUFFER_ELEMENTS* RECORDER_BYTE_PER_ELEMENT];
+        byte[] byteBuffer = new byte[RECORDER_BUFFER_ELEMENTS * RECORDER_BYTE_PER_ELEMENT];
         audioTotalRecordedSampleCnt = 0; // init this log value to 0 for every recording
         audioRecord.startRecording();
 
@@ -299,7 +299,7 @@ public class AudioController {
                 else sensingTimer.sendMessageDelayed(Message.obtain(null, MESSAGE_TO_STOP_RECORD), DELAY_TO_STOP_RECORD);
             } else if (msg.what == MESSAGE_TO_STOP_RECORD) {
                 startAndKeepRecording = false; // set it to false will force the recording thread to stop
-            } else if (msg.what == MESSAGE_PLAY_IS_STOPPED) {
+            } else if (msg.what == MESSAGE_RECORD_IS_STOPPED) {
                 if (!isPlaying) sensingEnd();
             } else {
                 Log.e(LOG_TAG, "[ERROR]: undefined message type = "+msg.what);

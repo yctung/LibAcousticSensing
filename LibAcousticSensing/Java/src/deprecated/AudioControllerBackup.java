@@ -1,3 +1,4 @@
+package deprecated;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -16,14 +17,14 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 
-public class AcousticController {
+public class AudioControllerBackup {
 	float FS=96000.0f; 
-	public AcousticController() {
+	public AudioControllerBackup() {
 		// ref: http://stackoverflow.com/questions/25798200/java-record-mic-to-byte-array-and-play-sound
-		
 	}
+	
 	ByteArrayOutputStream out;
-	void start() {
+	public void start() {
 		//AudioFormat format = new AudioFormat(FS, 16, 1, true, true);
 		AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,FS, 16, 1, 2, FS, false);
 		System.out.print("Encodie = "+format.getEncoding());
@@ -122,7 +123,7 @@ public class AcousticController {
 	}
 	
 	public static void main(String[] args) {
-		AcousticController ac = new AcousticController();
+		AudioControllerBackup ac = new AudioControllerBackup();
 		ac.start();
 		System.out.println("Hello World");
 		ac.play();

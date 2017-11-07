@@ -1,3 +1,4 @@
+package deprecated;
 import java.io.ByteArrayInputStream;  
 import java.io.ByteArrayOutputStream;  
 import java.io.FileNotFoundException;
@@ -123,7 +124,6 @@ import javax.sound.sampled.TargetDataLine;
    public double getDuration() {  
      return duration;  
    }  
-   
    
    public static void main(String[] args) throws Exception {  
 	   //MicrophoneRecorder mr = new MicrophoneRecorder(AudioFormatUtil.getDefaultFormat());  

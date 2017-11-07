@@ -1,6 +1,5 @@
 package umich.cse.yctung.libacousticsensing.Network;
 
-import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -18,6 +17,7 @@ import java.util.Queue;
 
 import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
 import umich.cse.yctung.libacousticsensing.Constant;
+import umich.cse.yctung.libacousticsensing.Log;
 /**
  * Created by Yu-Chih Tung on 10/15/15.
  * NetworkController provides interface to talk to the matlab server
@@ -254,7 +254,7 @@ public class NetworkController {
 						listener.updateDebugStatus(false, "signal loaded fails");
 					}
 
-					AudioSource audioSource = new AudioSource(pilot, signal, FS, chCnt, repeatCnt);
+					AudioSource audioSource = new AudioSource(pilot,signal,FS,chCnt,repeatCnt);
 
 					Log.d(LOG_TAG, "Load audio from server with length="+shortToRead);
 					listener.audioReceivedFromServer(audioSource);
@@ -320,7 +320,6 @@ public class NetworkController {
 				try{
 					while(!requestQueue.isEmpty()){
 						NetworkRequest r = requestQueue.peek();
-						Log.d(LOG_TAG, "Sending message type: " + r.action);
 						switch (r.action){
 							case ACTION_INIT:
 								dataOut.write(ACTION_INIT);
@@ -363,7 +362,6 @@ public class NetworkController {
 								Log.e(LOG_TAG, "[ERROR]: undefined action = "+r.action);
 						}
 						requestQueue.poll();
-						Log.d(LOG_TAG, "Finished sending packet.");
 					}
 					dataOut.flush();
 				} catch (IOException e) {

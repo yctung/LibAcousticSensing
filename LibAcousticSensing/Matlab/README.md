@@ -103,6 +103,17 @@ preamble = PreambleBuilder(PREAMBLE_TYPE, PREAMBLE_FREQS, PREAMBLE_LENS, PREAMBL
 as = AudioSource('dummySound', signal, FS, REPEAT_CNT, SIGNAL_GAIN, preamble);
 ```
 
+## (Optional) Multiple Devices
+LibAS supports the control of multiple devices by adding the ```slave servers``` in our remote API.
+In this case, multiple devices can be controlled for sensing easily. For example, [Example/DopplerDetector](Example/DopplerDetector/Matlab) demonstrates the example of sending a inaudible
+sound from a device to another device for monitoring what is the change of distance between two devices based on
+Doppler effect. In this example, two sensing server are created, one is called ```txss``` while another one is ```rxss```.
+The ```txss``` which responsible to send the sensing sound is added as a slave device/server to ```rxss``` which is responsible to analyze the sensing results:
+```
+  rxss.addSlaveServer(txss);
+```
+
+
 # Remote to Standalone
 TODO: add this part
 

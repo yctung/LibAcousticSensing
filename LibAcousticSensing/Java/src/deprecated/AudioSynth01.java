@@ -1,3 +1,4 @@
+package deprecated;
 /*File AudioSynth01.java
 Copyright 2003, R.G.Baldwin
 
