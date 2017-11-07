@@ -1,14 +1,27 @@
 package umich.cse.yctung.libacousticsensing.Setting;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import umich.cse.yctung.libacousticsensing.Log;
+import umich.cse.yctung.libacousticsensing.Utils;
 
 
 public class SharedPreferences {
 	// it is just a wrapper of json objects
-	JsonObject obj;
+	// we use jason-simple: https://code.google.com/archive/p/json-simple/wikis
+	// example: https://howtodoinjava.com/json-simple/json-simple-read-write-json-examples/
+	
+	private final static String TAG = "SharedPreferences";  
+	
+	JSONObject obj;
+	
 	private static SharedPreferences ref;
 	private static String JSON_FILE_NAME = "pref.json";
 	public static SharedPreferences loadSharedPreferences(){
@@ -19,20 +32,18 @@ public class SharedPreferences {
 	}
 	
 	public SharedPreferences() {
-		// TODO: load from a json file
-		obj = new JsonObject();
-		obj.addProperty("aa", "123");
+		loadOldAppSettingIfExist();
 	}
 	
 	
 	public String getString(String key, String defaultValue) {
-		// TODO: implemnet the real logic
-		return defaultValue;
+		String value = (String)obj.get(key);
+		if (value != null) return value;
+		else return defaultValue;
 	}
 	
 	public SharedPreferences putString(String key, String value) {
-		// TODO: update json object
-		
+		obj.put(key, value);
 		return this;
 	}
 	
@@ -42,50 +53,53 @@ public class SharedPreferences {
 	}
 	
 	public SharedPreferences clear() {
-		// TODO: null the json object
+		obj.clear();
 		return this;
 	}
 	
 	public void commit() {
-		// TODO: save to the json file
 		updateToFile();
 	}
 	
 	// internal control functions
 	// overwrite json file
     public void updateToFile(){
-        String json = obj.toString();
         try {
         	FileWriter writer = new FileWriter(JSON_FILE_NAME);
-            writer.write(json);
+            writer.write(obj.toString());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }    
-        
     }
 
     // load jason file back to object
-    private void LoadOldAppSetting() {
-        // clear original AppSetting
-    	/*
-        appSetting = null;
-
-        BufferedReader br;
-        try {
-        	obj = new JsonObject()
-            br = new BufferedReader(new FileReader(C.appFolderPath+C.SETTING_JSON_FILE_NAME));
-            //convert the json string back to object
-            Gson gson = new Gson();
-            appSetting = gson.fromJson(br, AppSetting.class);
-
-            Log.d(C.LOG_TAG, "LoadOldAppSetting");
-
-        } catch (FileNotFoundException e) {
-            Log.e(C.LOG_TAG, "Fail to open old json files");
-            e.printStackTrace();
-        }
-        */
+    private void loadOldAppSettingIfExist() {
+    	boolean loadSuccess = false;
+    	
+    	try {
+    		FileReader reader = new FileReader(JSON_FILE_NAME);
+    		JSONParser jsonParser = new JSONParser();
+    		obj = (JSONObject) jsonParser.parse(reader);
+    		
+    		loadSuccess = true;
+    	} catch (FileNotFoundException e) {
+    		e.printStackTrace();
+    	} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    	
+    	// create a new json file if need
+    	if (!loadSuccess || obj == null) {
+    		Log.w(TAG, "No json file existed: " + JSON_FILE_NAME + ", try to create a new one");
+    		obj = new JSONObject();
+    		obj.put("deviceName", Utils.getDeviceName());
+    		obj.put("updateTime", Utils.getTime());
+    		
+    		updateToFile();
+    	}
     }
 	
 }

@@ -22,7 +22,7 @@ Just download our [release .jar](release) file to your device. Or you can also i
 java -jar libas.jar [mode] [server ip] [server port]
 ```
 
-For example, to connect a Matlab server on 192.168.0.1:50001:
+For example, to connect a Matlab server on 192.168.0.1:50001, you can use the following command:
 ```
 java -jar libas.jar remote 192.168.0.1 50001
 ```

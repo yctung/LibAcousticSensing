@@ -103,5 +103,14 @@ public class AcousticSensingSetting {
     public void setServerPort(String port) {
         pref.edit().putString(SERVER_IP_KEY, port).commit();
     }
+    
+    public void dump() {
+    	Log.d(TAG, "======== current setting ========");
+    	if (getParseMode() == PARSE_MODE_REMOTE) {
+    		Log.d(TAG, "mode = remote");
+    		Log.d(TAG, "server = " + getServerAddr() + ":" + getServerPort());
+    	}
+    	Log.d(TAG, "========== end of dump ==========");
+    }
 
 }

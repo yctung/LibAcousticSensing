@@ -125,7 +125,6 @@ import javax.sound.sampled.TargetDataLine;
      return duration;  
    }  
    
-   
    public static void main(String[] args) throws Exception {  
 	   //MicrophoneRecorder mr = new MicrophoneRecorder(AudioFormatUtil.getDefaultFormat());  
 	   float FS=8000.0f;
