@@ -39,7 +39,7 @@ public class MainActivity implements AcousticSensingControllerListener {
 		Option optServer = Option.builder("s")
 				.longOpt("server")
 				.required(false)
-				.desc("Server : address:port")
+				.desc("Server: address:port")
 				.hasArg()
 				.build();
 		

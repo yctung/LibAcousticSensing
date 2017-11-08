@@ -84,11 +84,12 @@ public class SharedPreferences {
     		
     		loadSuccess = true;
     	} catch (FileNotFoundException e) {
-    		e.printStackTrace();
+    		// yctung: avoid dumping these errors to make users panic at the first time of using LibAS
+    		//e.printStackTrace();
     	} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
     	
     	// create a new json file if need
