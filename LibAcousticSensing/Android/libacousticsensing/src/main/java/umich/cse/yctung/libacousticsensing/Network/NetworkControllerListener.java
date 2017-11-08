@@ -11,6 +11,7 @@ public interface NetworkControllerListener {
     void serverAskStartSensing();
     void serverAskStopSensing();
     void audioReceivedFromServer(AudioSource audioSource);
+    void audioDelayFromServer (int delayBySamples);
     void resultReceviedFromServer(int result);
     void userStudyEnd();
     int consumeReceivedData(double dataReceived);

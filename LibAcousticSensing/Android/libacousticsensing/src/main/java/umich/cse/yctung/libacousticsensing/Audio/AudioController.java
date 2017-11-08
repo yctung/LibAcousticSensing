@@ -52,6 +52,7 @@ public class AudioController {
     boolean startAndKeepRecording;
     boolean isRecording;
     boolean isPlaying;
+    int delaySoundByOnce = -1;
     public long audioTotalRecordedSampleCnt = -1; // TODO: check the overflow issue
 
 
@@ -152,6 +153,13 @@ public class AudioController {
         Log.w(LOG_TAG, "audio playing and recording has terminated!");
     }
 
+
+    public void delaySoundBy (int delayBySamples) {
+        Log.e(LOG_TAG, "Received delay samples in AC: " + delayBySamples);
+        if (!isPlaying) return;
+        delaySoundByOnce = delayBySamples;
+    }
+
     /*
     public void destroy() {
         stopSensing();
@@ -220,6 +228,12 @@ public class AudioController {
                 break;
             }
             writeCnt = audioTrack.write(audioSource.signal, 0, audioSource.signal.length);
+            if (delaySoundByOnce != -1) {
+                Log.e(LOG_TAG, "Actually delaying sound in AC play loop: " + delaySoundByOnce);
+                audioTrack.write(new short[delaySoundByOnce], 0, delaySoundByOnce);
+                delaySoundByOnce = -1;
+            }
+
             playCnt++;
         }
         isPlaying = false;

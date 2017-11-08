@@ -51,13 +51,12 @@ public class NetworkController {
 	private final static int REACTION_SET_RESULT 	= 3;
 	private final static int REACTION_STOP_SENSING  = 4;
 	private final static int REACTION_SERVER_CLOSED  = 5;
+	private final static int REACTION_DELAY_SOUND 	= 6;
 
 	// Server statuses
 	private final static int SERVER_STATUS_DISABLED = -1; // default status of server
 	private final static int SERVER_STATUS_ENABLED 	= 1;
 	private final static int SERVER_STATUS_CONNECTED = 2;
-
-
 
 	// Other control flags
 	private final static boolean SAVE_LATEST_LOADED_AUDIO_TO_FILE = false;
@@ -280,7 +279,23 @@ public class NetworkController {
 
 						listener.resultReceviedFromServer(argInt);
 					}
+				} else if (reaction == REACTION_DELAY_SOUND) {
+					int argInt = dataIn.readInt();
+					int delayBySamples = argInt;
 
+					Log.e(LOG_TAG, "Received delay samples in NC: " + delayBySamples);
+					listener.audioDelayFromServer(delayBySamples);
+
+
+					byte check = dataIn.readByte();
+					Log.d(LOG_TAG, "received result = "+argInt+", check = "+check);
+					if(check != -1){
+						Log.e(LOG_TAG, "Check is not -1 -> some packet might be dropped or there is a bug in matlab server");
+						listener.updateDebugStatus(false, "result loaded fails (check != -1)");
+					} else {
+
+						listener.resultReceviedFromServer(argInt);
+					}
 				}
 			} catch (IOException e) {
 				Log.w(LOG_TAG, "Read socket data timeout (need more data? or wait a while?)");
