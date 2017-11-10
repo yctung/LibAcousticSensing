@@ -1,5 +1,4 @@
-#include "devappphone.h"
-#include "libas.h"
+#include "devappwearable.h"
 
 typedef struct appdata {
 	Evas_Object *win;
@@ -53,8 +52,7 @@ create_base_gui(appdata_s *ad)
 	/* Create an actual view of the base gui.
 	   Modify this part to change the view. */
 	ad->label = elm_label_add(ad->conform);
-	//elm_object_text_set(ad->label, "<align=center>Hello1 Tizen</align>");
-	elm_object_text_set(ad->label, libassrc_test());
+	elm_object_text_set(ad->label, "<align=center>Hello Tizen</align>");
 	evas_object_size_hint_weight_set(ad->label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_object_content_set(ad->conform, ad->label);
 
@@ -104,20 +102,11 @@ static void
 ui_app_lang_changed(app_event_info_h event_info, void *user_data)
 {
 	/*APP_EVENT_LANGUAGE_CHANGED*/
-
-	int ret;
-	char *language;
-
-	ret = app_event_get_language(event_info, &language);
-	if (ret != APP_ERROR_NONE) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "app_event_get_language() failed. Err = %d.", ret);
-		return;
-	}
-
-	if (language != NULL) {
-		elm_language_set(language);
-		free(language);
-	}
+	char *locale = NULL;
+	system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
+	elm_language_set(locale);
+	free(locale);
+	return;
 }
 
 static void

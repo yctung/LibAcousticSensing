@@ -4,3 +4,6 @@
 [submodule "DevApp/Tizen/Phone/libas"]
 	path = DevApp/Tizen/Phone/libas
 	url = git@github.com:yctung/LibAcousticSensingTizen.git
+[submodule "DevApp/Tizen/Wearable/libas"]
+	path = DevApp/Tizen/Wearable/libas
+	url = git@github.com:yctung/LibAcousticSensingTizen.git

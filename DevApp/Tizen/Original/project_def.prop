@@ -1,9 +1,9 @@
-APPNAME = devappwearable
+APPNAME = firsttizenhello
 
 type = app
 profile = wearable-3.0
 
-USER_SRCS = src/devappwearable.c
+USER_SRCS = src/firsttizenhello.c
 USER_DEFS =
 USER_INC_DIRS = inc
 USER_OBJS =
