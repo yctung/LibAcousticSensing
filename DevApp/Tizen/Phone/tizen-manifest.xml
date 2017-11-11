@@ -3,6 +3,6 @@
 	<profile name="mobile" />
 	<ui-application appid="umich.cse.yctung.libas.devappphone" exec="devappphone" type="capp" multiple="false" taskmanage="true" nodisplay="false" launch_mode="single">
 		<icon>devappphone.png</icon>
-		<label>devappphone</label>
+		<label>LibAS DevApp</label>
 	</ui-application>
 </manifest>

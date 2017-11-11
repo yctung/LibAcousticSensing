@@ -1,10 +1,18 @@
 #include "devappwearable.h"
 
-typedef struct appdata {
-	Evas_Object *win;
-	Evas_Object *conform;
-	Evas_Object *label;
-} appdata_s;
+char *main_menu_names[] = {
+	"Bg", "Button", "Check", "Entry", "Genlist", "Image", "PageControl", "Popup", "Progress",
+	"Nocontents", "Radio", "Scroller","Map",
+	"(Eext) Datetime", "(Eext) Genlist", "(Eext) More Option",
+	"(Eext) ProgressBar", "(Eext) Rotary Selector", "(Eext) Scroller", "(Eext) Slider", "(Eext) Spinner",
+	NULL
+};
+
+typedef struct _item_data
+{
+	int index;
+	Elm_Object_Item *item;
+} item_data;
 
 static void
 win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
@@ -18,6 +26,123 @@ win_back_cb(void *data, Evas_Object *obj, void *event_info)
 	appdata_s *ad = data;
 	/* Let window go to hide state. */
 	elm_win_lower(ad->win);
+}
+
+static void
+gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *it = (Elm_Object_Item *)event_info;
+	elm_genlist_item_selected_set(it, EINA_FALSE);
+}
+
+static char *
+_gl_menu_title_text_get(void *data, Evas_Object *obj, const char *part)
+{
+	char buf[1024];
+
+	snprintf(buf, 1023, "%s", "UI Controls");
+	return strdup(buf);
+}
+
+static char *
+_gl_menu_text_get(void *data, Evas_Object *obj, const char *part)
+{
+	char buf[1024];
+	item_data *id = (item_data *)data;
+	int index = id->index;
+
+	if (!strcmp(part, "elm.text")) {
+		snprintf(buf, 1023, "%s", main_menu_names[index]);
+		return strdup(buf);
+	}
+	return NULL;
+}
+
+static void
+_gl_menu_del(void *data, Evas_Object *obj)
+{
+	// FIXME: Unrealized callback can be called after this.
+	// Accessing Item_Data can be dangerous on unrealized callback.
+	item_data *id = (item_data *)data;
+	if (id) free(id);
+}
+
+static Eina_Bool
+naviframe_pop_cb(void *data, Elm_Object_Item *it)
+{
+	ui_app_exit();
+	return EINA_FALSE;
+}
+
+void button_cb(void *data, Evas_Object * obj, void *event_info) {
+
+}
+
+void bg_cb(void *data, Evas_Object * obj, void *event_info) {
+
+}
+
+static void
+create_list_view(appdata_s *ad)
+{
+	Evas_Object *genlist;
+	Evas_Object *circle_genlist;
+	Evas_Object *btn;
+	Evas_Object *nf = ad->nf;
+	Elm_Object_Item *nf_it;
+	Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
+	Elm_Genlist_Item_Class *ttc = elm_genlist_item_class_new();
+	Elm_Genlist_Item_Class *ptc = elm_genlist_item_class_new();
+	item_data *id;
+	int index = 0;
+
+	/* Genlist */
+	genlist = elm_genlist_add(nf);
+	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
+	evas_object_smart_callback_add(genlist, "selected", gl_selected_cb, NULL);
+
+	circle_genlist = eext_circle_object_genlist_add(genlist, ad->circle_surface);
+	eext_circle_object_genlist_scroller_policy_set(circle_genlist, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_AUTO);
+	eext_rotary_object_event_activated_set(circle_genlist, EINA_TRUE);
+
+	/* Genlist Title Item style */
+	ttc->item_style = "title";
+	ttc->func.text_get = _gl_menu_title_text_get;
+	ttc->func.del = _gl_menu_del;
+
+	/* Genlist Item style */
+	itc->item_style = "default";
+	itc->func.text_get = _gl_menu_text_get;
+	itc->func.del = _gl_menu_del;
+
+	/* Genlist Padding Item style */
+	ptc->item_style = "padding";
+	ptc->func.del = _gl_menu_del;
+
+	/* Title Items Here */
+	elm_genlist_item_append(genlist, ttc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+
+	/* Main Menu Items Here */
+	id = calloc(sizeof(item_data), 1);
+	id->index = index++;
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, bg_cb, ad);
+
+	id = calloc(sizeof(item_data), 1);
+	id->index = index++;
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, button_cb, ad);
+
+	/* Padding items */
+	elm_genlist_item_append(genlist, ptc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+
+	elm_genlist_item_class_free(itc);
+	elm_genlist_item_class_free(ttc);
+	elm_genlist_item_class_free(ptc);
+
+	/* This button is set for devices which doesn't have H/W back key. */
+	btn = elm_button_add(nf);
+	elm_object_style_set(btn, "naviframe/end_btn/default");
+	nf_it = elm_naviframe_item_push(nf, NULL, btn, NULL, genlist, "empty");
+	elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad->win);
 }
 
 static void
@@ -42,19 +167,37 @@ create_base_gui(appdata_s *ad)
 	   elm_conformant is mandatory for base gui to have proper size
 	   when indicator or virtual keypad is visible. */
 	ad->conform = elm_conformant_add(ad->win);
-	elm_win_indicator_mode_set(ad->win, ELM_WIN_INDICATOR_SHOW);
-	elm_win_indicator_opacity_set(ad->win, ELM_WIN_INDICATOR_OPAQUE);
 	evas_object_size_hint_weight_set(ad->conform, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_win_resize_object_add(ad->win, ad->conform);
 	evas_object_show(ad->conform);
 
+	// Eext Circle Surface Creation
+	ad->circle_surface = eext_circle_surface_conformant_add(ad->conform);
+
+	/* Layout */
+	ad->layout = elm_layout_add(ad->conform);
+	evas_object_size_hint_weight_set(ad->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_layout_theme_set(ad->layout, "layout", "application", "default");
+	evas_object_show(ad->layout);
+
+	elm_object_content_set(ad->conform, ad->layout);
+
+	/* Naviframe */
+	ad->nf = elm_naviframe_add(ad->layout);
+	create_list_view(ad);
+	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->nf);
+	eext_object_event_callback_add(ad->nf, EEXT_CALLBACK_BACK, eext_naviframe_back_cb, NULL);
+	eext_object_event_callback_add(ad->nf, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
+
 	/* Label */
 	/* Create an actual view of the base gui.
 	   Modify this part to change the view. */
+	/*
 	ad->label = elm_label_add(ad->conform);
 	elm_object_text_set(ad->label, "<align=center>Hello Tizen</align>");
 	evas_object_size_hint_weight_set(ad->label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_object_content_set(ad->conform, ad->label);
+	*/
 
 	/* Show window after base gui is set up */
 	evas_object_show(ad->win);

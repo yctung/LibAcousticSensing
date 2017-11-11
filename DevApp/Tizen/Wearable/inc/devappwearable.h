@@ -16,4 +16,14 @@
 #define PACKAGE "umich.cse.yctung.libas.devapppwearable"
 #endif
 
+typedef struct appdata {
+	Evas_Object *win;
+	Evas_Object *conform;
+	Evas_Object *layout;
+	Evas_Object *nf;
+	Evas_Object *label;
+	Eext_Circle_Surface *circle_surface;
+} appdata_s;
+
+
 #endif /* __devappwearable_H__ */
