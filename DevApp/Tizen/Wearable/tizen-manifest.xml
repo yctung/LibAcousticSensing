@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="3.0" package="umich.cse.yctung.libas.devapppwearable" version="1.0.0">
+	<profile name="wearable" />
+	<ui-application appid="umich.cse.yctung.libas.devapppwearable" exec="devappwearable" type="capp" multiple="false" taskmanage="true" nodisplay="false">
+		<icon>devappwearable.png</icon>
+		<label>devappwearable</label>
+	</ui-application>
+</manifest>

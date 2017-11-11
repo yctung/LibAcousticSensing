@@ -1,0 +1,11 @@
+APPNAME = devappwearable
+
+type = app
+profile = wearable-3.0
+
+USER_SRCS = src/devappwearable.c
+USER_DEFS =
+USER_INC_DIRS = inc
+USER_OBJS =
+USER_LIBS =
+USER_EDCS =

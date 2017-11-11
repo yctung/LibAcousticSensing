@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<properties>
+    <shape>square</shape>
+    <storyboard>
+        <view id="view1" location_x="475" location_y="10" />
+    </storyboard>
+</properties>
