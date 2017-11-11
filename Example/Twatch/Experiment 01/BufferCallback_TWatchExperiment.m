@@ -13,20 +13,30 @@ function BufferCallback_TWatchExperiment ()
     global recordedBorder referenceBorder; 
     global minX maxX minY maxY;
     
+    global NROWS NCOLS;
+    global handles;
+    
+    
     global confPlot currentPoint;
     global PS;
     
+    global CORRSIZE;
+
     
-    FLIPX = 1;
+    
     if any(FillUpPointers <= AlreadyProcessed)
         return;
     end
     
     fig = findobj('Tag', 'PeakFig');
+    FLIPX = 1;
     if isempty(fig)
+        CORRSIZE = 501;
         initialized = 0;
         doneTraining = 0;
-        CorrBuffer = zeros(501, 2000, 4);
+        CorrBuffer = zeros(CORRSIZE, 2000, 4);
+        NROWS = 4;
+        NCOLS = 4;
         XYBuffer = zeros(2000, 2);
         createUI();
         savedLabels = [];
@@ -40,26 +50,15 @@ function BufferCallback_TWatchExperiment ()
         
         
         if initialized
-            % Process data!
-            if TapReceived && AcceptTaps
-                fprintf('Got a tap!\n');
-                
-                event = [];
-                event.Modifier = [];
-                event.Key = 'space';
-                Key_Down(0, event);
-                TapReceived = 0;
-            end
-            
             lastWindow = FillUpBuffer(:,AlreadyProcessed,:);
             
             c1downcorr = abs(convn(lastWindow(:,1), PS.downchirp_data, 'same'));
             c2downcorr = abs(convn(lastWindow(:,2), PS.downchirp_data, 'same'));
             c3upcorr = abs(convn(lastWindow(:,3), PS.upchirp_data, 'same'));
             
-            c1downcorr = smooth(c1downcorr, 'moving', 10);
-            c2downcorr = smooth(c2downcorr, 'moving', 10);
-            c3upcorr = smooth(c3upcorr, 'moving', 10);
+            %c1downcorr = smooth(c1downcorr, 'moving', 10);
+            %c2downcorr = smooth(c2downcorr, 'moving', 10);
+            %c3upcorr = smooth(c3upcorr, 'moving', 10);
             
             
             c1downcorr = c1downcorr(c1window(1):c1window(2));
@@ -84,6 +83,13 @@ function BufferCallback_TWatchExperiment ()
                 c3UpPeak = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 3), CorrBuffer(:, AlreadyProcessed, 3), c3UpPeak - c3window(1) + 1);
             end
             
+            if abs(c1DownPeak - c2DownPeak) > 25
+                earlier = min(c1DownPeak, c2DownPeak);
+                newWindow = [earlier-c1window(1)+1-15, earlier-c1window(1)+1+15];
+                [~, c1DownPeak] = max(CorrBuffer(newWindow(1):newWindow(2), AlreadyProcessed, 1));
+                [~, c2DownPeak] = max(CorrBuffer(newWindow(1):newWindow(2), AlreadyProcessed, 2));
+            end
+            
             %c1PeakBuffer(AlreadyProcessed) = c1DownPeak;
             %c2PeakBuffer(AlreadyProcessed) = c2DownPeak;
             %c3PeakBuffer(AlreadyProcessed) = c3UpPeak;
@@ -104,11 +110,20 @@ function BufferCallback_TWatchExperiment ()
             %end
             
             XYBuffer(AlreadyProcessed, :) = [xm1 ym1];
-            
          
             LASTN = 100;   
             set(confPlot, 'xdata', smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 1), 4));
             set(confPlot, 'ydata', smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 2), 4));
+            
+            set(handles.c1CorrPlot, 'ydata', c1downcorr);
+            set(handles.c2CorrPlot, 'ydata', c2downcorr);
+            set(handles.c3CorrPlot, 'ydata', c3upcorr);
+            set(handles.c1CorrPeak, 'xdata', c1DownPeak-c1window(1)+1);
+            set(handles.c1CorrPeak, 'ydata', c1downcorr(c1DownPeak-c1window(1)+1));
+            set(handles.c2CorrPeak, 'xdata', c2DownPeak-c2window(1)+1);
+            set(handles.c2CorrPeak, 'ydata', c2downcorr(c2DownPeak-c2window(1)+1));
+            set(handles.c3CorrPeak, 'xdata', c3UpPeak-c3window(1)+1);
+            set(handles.c3CorrPeak, 'ydata', c3upcorr(c3UpPeak-c3window(1)+1));
             
             
             if doneTraining
@@ -128,8 +143,22 @@ function BufferCallback_TWatchExperiment ()
                 mappedPoint = bnTransform(recordedBorder, referenceBorder, [x y; x y], BN_A, BN_B, BN_P);
                 set(currentPoint, 'xdata', mappedPoint(1, 1));
                 set(currentPoint, 'ydata', mappedPoint(1, 2));
+                
+                
+                if TapReceived && AcceptTaps && doneTraining % Not strictly necessary to check the third item
+                    highlightButtonAt(mappedPoint(1, 1), mappedPoint(1, 2));
+                end
             end
         end
+        
+        if TapReceived && AcceptTaps && ~doneTraining
+            event = [];
+            event.Modifier = [];
+            event.Key = 'space';
+            Key_Down(0, event);
+        end
+        
+        TapReceived = 0;
         
         if ongoingExperiment
             savedLabels(AlreadyProcessed) = currentExpStep;
@@ -155,6 +184,7 @@ function Key_Down(~, event)
     global recordedBorder referenceBorder doneTraining;
     global currentPoint;
     global minX maxX minY maxY;
+    global handles;
     global BN_P BN_A BN_B;
     
     if isempty(event.Modifier) && strcmp(event.Key, 'space')
@@ -184,7 +214,14 @@ function Key_Down(~, event)
                     set(currentPoint, 'visible', 'on');
                     [minX, maxX, minY, maxY, recordedBorder] = getPoints;
                     referenceBorder = getReference;
+                    
+                    set(handles.instructionText, 'string', 'Finding deformation. Please wait.');
+                    drawnow;
                     [BN_A, BN_B, BN_P, ~] = BNSearch(recordedBorder, referenceBorder);
+                    
+                    set(handles.instructionText, 'visible', 'off');
+                    drawnow;
+                    drawbuttons;
                 end
                 
                 return;
@@ -256,6 +293,8 @@ function createUI()
     global currentPoint;
     global expSteps currentExpStep expFig ongoingExperiment;
     global confPlot statelessPlot;
+    global handles;
+    global CORRSIZE;
     currentExpStep = 1;
     ongoingExperiment = 0;
     
@@ -316,7 +355,7 @@ function createUI()
         
     % Draw experiment window
     expFig = figure(123);
-    ax = subplot(1,1,1);
+    handles.expAx = subplot(1,1,1);
     hold on;
     expSteps = zeros(1, 6);
     expSteps(1) = plot([0 1], [1 1]);
@@ -325,6 +364,8 @@ function createUI()
     expSteps(4) = plot([0 0], [0 1]);
     expSteps(5) = plot([0 1], [0.5 0.5]);
     expSteps(6) = plot([0.5 0.5], [0 1]);
+    
+    handles.instructionText = text(0.23, 0.5, 'Please trace the border');
     
     currentPoint = scatter(0, 0, 150, 'r', 'filled');
     currentPoint.Visible = 'off';
@@ -335,10 +376,96 @@ function createUI()
     set(expFig, 'KeyPressFcn', @Key_Down);
     
     figure;
-    subplot(1,1,1);
-    hold on;
+    subplot(3,2,[1 3 5]);
     confPlot = plot(0, 0, 'r');
-    statelessPlot = plot(0, 0, 'g');
+    
+    subplot(3,2,2);
+    hold on;
+    handles.c1CorrPlot = plot(zeros(1, CORRSIZE));
+    handles.c1CorrPeak = scatter(0,0);
     hold off;
     
+    subplot(3,2,4);
+    hold on;
+    handles.c2CorrPlot = plot(zeros(1, CORRSIZE));
+    handles.c2CorrPeak = scatter(0,0);
+    hold off;
+    
+    subplot(3,2,6);
+    hold on;
+    handles.c3CorrPlot = plot(zeros(1, CORRSIZE));
+    handles.c3CorrPeak = scatter(0,0);
+    hold off;
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function drawbuttons
+%DRAWBU Summary of this function goes here
+%   Detailed explanation goes here
+    global handles;
+    global NCOLS NROWS;
+
+    
+    axes(handles.expAx);
+    hold on;
+    for r=1:NROWS
+        for c=1:NCOLS
+            x = (c/NCOLS + (c-1)/NCOLS)/2.0;
+            y = ((1-r/NROWS) + (1-(r-1)/NROWS)) / 2.0;
+            s = scatter(x, y);
+            s.ZData = 10;
+        end
+    end
+    
+    for r=1:NROWS
+        plot([0 1], [1-r/NROWS 1-r/NROWS]);
+    end
+    
+    for c=1:NCOLS
+        plot([c/NCOLS c/NCOLS], [0 1]);
+    end
+    
+    handles.highlightedPart = fill(0, 0, 'r');
+    
+    hold off;
+    
+    %return;
+    %fprintf('Ready?\n');
+    %pause;
+    
+  
+    
+    %highlightButtonAt(0.23, 0.6);
+end
+
+
+function highlightButtonAt (x, y)
+    global NCOLS NROWS;
+    x = round(x*100);
+    y = round((1-y)*100);
+    perCol = round(1/NCOLS*100);
+    perRow = round(1/NROWS*100);
+    
+    col = ceil(x/perCol);
+    row = ceil(y/perRow);
+    highlightButton(row, col);
+end
+
+function highlightButton (r, c)
+    global NCOLS NROWS;
+    global handles;
+    x = [(c-1)/NCOLS c/NCOLS c/NCOLS (c-1)/NCOLS];
+    y = [(1-r/NROWS) (1-r/NROWS) (1-(r-1)/NROWS) (1-(r-1)/NROWS)];
+    set(handles.highlightedPart, 'xdata', x);
+    set(handles.highlightedPart, 'ydata', y);
 end
