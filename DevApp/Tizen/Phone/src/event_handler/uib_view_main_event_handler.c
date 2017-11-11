@@ -53,3 +53,16 @@ void view_main_entry_server_port_onclicked(uib_view_main_view_context *vc, Evas_
 	elm_entry_input_panel_layout_set(obj,ELM_INPUT_PANEL_LAYOUT_NUMBERONLY);
 }
 
+/**
+ * @brief the user clicked the button (press/release).
+ *
+ * @param vc It is context of the view that this event occurred on. It has all of UI components that this view consist of.
+ * @param obj It is UI component itself that emits the event signal.
+ * @param event_info
+ * 		event_info is NULL
+ *
+ */
+void view_main_button_connect_init_onclicked(uib_view_main_view_context *vc, Evas_Object *obj, void *event_info) {
+
+}
+
