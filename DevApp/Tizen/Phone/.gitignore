@@ -1,3 +1,15 @@
-/Debug/
-/SA_Report/
+.cproject
+.checkers
+.rds_delta
+.sdk_delta.info
 .sign
+crash-info/
+res/res.xml
+Debug/
+Release/
+lib/*.so*
+lib/*.a
+medialibrary/
+*.tmp
+*~
+res/edje/*.edj

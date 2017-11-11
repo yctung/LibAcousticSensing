@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document>
+	<mscreen>
+		<configuration device="HD" id="config1" name="common"
+			orientation="portrait" type="common" />
+	</mscreen>
+	<views startup="view_main">
+		<view id="view_main" indicator="true" screen_orientation="full_sensor"
+			type="view" page_location_x="0" page_location_y="0">
+			<grid align_h="fill" vsize_w="1000" align_v="fill" visible="true"
+				weight_v="1" id="grid_main" weight_h="1" vsize_h="1000">
+				<entry context_menu="true" align_v="fill" visible="true"
+					weight_v="1" editable="true" scroll="false" weight_h="1"
+					single_line="true" align_h="fill" password="false"
+					file_text_format="plain_utf8" disable="false" id="entry_server_ip"
+					text="10.0.0.12" pack_x="270" pack_y="161" pack_w="407" pack_h="48">
+					<event function_name="view_main_entry_server_ip_onclicked"
+						signal="clicked" />
+				</entry>
+				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
+					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0" id="label1"
+					text="Debug Info" pack_x="44" pack_y="65" pack_w="197" pack_h="24"></label>
+				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
+					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0"
+					id="label_server_ip" text="Server IP" pack_x="93" pack_y="175"
+					pack_w="139" pack_h="24"></label>
+				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
+					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0"
+					id="label_server_port" text="Server Port" pack_x="87" pack_y="248"
+					pack_w="181" pack_h="36"></label>
+				<entry context_menu="true" align_v="fill" visible="true"
+					weight_v="1" editable="true" scroll="false" weight_h="1"
+					single_line="true" align_h="fill" password="false"
+					file_text_format="plain_utf8" disable="false" id="entry_server_port"
+					text="50005" pack_x="291" pack_y="237" pack_w="402" pack_h="48">
+					<event function_name="view_main_entry_server_port_onclicked"
+						signal="clicked" />
+				</entry>
+				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
+					align_h="fill" disable="false" style="default" id="button_settings"
+					text="Settings" pack_x="96" pack_y="385" pack_w="286" pack_h="49"></button>
+				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
+					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0" id="label_mode"
+					text="Mode" pack_x="117" pack_y="115" pack_w="139" pack_h="24"></label>
+				<hoversel align_v="fill" visible="true" weight_v="1"
+					weight_h="1" align_h="fill" disable="false" id="hoversel_mode"
+					text="Remote" pack_x="275" pack_y="105" pack_w="556" pack_h="46">
+					<hoverselitem id="hoverselitem_remote_mode" text="Remote"></hoverselitem>
+					<hoverselitem id="hoverselitem_standalone" text="Standalone"></hoverselitem>
+					<event function_name="view_main_hoversel_mode_onclicked"
+						signal="clicked" />
+				</hoversel>
+				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
+					align_h="fill" disable="false" style="default" id="button_reset"
+					text="Reset settings" pack_x="105" pack_y="452" pack_w="419"
+					pack_h="48"></button>
+				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
+					align_h="fill" disable="false" style="default" id="button_connect_init"
+					text="Connect/Init" pack_x="101" pack_y="321" pack_w="453" pack_h="49">
+					<event function_name="view_main_button_connect_init_onclicked"
+						signal="clicked" />
+				</button>
+			</grid>
+		</view>
+	</views>
+</document>

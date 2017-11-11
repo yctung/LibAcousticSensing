@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>DevAppPhone</name>
+	<name>DevApp</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
+		<buildCommand>
+			<name>org.tizen.efluibuilder.builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
 			<arguments>
@@ -22,10 +27,11 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+		<nature>org.tizen.efluibuilder.nature</nature>
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1510241294797</id>
+			<id>0</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -34,7 +40,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1510241294816</id>
+			<id>0</id>
 			<name></name>
 			<type>6</type>
 			<matcher>
