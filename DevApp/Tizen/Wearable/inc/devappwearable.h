@@ -25,5 +25,6 @@ typedef struct appdata {
 	Eext_Circle_Surface *circle_surface;
 } appdata_s;
 
+void button_cb(void *data, Evas_Object * obj, void *event_info);
 
 #endif /* __devappwearable_H__ */

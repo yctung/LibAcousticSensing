@@ -3,7 +3,7 @@
 static char *main_menu_title = "LibAS DevApp";
 
 char *main_menu_names[] = {
-	"Status", "Setting", "Connect", NULL
+	"192.168.1.1", "Connect", NULL
 };
 
 char *status_buf[1024];
@@ -74,9 +74,11 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	return EINA_FALSE;
 }
 
+/*
 void button_cb(void *data, Evas_Object * obj, void *event_info) {
 
 }
+*/
 
 void bg_cb(void *data, Evas_Object * obj, void *event_info) {
 
@@ -90,8 +92,9 @@ create_list_view(appdata_s *ad)
 	Evas_Object *btn;
 	Evas_Object *nf = ad->nf;
 	Elm_Object_Item *nf_it;
-	Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
-	Elm_Genlist_Item_Class *ttc = elm_genlist_item_class_new();
+	Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new(); // items (buttons)
+	Elm_Genlist_Item_Class *ttc = elm_genlist_item_class_new(); // title
+	Elm_Genlist_Item_Class *stc = elm_genlist_item_class_new(); // status
 	Elm_Genlist_Item_Class *ptc = elm_genlist_item_class_new();
 	item_data *id;
 	int index = 0;
@@ -110,6 +113,11 @@ create_list_view(appdata_s *ad)
 	ttc->func.text_get = _gl_menu_title_text_get;
 	ttc->func.del = _gl_menu_del;
 
+	/* Genlist Status style */
+	stc->item_style = "title";
+	stc->func.text_get = _gl_menu_title_text_get;
+	stc->func.del = _gl_menu_del;
+
 	/* Genlist Item style */
 	itc->item_style = "default";
 	itc->func.text_get = _gl_menu_text_get;
@@ -121,11 +129,12 @@ create_list_view(appdata_s *ad)
 
 	/* Title Items Here */
 	elm_genlist_item_append(genlist, ttc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+	//elm_genlist_item_append(genlist, stc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 
 	/* Main Menu Items Here */
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
-	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, bg_cb, ad);
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, button_cb, ad);
 
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
