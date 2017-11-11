@@ -44,6 +44,7 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
     float [] circGreaterBuffer = new float[15];
     float [] prevValue = new float[3];
     float [] prevDelta = new float[3];
+    final int USERDATACODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -276,6 +277,10 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         lastTrigger = 0;
     }
 
+
+    final float MAG_THRESH = 0.1f;
+    final int GREATER_THRESH = 6;
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
@@ -291,8 +296,7 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         prevValue[2] = sensorEvent.values[2];
 
 
-        float THRESH = 0.2f;
-        if (xVal > THRESH && yVal > THRESH && zVal > THRESH)
+        if (xVal > MAG_THRESH && yVal > MAG_THRESH && zVal > MAG_THRESH)
             circGreaterBuffer[accCounter] = 1;
         else
             circGreaterBuffer[accCounter] = 0;
@@ -302,12 +306,15 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
             totalGreater += circGreaterBuffer[i];
 
 
-        if (totalGreater > 5) {
+        if (totalGreater > GREATER_THRESH) {
             long currTime = System.currentTimeMillis();
             if (currTime - lastTrigger > 250) {
                 // We found a tap!
                 lastTrigger = currTime;
                 Toast.makeText(this, "Tap!!!", Toast.LENGTH_SHORT).show();
+                if (asc.isReadyToSense()) {
+                    asc.sendUserData("ukn", USERDATACODE, 0.0f, 0.0f);
+                }
             }
         }
 
