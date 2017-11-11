@@ -1,12 +1,12 @@
 #include "devappwearable.h"
 
+static char *main_menu_title = "LibAS DevApp";
+
 char *main_menu_names[] = {
-	"Bg", "Button", "Check", "Entry", "Genlist", "Image", "PageControl", "Popup", "Progress",
-	"Nocontents", "Radio", "Scroller","Map",
-	"(Eext) Datetime", "(Eext) Genlist", "(Eext) More Option",
-	"(Eext) ProgressBar", "(Eext) Rotary Selector", "(Eext) Scroller", "(Eext) Slider", "(Eext) Spinner",
-	NULL
+	"Status", "Setting", "Connect", NULL
 };
+
+char *status_buf[1024];
 
 typedef struct _item_data
 {
@@ -40,7 +40,7 @@ _gl_menu_title_text_get(void *data, Evas_Object *obj, const char *part)
 {
 	char buf[1024];
 
-	snprintf(buf, 1023, "%s", "UI Controls");
+	snprintf(buf, 1023, "%s", main_menu_title);
 	return strdup(buf);
 }
 
