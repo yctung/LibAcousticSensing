@@ -281,6 +281,14 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     @Override
+    public void audioDelayFromServer(int delayBySamples) {
+        // If we aren't currently playing, we will ignore this
+        Log.e(LOG_TAG, "Received delay samples in ASC: " + delayBySamples);
+        if (!isSensing) return;
+        else ac.delaySoundBy(delayBySamples);
+    }
+
+    @Override
     public void resultReceviedFromServer(int result) {
         listener.updateResult(result, 0.0f);
     }

@@ -21,6 +21,7 @@ classdef SensingServer < handle
         REACTION_SET_RESULT 	= 3;
         REACTION_STOP_SENSING   = 4;
         REACTION_SERVER_CLOSED  = 5;
+        REACTION_DELAY_SOUND    = 6;
         
         % Supported type for ACTION_SET
         SET_TYPE_BYTE_ARRAY = 1;
@@ -60,6 +61,7 @@ classdef SensingServer < handle
         buttonLoad;
         buttonSave;
         buttonReplayOrStop;
+        buttonAutotune;
         textServerInfo;
         textServerStatus;
         isUIBusy;
@@ -535,7 +537,17 @@ classdef SensingServer < handle
                         'Interruptible','on',...
                         'Callback',@(~,~)obj.buttonReplayOrStopCallback);
                     
-                    
+              
+            obj.buttonAutotune = uicontrol(obj.panel,'Style','pushbutton',...
+                'Position',[5+100,30,90,30],...
+                'String','Autotune',...
+                'TooltipString','Autoshift Sounds',...
+                'FontSize',TEXT_FONT_SIZE,...
+                'Interruptible','on',...
+                'Callback',@(~,~)obj.buttonAutotuneCallback);
+
+
+
             obj.updateUI();
         end
         
@@ -559,11 +571,20 @@ classdef SensingServer < handle
                 end
             end
             
-            if ~isempty(obj.masterServer),
+            if obj.isSensing
+                obj.buttonAutotune.Enable = 'on';
+            else
+                obj.buttonAutotune.Enable = 'off';
+            end
+            
+            if ~isempty(obj.masterServer)
                 obj.buttonStartOrStopSensing.Enable = 'off';
+                % Only the master server can do autotuning
+                obj.buttonAutotune.Enable = 'off';
                 obj.buttonStartOrStopSensing.String = 'Slave Mode';
                 
                 % Disable closing the slave window
+                % We can only close from the master window
                 set(obj.fig, 'CloseRequestFcn', @obj.dummyCloseReq);
             end
             
@@ -575,6 +596,7 @@ classdef SensingServer < handle
             % diable all UI if it is busy
             if obj.isUIBusy
                 obj.buttonStartOrStopSensing.Enable = 'off';
+                obj.buttonAutotune.Enable = 'off';
                 obj.buttonLoad.Enable = 'off';
                 obj.buttonSave.Enable = 'off';
             end
@@ -671,6 +693,25 @@ classdef SensingServer < handle
             fakeEvent.dataBytes = audioAllBytes;
             fakeJavaHanlder = -1;
             obj.onDataCallback(fakeJavaHanlder, fakeEvent);
+        end
+        
+        
+        
+        function buttonAutotuneCallback (obj)
+            %{
+            Records audio from this device (assuming this is master server)
+            If we hear both chirps (based on PS?), calculate the peak of
+            both chirps. If the peaks are equally spread apart (based on
+            PS.period) then we're done. Otherwise, we will send 
+            REACTION_DELAY_SOUND to this device.
+            %}
+            
+            
+            % For now it simply delays by a fixed value.
+            obj.jss.writeByte(int8(obj.REACTION_DELAY_SOUND));
+            obj.jss.writeInt(int32(300));
+            CHECK = -1;
+            obj.jss.writeByte(int8(CHECK));
         end
     end
     

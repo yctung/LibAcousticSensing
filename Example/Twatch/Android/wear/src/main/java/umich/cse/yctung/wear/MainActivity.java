@@ -3,6 +3,10 @@ package umich.cse.yctung.wear;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.wearable.activity.WearableActivity;
@@ -11,13 +15,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
 import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 
+import static java.lang.Math.abs;
 
-public class MainActivity extends WearableActivity implements AcousticSensingControllerListener {
+
+public class MainActivity extends WearableActivity implements AcousticSensingControllerListener, SensorEventListener {
     private final static String TAG = "MainActivity";
     private final static String AUTO_CONNECT_KEY = "DEVAPP_AUTO_CONNECT_KEY";
     final static int RETRY_WAIT = 1000; // ms
@@ -29,6 +38,12 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 
     AcousticSensingSetting ass;
     AcousticSensingController asc;
+
+    long lastTrigger;
+    int accCounter = 0;
+    float [] circGreaterBuffer = new float[15];
+    float [] prevValue = new float[3];
+    float [] prevDelta = new float[3];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +74,8 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
 
         ass = new AcousticSensingSetting(this);
         asc = new AcousticSensingController(this,this);
+
+        createDoubleTapThread();
         updateUI();
     }
 
@@ -144,9 +161,6 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
     }
 
     private void updateUI() {
-
-
-
         if (asc == null || !asc.isReadyToSense()) {
             // not ready to sense yet
             Log.v(TAG, "Disconnected");
@@ -168,6 +182,9 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
             }
         }
     }
+
+
+
 
 //=================================================================================================
 //  Acoustic sensing callbacks
@@ -237,4 +254,68 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         });
     }
 
+
+
+
+
+
+//=================================================================================================
+//  Double Tap Sensing
+//=================================================================================================
+    private void createDoubleTapThread() {
+        SensorManager mSensorManager;
+        Sensor mSensor;
+        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+        //for (Sensor sensor : deviceSensors) {
+            //Log.v(TAG, String.format("Sensor name: %s and type: %s", sensor.getName(), sensor.getStringType()));
+        //}
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        lastTrigger = 0;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        float xVal = abs((sensorEvent.values[0] - prevValue[0]) - prevDelta[0]);
+        float yVal = abs((sensorEvent.values[1] - prevValue[1]) - prevDelta[1]);
+        float zVal = abs((sensorEvent.values[2] - prevValue[2]) - prevDelta[2]);
+
+        prevDelta[0] = sensorEvent.values[0] - prevValue[0];
+        prevDelta[1] = sensorEvent.values[1] - prevValue[1];
+        prevDelta[2] = sensorEvent.values[2] - prevValue[2];
+        prevValue[0] = sensorEvent.values[0];
+        prevValue[1] = sensorEvent.values[1];
+        prevValue[2] = sensorEvent.values[2];
+
+
+        float THRESH = 0.2f;
+        if (xVal > THRESH && yVal > THRESH && zVal > THRESH)
+            circGreaterBuffer[accCounter] = 1;
+        else
+            circGreaterBuffer[accCounter] = 0;
+
+        int totalGreater = 0;
+        for (int i = 0; i < circGreaterBuffer.length; i++)
+            totalGreater += circGreaterBuffer[i];
+
+
+        if (totalGreater > 5) {
+            long currTime = System.currentTimeMillis();
+            if (currTime - lastTrigger > 250) {
+                // We found a tap!
+                lastTrigger = currTime;
+                Toast.makeText(this, "Tap!!!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        accCounter = (accCounter + 1) % circGreaterBuffer.length;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }

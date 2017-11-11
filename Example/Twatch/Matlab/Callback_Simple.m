@@ -16,19 +16,16 @@ function [] =  Callback_Simple ( obj, type, data )
             % Plot a simplified version of the data
             C1 = data(:,1,1);
             C2 = data(:,1,2);
-            all(C1 == C2)
+            %all(C1 == C2);
 
-            downsampled = downsample(data, 50);
+            downsampled = downsample(data, 10);
             dataToPlot = downsampled;
             
             set(findobj('tag', 'mic1'), 'yData', dataToPlot(:,end,1));
             set(findobj('tag', 'mic2'), 'yData', dataToPlot(:,end,2));
             
-            line = findobj('Tag', 'mic2');
-            set(line, 'yData', dataToPlot (:, end, 2));
-            
             % Save it if the toggle button is pressed
-            toggleButton = findobj('Tag', 'recordtoggle');
+            %toggleButton = findobj('Tag', 'recordtoggle');
             %if (toggleButton.Value)
             %    % Save it
             %    savename = sprintf('%s/%s', SAVE_FOLDER, datestr(now, 'MM-SS-FFF'));

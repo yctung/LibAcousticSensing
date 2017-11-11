@@ -42,8 +42,8 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     import edu.umich.cse.yctung.*;
     
     FS = 48000;
-    PERIOD = 48000; %2400;
-    CHIRP_LEN = 1200;%1200;
+    PERIOD = 12000; %2400;
+    CHIRP_LEN = 300;%1200;
     CHIRP_FREQ_START = 1400;%18000;
     CHIRP_FREQ_END = 1800; %24000;
     FADING_RATIO = 0.5;
@@ -83,7 +83,7 @@ function [chirpSignal, playSignal] = CreateSignal (direction)
     w(1:length(winStart)) = winStart;
     w(end-length(winEnd)+1:end) = winEnd;
     % apply fadding to the sync signal
-
+    
     playSignal(1:CHIRP_LEN) = playSignal(1:CHIRP_LEN).*w;
     playSignal = playSignal./max(abs(playSignal));
     playSignal = playSignal(:);
