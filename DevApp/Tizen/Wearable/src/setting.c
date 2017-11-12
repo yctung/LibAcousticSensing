@@ -27,7 +27,7 @@ _gl_menu_title_text_get(void *data, Evas_Object *obj, const char *part)
 {
 	char buf[1024];
 
-	snprintf(buf, 1023, "%s", "Entry");
+	snprintf(buf, 1023, "%s", "Setting");
 	return strdup(buf);
 }
 
@@ -101,29 +101,38 @@ void maxlength_reached(void *data, Evas_Object *obj, void *event_info)
 }
 
 
-static void _entry_enter_click(void *data, Evas_Object *obj, void *event_info)
+static void __entry_enter_click(void *data, Evas_Object *obj, void *event_info, char *key)
 {
 	const char* text = elm_entry_entry_get(obj);
-	dlog_print(DLOG_INFO, LOG_TAG, "enter is clicked: %s", text);
-	printf("enter key clicked!!\n");
-	preference_set_string(DEVAPP_PREF_SERVER_ADDR_KEY, text);
+	dlog_print(DLOG_INFO, LOG_TAG, "enter for key = %s is clicked, text = %s", key, text);
+	preference_set_string(key, text);
 
 	update_setting_genlist();
 	update_main_genlist();
 }
 
-static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info)
+static void _setting_addr_entry_enter_click(void *data, Evas_Object *obj, void *event_info) {
+	__entry_enter_click(data, obj, event_info, DEVAPP_PREF_SERVER_ADDR_KEY);
+}
+
+static void _setting_port_entry_enter_click(void *data, Evas_Object *obj, void *event_info) {
+	__entry_enter_click(data, obj, event_info, DEVAPP_PREF_SERVER_PORT_KEY);
+}
+
+// internal function to create the entry
+// we have a customized "index" argument since I don't know why Tizen stupidly don't assign the object item_data correctly
+static void __single_line_entry_cb(void *data, Evas_Object *obj, void *event_info, int index)
 {
 	Evas_Object *entry;
 	Evas_Object *layout;
 	Evas_Object *scroller;
 	Evas_Object *nf = (Evas_Object *)data;
 	static Elm_Entry_Filter_Limit_Size limit_filter_data;
-	// dont' know why Tizen stupidly can't just assign the id correctly, so I now just copy past the code for now
+	// will not working..... TODO: know why...WTF
 	/*
-	item_data *id = (item_data *)data;
+	item_data *id =  elm_object_item_data_get(obj);
 	int index = -1;
-	if (id != 0) {
+	if (id != NULL) {
 		index = id->index;
 	}*/
 
@@ -141,24 +150,39 @@ static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info
 	elm_entry_scrollable_set(entry, EINA_TRUE);
 	elm_scroller_policy_set(entry, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_AUTO);
 	evas_object_smart_callback_add(entry, "maxlength,reached", maxlength_reached, nf);
+	elm_entry_input_panel_layout_set(entry, ELM_INPUT_PANEL_LAYOUT_IP);
 
 	limit_filter_data.max_char_count = 0;
 	limit_filter_data.max_byte_count = 100;
 	elm_entry_markup_filter_append(entry, elm_entry_filter_limit_size, &limit_filter_data);
 	elm_object_part_text_set(entry, "elm.guide", "input your text");
-	char *addr = "undefined";
-	preference_get_string(DEVAPP_PREF_SERVER_ADDR_KEY, &addr);
-	elm_entry_entry_set(entry, addr);
+	char *toshow = "undefined";
+	if (index == 0) { // server address
+		preference_get_string(DEVAPP_PREF_SERVER_ADDR_KEY, &toshow);
+		evas_object_smart_callback_add(entry, "activated", _setting_addr_entry_enter_click, NULL);
+	} else if (index == 1) { // server port
+		preference_get_string(DEVAPP_PREF_SERVER_PORT_KEY, &toshow);
+		evas_object_smart_callback_add(entry, "activated", _setting_port_entry_enter_click, NULL);
+	}
+	elm_entry_entry_set(entry, toshow);
 
 	elm_entry_cursor_end_set(entry);
 	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_smart_callback_add(entry, "activated", _entry_enter_click, NULL);
+
 
 	elm_object_part_content_set(layout, "entry_part", entry);
 	elm_object_content_set(scroller, layout);
 
 	elm_naviframe_item_push(nf, _("Single line entry"), NULL, NULL, scroller, "empty");
+}
+
+static void _setting_addr_entry_cb(void *data, Evas_Object *obj, void *event_info) {
+	__single_line_entry_cb(data, obj, event_info, 0 /* server addr */);
+}
+
+static void _setting_port_entry_cb(void *data, Evas_Object *obj, void *event_info) {
+	__single_line_entry_cb(data, obj, event_info, 1 /* server port */);
 }
 
 /* UI function to create entries */
@@ -198,10 +222,11 @@ void setting_cb(void *data, Evas_Object *obj, void *event_info)
 
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
-	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _single_line_entry_cb, nf);
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _setting_addr_entry_cb, nf);
+
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
-	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _single_line_entry_cb, nf);
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _setting_port_entry_cb, nf);
 
 	elm_genlist_item_append(genlist, ptc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 
