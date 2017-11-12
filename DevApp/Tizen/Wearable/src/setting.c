@@ -100,7 +100,6 @@ void maxlength_reached(void *data, Evas_Object *obj, void *event_info)
 	to_del = popup;
 }
 
-static Evas_Object *setting_genlist;
 
 static void _entry_enter_click(void *data, Evas_Object *obj, void *event_info)
 {
@@ -108,13 +107,9 @@ static void _entry_enter_click(void *data, Evas_Object *obj, void *event_info)
 	dlog_print(DLOG_INFO, LOG_TAG, "enter is clicked: %s", text);
 	printf("enter key clicked!!\n");
 	preference_set_string(DEVAPP_PREF_SERVER_ADDR_KEY, text);
-	// refresh the item, ref: https://developer.tizen.org/ko/forums/native-application-development/how-refresh-my-genlist?langswitch=ko
-	Elm_Object_Item *it0 = elm_genlist_nth_item_get(setting_genlist, 0);
-		elm_genlist_item_fields_update(it0, NULL, ELM_GENLIST_ITEM_FIELD_TEXT);
 
-	Elm_Object_Item *it1 = elm_genlist_nth_item_get(setting_genlist, 1);
-	elm_genlist_item_fields_update(it1, NULL, ELM_GENLIST_ITEM_FIELD_TEXT);
-
+	update_setting_genlist();
+	update_main_genlist();
 }
 
 static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info)
@@ -166,46 +161,6 @@ static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info
 	elm_naviframe_item_push(nf, _("Single line entry"), NULL, NULL, scroller, "empty");
 }
 
-/*
-static void _password_entry_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	Evas_Object *entry;
-	Evas_Object *layout;
-	Evas_Object *scroller;
-	Evas_Object *nf = (Evas_Object *)data;
-	static Elm_Entry_Filter_Limit_Size limit_filter_data;
-
-	scroller = elm_scroller_add(nf);
-	evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-
-	layout = elm_layout_add(scroller);
-	elm_layout_file_set(layout, ELM_DEMO_EDJ, "entry_layout");
-	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, 0.0);
-	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, 0.0);
-
-	entry = elm_entry_add(layout);
-	elm_entry_password_set(entry, EINA_TRUE);
-	elm_entry_scrollable_set(entry, EINA_TRUE);
-	elm_scroller_policy_set(entry, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_AUTO);
-	evas_object_smart_callback_add(entry, "maxlength,reached", maxlength_reached, nf);
-
-	limit_filter_data.max_char_count = 0;
-	limit_filter_data.max_byte_count = 50;
-	elm_entry_markup_filter_append(entry, elm_entry_filter_limit_size, &limit_filter_data);
-	elm_object_part_text_set(entry, "elm.guide", "input your text");
-	elm_entry_cursor_end_set(entry);
-	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_smart_callback_add(entry, "activated", _entry_enter_click, NULL);
-
-	elm_object_part_content_set(layout, "entry_part", entry);
-	elm_object_content_set(scroller, layout);
-
-	elm_naviframe_item_push(nf, _("Password entry"), NULL, NULL, scroller, "empty");
-}
-*/
-
 /* UI function to create entries */
 void setting_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -254,7 +209,7 @@ void setting_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_genlist_item_class_free(itc);
 	elm_genlist_item_class_free(ptc);
 
-	setting_genlist = genlist;
+	assign_setting_genlist(genlist);
 
 	nf_it = elm_naviframe_item_push(nf, "Entry", NULL, NULL, genlist, "empty");
 }

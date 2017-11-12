@@ -145,6 +145,9 @@ create_list_view(appdata_s *ad)
 	elm_genlist_item_class_free(ttc);
 	elm_genlist_item_class_free(ptc);
 
+	/* global reference for later refresh */
+	assign_main_genlist(genlist);
+
 	/* This button is set for devices which doesn't have H/W back key. */
 	btn = elm_button_add(nf);
 	elm_object_style_set(btn, "naviframe/end_btn/default");

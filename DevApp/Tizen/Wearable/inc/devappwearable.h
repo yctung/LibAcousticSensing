@@ -39,4 +39,11 @@ typedef struct appdata {
 void setting_cb(void *data, Evas_Object *obj, void *event_info);
 void button_cb(void *data, Evas_Object * obj, void *event_info);
 
+// some stupidly global variables for refresh the gen_list
+// TODO: need to find a better way to manage them
+void assign_main_genlist(Evas_Object *genlist);
+void update_main_genlist();
+void assign_setting_genlist(Evas_Object *genlist);
+void update_setting_genlist();
+
 #endif /* __devappwearable_H__ */
