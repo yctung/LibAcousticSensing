@@ -101,6 +101,8 @@ void maxlength_reached(void *data, Evas_Object *obj, void *event_info)
 }
 
 
+
+static Evas_Object *current_nf;
 static void __entry_enter_click(void *data, Evas_Object *obj, void *event_info, char *key)
 {
 	const char* text = elm_entry_entry_get(obj);
@@ -109,6 +111,8 @@ static void __entry_enter_click(void *data, Evas_Object *obj, void *event_info, 
 
 	update_setting_genlist();
 	update_main_genlist();
+
+	elm_naviframe_item_pop(current_nf);
 }
 
 static void _setting_addr_entry_enter_click(void *data, Evas_Object *obj, void *event_info) {
@@ -236,5 +240,6 @@ void setting_cb(void *data, Evas_Object *obj, void *event_info)
 
 	assign_setting_genlist(genlist);
 
+	current_nf = nf;
 	nf_it = elm_naviframe_item_push(nf, "Entry", NULL, NULL, genlist, "empty");
 }
