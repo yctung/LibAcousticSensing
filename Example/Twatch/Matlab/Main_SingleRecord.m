@@ -29,7 +29,8 @@ function StartSensingServer (upas)
     pause(1.0);
 
     % NOTE: DummyCallback is used so no signal received at tx will be parsed
-    phoneCallback = @Callback_Simple;
+    %phoneCallback = @Callback_Simple;
+    phoneCallback = @Callback_Tapman;
     pss = SensingServer(SERVER_1, phoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, upas);
     pss.startSensingAfterConnectionInit = 0; % avoid auto sensing
     pause(1.0); % wait some time before building the next server
