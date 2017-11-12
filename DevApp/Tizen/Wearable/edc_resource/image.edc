@@ -1,0 +1,250 @@
+/*
+ * Copyright (c) 2014 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+#define IMAGE_WIDTH 170.0
+#define IMAGE_HEIGHT 170.0
+#define IMAGE_GAP 30.0
+
+group {
+   name: "image_layout";
+   parts {
+        part {
+         name: "top_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            fixed: 0 1;
+            align: 0 0;
+            rel1.relative: 0.0 0.0;
+            rel2.relative: 1.0 0.0;
+         }
+      }
+      part {
+         name: "image1";
+         type: SWALLOW;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y:"top_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y:"top_padding";
+            }
+         }
+      }
+      part {
+         name: "image1_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            max : IMAGE_WIDTH IMAGE_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "image1";
+            }
+            rel2.to_y: "image1";
+         }
+      }
+      part {
+         name: "image2";
+         type: SWALLOW;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "image1_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "image1_bottom_padding";
+            }
+         }
+      }
+     part {
+         name: "image2_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            max : IMAGE_WIDTH IMAGE_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "image2";
+            }
+            rel2.to_y: "image2";
+         }
+      }
+      part {
+         name: "image3";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "image2_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "image2_bottom_padding";
+            }
+         }
+      }
+
+      part {
+         name: "image3_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            max : IMAGE_WIDTH IMAGE_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "image3";
+            }
+            rel2.to_y: "image3";
+         }
+      }
+      part {
+         name: "image_gif";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "image3_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "image3_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "image_gif_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            max : IMAGE_WIDTH IMAGE_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "image_gif";
+            }
+            rel2.to_y: "image_gif";
+         }
+      }
+      part {
+         name: "image_jpg";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "image_gif_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "image_gif_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "image_jpg_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            max : IMAGE_WIDTH IMAGE_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "image_jpg";
+            }
+            rel2.to_y: "image_jpg";
+         }
+      }
+      part {
+         name: "image_bmp";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "image_jpg_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "image_jpg_bottom_padding";
+            }
+         }
+      }
+
+      part {
+         name: "bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : IMAGE_WIDTH IMAGE_GAP;
+            align: 0.5 1.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "image_bmp";
+            }
+         }
+      }
+   }
+}
+
+#undef image_WIDTH
+#undef image_HEIGHT
+#undef image_GAP

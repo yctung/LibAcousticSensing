@@ -1,0 +1,300 @@
+/*
+ * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+#define RADIO_WIDTH 170.0
+#define RADIO_HEIGHT 44.0
+#define RADIO_GAP 30.0
+
+group {
+   name: "elmdemo-test/radio";
+   parts {
+      part {
+         name: "top_padding";
+         type: SPACER;
+         scale: 1; //allow scaling
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP; //minimum size for gap filler
+            fixed: 0 1;
+            align: 0 0;
+            rel1.relative: 0.0 0.0;
+            rel2.relative: 1.0 0.0;
+         }
+      }
+      part {
+         name: "radio1";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "top_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "top_padding";
+            }
+         }
+      }
+      part {
+         name: "radio1_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            max : RADIO_WIDTH RADIO_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio1";
+            }
+            rel2.to_y: "radio1";
+         }
+      }
+      part {
+         name: "radio2";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "radio1_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "radio1_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "radio2_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            max : RADIO_WIDTH RADIO_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio2";
+            }
+            rel2.to_y: "radio2";
+         }
+      }
+      part {
+         name: "radio3";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "radio2_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "radio2_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "radio3_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            max : RADIO_WIDTH RADIO_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio3";
+            }
+            rel2.to_y: "radio3";
+         }
+      }
+      part {
+         name: "radio4";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "radio3_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "radio3_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            align: 0.5 1.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio4";
+            }
+         }
+      }
+   } //end parts
+} //end group
+
+group {
+   name: "elmdemo-test/radio-custom";
+   parts {
+      part {
+         name: "top_padding";
+         type: SPACER;
+         scale: 1; //allow scaling
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP; //minimum size for gap filler
+            fixed: 0 1;
+            align: 0.0 0.0;
+            rel2.relative: 1.0 0.0;
+         }
+      }
+      part {
+         name: "radio1";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "top_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "top_padding";
+            }
+         }
+      }
+      part {
+         name: "radio1_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            max : RADIO_WIDTH RADIO_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio1";
+            }
+            rel2.to_y: "radio1";
+         }
+      }
+      part {
+         name: "radio2";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "radio1_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "radio1_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "radio2_bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            max : RADIO_WIDTH RADIO_GAP;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio2";
+            }
+            rel2.to_y: "radio2";
+         }
+      }
+      part {
+         name: "radio3";
+         type: SWALLOW;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            fixed: 1 1;
+            align: 0.5 0.0;
+            rel1 {
+               relative: 0.5 1.0;
+               to_y: "radio2_bottom_padding";
+            }
+            rel2 {
+               relative: 0.5 1.0;
+               to_y: "radio2_bottom_padding";
+            }
+         }
+      }
+      part {
+         name: "bottom_padding";
+         type: SPACER;
+         scale: 1;
+         description {
+            state: "default" 0.0;
+            min : RADIO_WIDTH RADIO_GAP;
+            align: 0.5 1.0;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "radio3";
+            }
+         }
+      }
+   } //end parts
+} //end group
+
+#undef RADIO_WIDTH
+#undef RADIO_HEIGHT
+#undef RADIO_GAP
+
