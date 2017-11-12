@@ -8,7 +8,6 @@ function BufferCallback_PeakFeedback ()
     
     DidMicModeCheck = 0;
     
-    
     if any(FillUpPointers <= AlreadyProcessed)
         return;
     end
@@ -18,7 +17,6 @@ function BufferCallback_PeakFeedback ()
         drawExp();
     else
         AlreadyProcessed = AlreadyProcessed + 1;
-        
         
         %peakAlgorithmToggle chirpDirectionToggle channelToggle
         %get(peakAlgorithmToggle, 'value');

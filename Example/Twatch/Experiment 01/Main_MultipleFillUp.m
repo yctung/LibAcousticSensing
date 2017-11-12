@@ -28,7 +28,6 @@ PS.downPass = [2000 6000]; PS.upPass = [2000 6000];
 [upChirp, upSignal] = Helper_CreateSignal('up');
 [downChirp, downSignal] = Helper_CreateSignal('down');    
 
-
 NUMSOURCES = 2;
 FillUpBuffer = zeros(PS.PERIOD, 2000, NUMSOURCES*2);
 FillUpPointers = zeros(1, NUMSOURCES*2);
@@ -90,6 +89,7 @@ end
 
 function StartSensingServer (audioSources)
     %% Create sensing servers with signals
+    global phoneSensor watchSensor;
     import edu.umich.cse.yctung.*;
     close all;
     JavaSensingServer.closeAll(); 
@@ -99,19 +99,23 @@ function StartSensingServer (audioSources)
     %analysisFunction = @BufferCallback_PeakFeedback;
     
     
-    clear sensingServers;
-    for asIdx=1:length(audioSources)
-        sensingServers(asIdx) = SensingServer(...
-                50005+asIdx-1, ...
-                CallbackFactory_FillUpIndices(2*asIdx-1,2*asIdx,analysisFunction), ...
-                SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, ...
-                audioSources(asIdx));
-        sensingServers(asIdx).startSensingAfterConnectionInit = 0;
-        %pause(0.5);
-    end
+    %clear sensingServers;
     
-    master = sensingServers(1);
-    for asIdx=2:length(audioSources)
-        master.addSlaveServer(sensingServers(asIdx));
-    end
+    phoneSensor = SensingServer(...
+            50005, ...
+            CallbackFactory_FillUpIndices(1,2,analysisFunction), ...
+            SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, ...
+            audioSources(1));
+    phoneSensor.startSensingAfterConnectionInit = 0;
+    
+    
+    
+    watchSensor = SensingServer(...
+            50006, ...
+            CallbackFactory_FillUpIndices(3,4,analysisFunction), ...
+            SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, ...
+            audioSources(2));
+    watchSensor.startSensingAfterConnectionInit = 0;
+    
+    phoneSensor.addSlaveServer(watchSensor);
 end

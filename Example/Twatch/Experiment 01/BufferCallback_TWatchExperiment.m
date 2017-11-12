@@ -3,7 +3,6 @@ function BufferCallback_TWatchExperiment ()
     global CorrBuffer XYBuffer;
     global currentExpStep ongoingExperiment;
     global AcceptTaps TapReceived;
-    global aggregateDetails;
     global BN_A BN_B BN_P;
     global c1ego c2ego c3ego;
     global c1window c2window c3window;
@@ -16,21 +15,24 @@ function BufferCallback_TWatchExperiment ()
     global NROWS NCOLS;
     global handles;
     
-    
     global confPlot currentPoint;
     global PS;
-    
     global CORRSIZE;
+    global StartTime;
 
     
+    global FLIP_X FLIP_Y;
     
     if any(FillUpPointers <= AlreadyProcessed)
         return;
     end
     
     fig = findobj('Tag', 'PeakFig');
-    FLIPX = 1;
+    
     if isempty(fig)
+        FLIP_X =1;
+        FLIP_Y =1;
+        
         CORRSIZE = 501;
         initialized = 0;
         doneTraining = 0;
@@ -43,9 +45,20 @@ function BufferCallback_TWatchExperiment ()
         c1DownPeak = -1;
         c2DownPeak = -1;
         c3UpPeak = -1;
+        
+        StartTime = datevec(now);
     else
         AlreadyProcessed = AlreadyProcessed + 1;
-        set(aggregateDetails, 'string', sprintf('#%d', AlreadyProcessed));
+        
+        
+        NowTime = datevec(now);
+        % We should have received this many by now. 
+        elapsed = (NowTime - StartTime);
+        elapsedSecs = elapsed(5)*60 + elapsed(6);
+        perChirp = PS.PERIOD / PS.FS;
+        expectedNum = ceil(elapsedSecs / perChirp);
+        
+        title(handles.expAx, sprintf('#%d (out of %d)', AlreadyProcessed, expectedNum));
         %savedLabels{AlreadyProcessed} = groundLabel;
         
         
@@ -56,9 +69,9 @@ function BufferCallback_TWatchExperiment ()
             c2downcorr = abs(convn(lastWindow(:,2), PS.downchirp_data, 'same'));
             c3upcorr = abs(convn(lastWindow(:,3), PS.upchirp_data, 'same'));
             
-            %c1downcorr = smooth(c1downcorr, 'moving', 10);
-            %c2downcorr = smooth(c2downcorr, 'moving', 10);
-            %c3upcorr = smooth(c3upcorr, 'moving', 10);
+            c1downcorr = smooth(c1downcorr, 'moving', 10);
+            c2downcorr = smooth(c2downcorr, 'moving', 10);
+            c3upcorr = smooth(c3upcorr, 'moving', 10);
             
             
             c1downcorr = c1downcorr(c1window(1):c1window(2));
@@ -83,16 +96,22 @@ function BufferCallback_TWatchExperiment ()
                 c3UpPeak = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 3), CorrBuffer(:, AlreadyProcessed, 3), c3UpPeak - c3window(1) + 1);
             end
             
-            if abs(c1DownPeak - c2DownPeak) > 25
-                earlier = min(c1DownPeak, c2DownPeak);
-                newWindow = [earlier-c1window(1)+1-15, earlier-c1window(1)+1+15];
-                [~, c1DownPeak] = max(CorrBuffer(newWindow(1):newWindow(2), AlreadyProcessed, 1));
-                [~, c2DownPeak] = max(CorrBuffer(newWindow(1):newWindow(2), AlreadyProcessed, 2));
-            end
-            
-            %c1PeakBuffer(AlreadyProcessed) = c1DownPeak;
-            %c2PeakBuffer(AlreadyProcessed) = c2DownPeak;
-            %c3PeakBuffer(AlreadyProcessed) = c3UpPeak;
+%             if abs(c1DownPeak - c2DownPeak) > 25
+%                 c1Mag = CorrBuffer(c1DownPeak-c1window(1)+1, AlreadyProcessed, 1);
+%                 c2Mag = CorrBuffer(c2DownPeak-c2window(1)+1, AlreadyProcessed, 2);
+%                 
+%                 if c1Mag > c2Mag
+%                     newWindow = [c1DownPeak-c1window(1)+1-15, c1DownPeak-c1window(1)+1+15];
+%                 else
+%                     newWindow = [c2DownPeak-c1window(1)+1-15, c2DownPeak-c1window(1)+1+15];
+%                 end
+%                 
+%                 %if (CorrBuffer(c1DownPeak-c1window(1)+1, AlreadyProcessed, 1) > )  
+%                 %earlier = min(c1DownPeak, c2DownPeak);
+%                 %newWindow = [earlier-c1window(1)+1-15, earlier-c1window(1)+1+15];
+%                 [~, c1DownPeak] = max(CorrBuffer(newWindow(1):newWindow(2), AlreadyProcessed, 1));
+%                 [~, c2DownPeak] = max(CorrBuffer(newWindow(1):newWindow(2), AlreadyProcessed, 2));
+%             end
             
             c1DownPeak =  c1DownPeak + c1window(1) - 1;
             c2DownPeak = c2DownPeak + c2window(1) - 1;
@@ -105,15 +124,16 @@ function BufferCallback_TWatchExperiment ()
             
             AllInterMicDistances = [d13 d23];
             [xm1, ym1] = calculateXY(AllInterMicDistances(1), AllInterMicDistances(2), 0.142);
-            %if FLIPX
-            %    xm1 = -xm1;
-            %end
-            
             XYBuffer(AlreadyProcessed, :) = [xm1 ym1];
-         
+            
             LASTN = 100;   
-            set(confPlot, 'xdata', smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 1), 4));
-            set(confPlot, 'ydata', smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 2), 4));
+            smoothedX = smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 1), 4);
+            smoothedY = smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 2), 4);
+            set(confPlot, 'xdata', smoothedX);
+            set(confPlot, 'ydata', smoothedY);
+            
+            x = smoothedX(end);
+            y = smoothedY(end);
             
             set(handles.c1CorrPlot, 'ydata', c1downcorr);
             set(handles.c2CorrPlot, 'ydata', c2downcorr);
@@ -127,23 +147,33 @@ function BufferCallback_TWatchExperiment ()
             
             
             if doneTraining
-                x = xm1;
-                y = ym1;
                 
-                if FLIPX    
+                if FLIP_X    
                     x = -x;
                 end
+                
+                if FLIP_Y
+                    y = -y;
+                end
+                
+                
                 
                 width = maxX - minX;
                 height = maxY - minY;
                 x = (x - minX) / width;
                 y = (y - minY) / height;
                 
+                
+                
                 % Go through beier neely!
                 mappedPoint = bnTransform(recordedBorder, referenceBorder, [x y; x y], BN_A, BN_B, BN_P);
+                
+                %sprintf('(%f, %f) --> (%f, %f)', x, y, mappedPoint(1, 1), mappedPoint(1, 2))
+                
                 set(currentPoint, 'xdata', mappedPoint(1, 1));
                 set(currentPoint, 'ydata', mappedPoint(1, 2));
                 
+                set(handles.debugMessage, 'string', sprintf('(%f, %f) --> (%f, %f)', x, y, mappedPoint(1,1), mappedPoint(1,2)));
                 
                 if TapReceived && AcceptTaps && doneTraining % Not strictly necessary to check the third item
                     highlightButtonAt(mappedPoint(1, 1), mappedPoint(1, 2));
@@ -158,7 +188,11 @@ function BufferCallback_TWatchExperiment ()
             Key_Down(0, event);
         end
         
-        TapReceived = 0;
+        if TapReceived
+            set(handles.debugMessage, 'string', 'Tap detected');
+            TapReceived = 0;
+        end
+        
         
         if ongoingExperiment
             savedLabels(AlreadyProcessed) = currentExpStep;
@@ -186,6 +220,7 @@ function Key_Down(~, event)
     global minX maxX minY maxY;
     global handles;
     global BN_P BN_A BN_B;
+    global FLIP_X FLIP_Y;
     
     if isempty(event.Modifier) && strcmp(event.Key, 'space')
         % Space is pressed.
@@ -208,20 +243,21 @@ function Key_Down(~, event)
             ongoingExperiment = 0;
             currentExpStep = currentExpStep + 1;
             if currentExpStep > length(expSteps) 
-                if ~doneTraining
-                    doneTraining = 1;
+                if ~doneTraining                    
                     disp('All done!');
                     set(currentPoint, 'visible', 'on');
-                    [minX, maxX, minY, maxY, recordedBorder] = getPoints;
+                    [minX, maxX, minY, maxY, recordedBorder] = getPoints(FLIP_X, FLIP_Y);
                     referenceBorder = getReference;
                     
                     set(handles.instructionText, 'string', 'Finding deformation. Please wait.');
+                    set(handles.debugMessage, 'string', 'Finding beier neely parameters');
                     drawnow;
                     [BN_A, BN_B, BN_P, ~] = BNSearch(recordedBorder, referenceBorder);
-                    
+                    set(handles.debugMessage, 'string', 'Done.');
                     set(handles.instructionText, 'visible', 'off');
                     drawnow;
                     drawbuttons;
+                    doneTraining = 1;
                 end
                 
                 return;
@@ -244,6 +280,49 @@ function Key_Down(~, event)
             end
         end
     end
+end
+
+
+function autotuneCallback (~, ~, ~)
+    global phoneSensor watchSensor;
+    global FillUpBuffer AlreadyProcessed;
+    global PS handles;
+    % Take the last correlation 
+    % Find the ego sounds in c1-up, c2-up, c3-down
+    % Use those to set the windows for c1-down, c2-down and c3-up
+    
+    
+    lastWindow = FillUpBuffer(:, AlreadyProcessed, :);
+    c1upcorr = abs(convn(lastWindow(:,1), PS.upchirp_data, 'same'));
+    c3downcorr = abs(convn(lastWindow(:,3), PS.downchirp_data, 'same'));
+    [~, c1ego] = max(c1upcorr);
+    [~, c3ego] = max(c3downcorr);
+
+    while   (abs(c1ego - c3ego) < (PS.PERIOD*0.3)) || ...
+            (abs(c1ego - c3ego) > (PS.PERIOD*0.6))% Lots of space!
+        phoneSensor.jss.writeByte(int8(phoneSensor.REACTION_DELAY_SOUND));
+        phoneSensor.jss.writeInt(int32(300));
+        phoneSensor.jss.writeByte(int8(-1)); % Check
+        pause(0.5);
+        
+        
+        lastWindow = FillUpBuffer(:, AlreadyProcessed, :);
+        c1upcorr = abs(convn(lastWindow(:,1), PS.upchirp_data, 'same'));
+        c3downcorr = abs(convn(lastWindow(:,3), PS.downchirp_data, 'same'));
+        [~, c1ego] = max(c1upcorr);
+        [~, c3ego] = max(c3downcorr);
+        
+        set(handles.debugMessage, 'string', ...
+            sprintf('Auto tune with already processed %d. \nc1Ego=%d, c3Ego=%d, Diff=%d\n. We are trying go higher than %d\n', ...
+                AlreadyProcessed, ...
+                c1ego, c3ego, abs(c1ego-c3ego), ...
+                PS.PERIOD*0.3));
+    end
+    
+    
+        set(handles.debugMessage, 'string', ...
+            sprintf('Auto tune done with: c1Ego=%d, c3Ego=%d, Diff=%d\n.\n', ...
+                c1ego, c3ego, abs(c1ego-c3ego)));
 end
 
 
@@ -287,9 +366,10 @@ function startTapCallback (~, ~, ~)
 end
 
 
+
+
 function createUI()
     % lineCnts is the number of lines per figure
-    global aggregateDetails;
     global currentPoint;
     global expSteps currentExpStep expFig ongoingExperiment;
     global confPlot statelessPlot;
@@ -301,16 +381,27 @@ function createUI()
     FONTSIZE = 20;
     
     set(0,'DefaultAxesFontSize',14,'DefaultTextFontSize',16);
-    figure('Toolbar','none','MenuBar','none','Tag','PeakFig');
+    
+    
+    MonPositions = get(0, 'monitorpositions');
+    fullSecondMon = MonPositions(MonPositions(:,3) == 1920, :);
+    fullMon = MonPositions(MonPositions(:,3) == 1440, :);
+    firstHalf = fullMon;
+    firstHalf(3) = firstHalf(3)/2;
+    secondHalf = firstHalf;
+    secondHalf(1) = firstHalf(3);
+    
+    
+    figure('Toolbar','none','MenuBar','none','Tag','PeakFig', 'position', firstHalf);
     
     h_panel = uipanel('Parent', gcf, 'Units', 'normal', 'Position', [0  0 1 0.5]);
     
             
-   aggregateDetails = uicontrol(h_panel, ...
+   handles.debugMessage = uicontrol(h_panel, ...
     'Style','text',...
     'units', 'normalized', ...
     'Position',[0 0 1 0.9],...
-    'FontSize',100 ,...
+    'FontSize',25 ,...
     'String','Num');
     
     
@@ -333,12 +424,22 @@ function createUI()
         'FontSize', FONTSIZE, ...
         'Callback', @saveButton);
      
-        
+   
     uicontrol(h_panel2, ...
         'style','pushbutton', ...
         'units','normal', ...
-        'position',[0.5 0.5 0.5 0.5], ...
-        'String', 'Find Windows and Ego', ...
+        'position',[0.5 0.66 0.5 0.33], ...
+        'String', '1. Autotune', ...
+        'FontSize', FONTSIZE, ...
+        'Callback', @autotuneCallback);
+      
+    
+    
+    uicontrol(h_panel2, ...
+        'style','pushbutton', ...
+        'units','normal', ...
+        'position',[0.5 0.33 0.5 0.33], ...
+        'String', '2. Find Windows and Ego', ...
         'FontSize', FONTSIZE, ...
         'Callback', @findWindowsAndEgoCallback);
 
@@ -347,14 +448,14 @@ function createUI()
     uicontrol(h_panel2, ...
         'style','pushbutton', ...
         'units','normal', ...
-        'position',[0.5 0.0 0.5 0.5], ...
-        'String', 'Start Tapping', ...
+        'position',[0.5 0.0 0.5 0.33], ...
+        'String', '3. Start Tapping', ...
         'FontSize', FONTSIZE, ...
         'Callback', @startTapCallback);
     
         
     % Draw experiment window
-    expFig = figure(123);
+    expFig = figure('position', fullSecondMon);
     handles.expAx = subplot(1,1,1);
     hold on;
     expSteps = zeros(1, 6);
@@ -375,7 +476,7 @@ function createUI()
     
     set(expFig, 'KeyPressFcn', @Key_Down);
     
-    figure;
+    figure('position', secondHalf);
     subplot(3,2,[1 3 5]);
     confPlot = plot(0, 0, 'r');
     
