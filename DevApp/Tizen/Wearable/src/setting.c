@@ -39,7 +39,20 @@ _gl_menu_text_get(void *data, Evas_Object *obj, const char *part)
 	int index = id->index;
 
 	if (!strcmp(part, "elm.text")) {
-		snprintf(buf, 1023, "%s", entry_menu_names[index]);
+		if (index == 0) { // IP
+			char *addr;
+			preference_get_string(DEVAPP_PREF_SERVER_ADDR_KEY, &addr);
+			sprintf(buf, "IP=%s", addr);
+		} else if (index == 1) { // port
+			char *port;
+			preference_get_string(DEVAPP_PREF_SERVER_PORT_KEY, &port);
+			sprintf(buf, "port=%s", port);
+		} else {
+			snprintf(buf, 1023, "%s", "Undefined");
+		}
+
+		//snprintf(buf, 1023, "%s", entry_menu_names[index]);
+
 		return strdup(buf);
 	}
 	return NULL;
@@ -87,9 +100,21 @@ void maxlength_reached(void *data, Evas_Object *obj, void *event_info)
 	to_del = popup;
 }
 
+static Evas_Object *setting_genlist;
+
 static void _entry_enter_click(void *data, Evas_Object *obj, void *event_info)
 {
+	const char* text = elm_entry_entry_get(obj);
+	dlog_print(DLOG_INFO, LOG_TAG, "enter is clicked: %s", text);
 	printf("enter key clicked!!\n");
+	preference_set_string(DEVAPP_PREF_SERVER_ADDR_KEY, text);
+	// refresh the item, ref: https://developer.tizen.org/ko/forums/native-application-development/how-refresh-my-genlist?langswitch=ko
+	Elm_Object_Item *it0 = elm_genlist_nth_item_get(setting_genlist, 0);
+		elm_genlist_item_fields_update(it0, NULL, ELM_GENLIST_ITEM_FIELD_TEXT);
+
+	Elm_Object_Item *it1 = elm_genlist_nth_item_get(setting_genlist, 1);
+	elm_genlist_item_fields_update(it1, NULL, ELM_GENLIST_ITEM_FIELD_TEXT);
+
 }
 
 static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info)
@@ -99,13 +124,20 @@ static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info
 	Evas_Object *scroller;
 	Evas_Object *nf = (Evas_Object *)data;
 	static Elm_Entry_Filter_Limit_Size limit_filter_data;
+	// dont' know why Tizen stupidly can't just assign the id correctly, so I now just copy past the code for now
+	/*
+	item_data *id = (item_data *)data;
+	int index = -1;
+	if (id != 0) {
+		index = id->index;
+	}*/
 
 	scroller = elm_scroller_add(nf);
 	evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
 	layout = elm_layout_add(scroller);
-	bool temp = elm_layout_file_set(layout, ELM_DEMO_EDJ, "entry_layout");
+	elm_layout_file_set(layout, ELM_DEMO_EDJ, "entry_layout");
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, 0.0);
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, 0.0);
 
@@ -119,6 +151,10 @@ static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info
 	limit_filter_data.max_byte_count = 100;
 	elm_entry_markup_filter_append(entry, elm_entry_filter_limit_size, &limit_filter_data);
 	elm_object_part_text_set(entry, "elm.guide", "input your text");
+	char *addr = "undefined";
+	preference_get_string(DEVAPP_PREF_SERVER_ADDR_KEY, &addr);
+	elm_entry_entry_set(entry, addr);
+
 	elm_entry_cursor_end_set(entry);
 	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -130,6 +166,7 @@ static void _single_line_entry_cb(void *data, Evas_Object *obj, void *event_info
 	elm_naviframe_item_push(nf, _("Single line entry"), NULL, NULL, scroller, "empty");
 }
 
+/*
 static void _password_entry_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *entry;
@@ -167,6 +204,7 @@ static void _password_entry_cb(void *data, Evas_Object *obj, void *event_info)
 
 	elm_naviframe_item_push(nf, _("Password entry"), NULL, NULL, scroller, "empty");
 }
+*/
 
 /* UI function to create entries */
 void setting_cb(void *data, Evas_Object *obj, void *event_info)
@@ -208,13 +246,15 @@ void setting_cb(void *data, Evas_Object *obj, void *event_info)
 	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _single_line_entry_cb, nf);
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
-	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _password_entry_cb, nf);
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _single_line_entry_cb, nf);
 
 	elm_genlist_item_append(genlist, ptc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 
 	elm_genlist_item_class_free(ttc);
 	elm_genlist_item_class_free(itc);
 	elm_genlist_item_class_free(ptc);
+
+	setting_genlist = genlist;
 
 	nf_it = elm_naviframe_item_push(nf, "Entry", NULL, NULL, genlist, "empty");
 }

@@ -32,6 +32,8 @@ typedef struct appdata {
 	Evas_Object *nf;
 	Evas_Object *label;
 	Eext_Circle_Surface *circle_surface;
+
+	//Evas_Object *setting_genlist;
 } appdata_s;
 
 void setting_cb(void *data, Evas_Object *obj, void *event_info);
