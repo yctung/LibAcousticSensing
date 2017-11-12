@@ -17,6 +17,11 @@
 #define PACKAGE "umich.cse.yctung.libas.devapppwearable"
 #endif
 
+#define DEVAPP_PREF_SERVER_ADDR_KEY "DEVAPP_PREF_SERVER_ADDR_KEY"
+#define DEVAPP_PREF_SERVER_ADDR_DEFAULT "10.0.0.1"
+#define DEVAPP_PREF_SERVER_PORT_KEY "DEVAPP_PREF_SERVER_PORT_KEY"
+#define DEVAPP_PREF_SERVER_PORT_DEFAULT "7788"
+
 // some UI definitions
 #define ELM_DEMO_EDJ "/opt/usr/apps/umich.cse.yctung.libas.devapppwearable/res/ui_controls.edj"
 

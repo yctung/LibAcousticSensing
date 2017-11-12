@@ -52,7 +52,15 @@ _gl_menu_text_get(void *data, Evas_Object *obj, const char *part)
 	int index = id->index;
 
 	if (!strcmp(part, "elm.text")) {
-		snprintf(buf, 1023, "%s", main_menu_names[index]);
+		if (index == 0) { // IP + port
+			char *addr;
+			char *port;
+			preference_get_string(DEVAPP_PREF_SERVER_ADDR_KEY, &addr);
+			preference_get_string(DEVAPP_PREF_SERVER_PORT_KEY, &port);
+			sprintf(buf, "%s:%s", addr, port);
+		} else {
+			snprintf(buf, 1023, "%s", main_menu_names[index]);
+		}
 		return strdup(buf);
 	}
 	return NULL;
@@ -72,16 +80,6 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	ui_app_exit();
 	return EINA_FALSE;
-}
-
-/*
-void button_cb(void *data, Evas_Object * obj, void *event_info) {
-
-}
-*/
-
-void bg_cb(void *data, Evas_Object * obj, void *event_info) {
-
 }
 
 static void
@@ -286,11 +284,25 @@ ui_app_low_memory(app_event_info_h event_info, void *user_data)
 	/*APP_EVENT_LOW_MEMORY*/
 }
 
+static void
+_init_preference_if_not_exist() {
+	// here we set the default value of preferences before access them
+	bool exist;
+
+	preference_is_existing(DEVAPP_PREF_SERVER_ADDR_KEY, &exist);
+	if (!exist) preference_set_string(DEVAPP_PREF_SERVER_ADDR_KEY, DEVAPP_PREF_SERVER_ADDR_DEFAULT);
+
+	preference_is_existing(DEVAPP_PREF_SERVER_PORT_KEY, &exist);
+	if (!exist) preference_set_string(DEVAPP_PREF_SERVER_PORT_KEY, DEVAPP_PREF_SERVER_PORT_DEFAULT);
+}
+
 int
 main(int argc, char *argv[])
 {
 	appdata_s ad = {0,};
 	int ret = 0;
+
+	_init_preference_if_not_exist();
 
 	ui_app_lifecycle_callback_s event_callback = {0,};
 	app_event_handler_h handlers[5] = {NULL, };
