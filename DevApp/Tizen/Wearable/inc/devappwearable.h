@@ -37,7 +37,7 @@ typedef struct appdata {
 } appdata_s;
 
 void setting_cb(void *data, Evas_Object *obj, void *event_info);
-void button_cb(void *data, Evas_Object * obj, void *event_info);
+void status_cb(void *data, Evas_Object * obj, void *event_info);
 
 // some stupidly global variables for refresh the gen_list
 // TODO: need to find a better way to manage them

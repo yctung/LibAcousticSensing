@@ -6,6 +6,7 @@
 		<label>devappwearable</label>
 	</ui-application>
 	<privileges>
+		<privilege>http://tizen.org/privilege/recorder</privilege>
         <privilege>http://tizen.org/privilege/mediastorage</privilege>
         <privilege>http://tizen.org/privilege/download</privilege>
         <privilege>http://tizen.org/privilege/network.get</privilege>
