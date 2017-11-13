@@ -7,6 +7,7 @@
 #include <efl_extension.h>
 #include <dlog.h>
 #include <app_preference.h>
+#include <device/power.h>
 
 #ifdef  LOG_TAG
 #undef  LOG_TAG
