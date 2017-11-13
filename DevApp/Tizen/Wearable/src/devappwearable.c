@@ -52,7 +52,15 @@ _gl_menu_text_get(void *data, Evas_Object *obj, const char *part)
 	int index = id->index;
 
 	if (!strcmp(part, "elm.text")) {
-		snprintf(buf, 1023, "%s", main_menu_names[index]);
+		if (index == 0) { // IP + port
+			char *addr;
+			char *port;
+			preference_get_string(DEVAPP_PREF_SERVER_ADDR_KEY, &addr);
+			preference_get_string(DEVAPP_PREF_SERVER_PORT_KEY, &port);
+			sprintf(buf, "%s:%s", addr, port);
+		} else {
+			snprintf(buf, 1023, "%s", main_menu_names[index]);
+		}
 		return strdup(buf);
 	}
 	return NULL;
@@ -72,16 +80,6 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	ui_app_exit();
 	return EINA_FALSE;
-}
-
-/*
-void button_cb(void *data, Evas_Object * obj, void *event_info) {
-
-}
-*/
-
-void bg_cb(void *data, Evas_Object * obj, void *event_info) {
-
 }
 
 static void
@@ -134,11 +132,11 @@ create_list_view(appdata_s *ad)
 	/* Main Menu Items Here */
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
-	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, button_cb, ad);
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, setting_cb, ad);
 
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
-	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, button_cb, ad);
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, status_cb, ad);
 
 	/* Padding items */
 	elm_genlist_item_append(genlist, ptc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
@@ -146,6 +144,9 @@ create_list_view(appdata_s *ad)
 	elm_genlist_item_class_free(itc);
 	elm_genlist_item_class_free(ttc);
 	elm_genlist_item_class_free(ptc);
+
+	/* global reference for later refresh */
+	assign_main_genlist(genlist);
 
 	/* This button is set for devices which doesn't have H/W back key. */
 	btn = elm_button_add(nf);
@@ -236,12 +237,16 @@ static void
 app_pause(void *data)
 {
 	/* Take necessary actions when application becomes invisible. */
+	device_power_release_lock(POWER_LOCK_DISPLAY);
 }
 
 static void
 app_resume(void *data)
 {
 	/* Take necessary actions when application becomes visible. */
+	// keep app running on the foreground, ref: https://developer.tizen.org/community/tip-tech/keeping-screen-awake-until-pressing-hold-button?langswitch=en
+	// NOTE: we need <privilege>http://tizen.org/privilege/display</privilege>
+	device_power_request_lock(POWER_LOCK_DISPLAY, 0);
 }
 
 static void
@@ -286,11 +291,25 @@ ui_app_low_memory(app_event_info_h event_info, void *user_data)
 	/*APP_EVENT_LOW_MEMORY*/
 }
 
+static void
+_init_preference_if_not_exist() {
+	// here we set the default value of preferences before access them
+	bool exist;
+
+	preference_is_existing(DEVAPP_PREF_SERVER_ADDR_KEY, &exist);
+	if (!exist) preference_set_string(DEVAPP_PREF_SERVER_ADDR_KEY, DEVAPP_PREF_SERVER_ADDR_DEFAULT);
+
+	preference_is_existing(DEVAPP_PREF_SERVER_PORT_KEY, &exist);
+	if (!exist) preference_set_string(DEVAPP_PREF_SERVER_PORT_KEY, DEVAPP_PREF_SERVER_PORT_DEFAULT);
+}
+
 int
 main(int argc, char *argv[])
 {
 	appdata_s ad = {0,};
 	int ret = 0;
+
+	_init_preference_if_not_exist();
 
 	ui_app_lifecycle_callback_s event_callback = {0,};
 	app_event_handler_h handlers[5] = {NULL, };

@@ -1,0 +1,180 @@
+/*
+ * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+group {
+	name: "elmdemo-test/index_tab";
+	parts {
+		part {
+			name: "scroller";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+			}
+		}
+		part {
+			name: "controller";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				min: 0 6;
+				max: -1 6;
+				fixed: 0 1;
+				align: 0.5 0.0;
+			}
+		}
+	}
+}
+
+group {
+	name: "elmdemo-test/index_thumbnail";
+	parts {
+		part {
+			name: "bg";
+			type: RECT;
+			scale: 1;
+			description { state: "default" 0.0;
+				color: 7 7 7 255; /*(Changeable UI) color_class: "B011"; */
+			}
+		}
+		part {
+			name: "scroller";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				min: 360 281;
+				max: 360 281;
+				fixed: 1 1;
+				rel1 {
+					to_x: "bg";
+					to_y: "padding.scroller.top";
+					relative: 0.0 1.0;
+				}
+				rel2 {
+					to_x: "bg";
+					to_y: "padding.scroller.top";
+					relative: 1.0 1.0;
+				}
+				align: 0.5 0.0;
+			}
+		}
+		part {
+			name: "padding.scroller.top";
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				align: 0.5 0.0;
+				min: 0 79;
+				max: -1 79;
+				fixed: 0 1;
+				rel1.to: "bg";
+				rel2.to: "bg";
+				}
+			}
+		part {
+			name: "padding.controller.top";
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				align: 0.5 0.0;
+				min: 0 22;
+				max: -1 22;
+				fixed: 0 1;
+				rel1.to: "bg";
+				rel2.to: "bg";
+				}
+			}
+		part {
+			name: "controller";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				align: 0.5 0.0;
+				min: 0 19;
+				max: -1 19;
+				fixed: 0 1;
+				rel1.to: "padding.controller.top";
+				rel1.relative: 0.0 1.0;
+				rel2.to: "padding.controller.top";
+				rel2.relative: 1.0 1.0;
+			}
+		}
+	}
+}
+
+group {
+	name: "elmdemo-test/index_circle";
+	parts {
+		part {
+			name: "bg";
+			type: RECT;
+			scale: 1;
+			description { state: "default" 0.0;
+				color: 7 7 7 255; /*(Changeable UI) color_class: "B011";*/
+			}
+		}
+		part {
+			name: "scroller";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				min: 360 281;
+				max: 360 281;
+				fixed: 1 1;
+				rel1 {
+					to_x: "bg";
+					to_y: "padding.scroller.top";
+					relative: 0.0 1.0;
+				}
+				rel2 {
+					to_x: "bg";
+					to_y: "padding.scroller.top";
+					relative: 1.0 1.0;
+				}
+				align: 0.5 0.0;
+			}
+		}
+		part {
+			name: "padding.scroller.top";
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				align: 0.5 0.0;
+				min: 0 79;
+				max: -1 79;
+				fixed: 0 1;
+				rel1.to: "bg";
+				rel2.to: "bg";
+			}
+		}
+		part {
+			name: "controller";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+			}
+		}
+	}
+}

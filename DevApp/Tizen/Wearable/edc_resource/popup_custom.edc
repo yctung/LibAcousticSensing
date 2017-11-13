@@ -1,0 +1,284 @@
+/*
+ * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+//Height = 480 - (2 + 83 + 68)
+group { name: "elmdemo-test/popup/layout/title_content_button";
+   parts {
+      part { name: "elm.swallow.content";
+         scale: 1;
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            min: 0 327;
+            max: -1 327;
+         }
+      }
+   }
+}
+
+//No button: Height = 480 - (2 + 68)
+group { name: "elmdemo-test/popup/layout/title_content";
+   parts {
+      part { name: "elm.swallow.content";
+         scale: 1;
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            min: 0 410;
+            max: -1 410;
+         }
+      }
+   }
+}
+
+//No title: Height = 480 - ( 2 + 83 )
+group { name: "elmdemo-test/popup/layout/content_button";
+   parts {
+      part { name: "elm.swallow.content";
+         scale: 1;
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            min: 0 395;
+            max: -1 395;
+         }
+      }
+   }
+}
+
+//No title and button present: Height  = 480 - 2
+group { name: "elmdemo-test/popup/layout/default";
+   parts {
+      part { name: "elm.swallow.content";
+         scale: 1;
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            min: 0 478;
+            max: -1 478;
+         }
+      }
+   }
+}
+
+//Height = 408 - (2 + 83 + 68)
+group { name: "elmdemo-test/popup/layout/checkview";
+   parts {
+      part { name: "elm.swallow.content";
+         scale: 1;
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            min: 0 255;
+            max: -1 255;
+         }
+      }
+   }
+}
+
+group { name: "popup_checkview_internal";
+   parts {
+      part { name: "label";
+         scale: 1;
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            fixed: 1 0;
+            rel2 {
+               relative: 1.0 0.0;
+               to_y: "end_field";
+            }
+         }
+      }
+      part { name: "bottom_pad";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            align: 0.0 1.0;
+            min: 0 4;
+            fixed: 0 1;
+            rel1.relative: 0.0 1.0;
+         }
+      }
+      part { name: "pad_b";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            align: 0.0 1.0;
+            min: 0 90;
+            fixed: 0 1;
+            rel1 {
+               relative: 0.0 0.0;
+               to: "bottom_pad";
+            }
+            rel2 {
+               relative: 1.0 0.0;
+               to: "bottom_pad";
+            }
+         }
+      }
+      part { name: "left_pad";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            fixed: 1 0;
+            min: 16 0;
+            rel1 {
+               relative: 0.0 0.0;
+            }
+            rel2 {
+               relative: 0.0 1.0;
+            }
+         }
+      }
+      part { name: "right_pad";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            fixed: 1 0;
+            min: 16 0;
+            rel1 {
+               relative: 1.0 0.0;
+            }
+            rel2 {
+               relative: 1.0 1.0;
+            }
+         }
+      }
+      part { name: "end_field";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            align: 0.0 1.0;
+            min: 0 90;
+            max: 244 -1;
+            fixed: 0 1;
+            rel1 {
+               relative: 1.0 1.0;
+               to_x: "left_pad";
+               to_y: "pad_b";
+            }
+            rel2 {
+               relative: 0.0 1.0;
+               to_x: "right_pad";
+               to_y: "pad_b";
+            }
+         }
+      }
+      part { name: "elm.swallow.end";
+         type: SWALLOW;
+         scale: 1;
+         description { state: "default" 0.0;
+            rel1.to: "end_field";
+            rel2.to: "end_field";
+            rel1 {
+               relative: 0.0 0.0;
+            }
+            rel2 {
+               relative: 1.0 1.0;
+            }
+         }
+      }
+   }
+}
+
+styles {
+   style { name: "popup_progress_style";
+      base: "font=Tizen:style=Light font_size=32 color=#F9F9F9FF wrap=mixed align=center ellipsis=1.0 text_class=tizen";
+   }
+}
+
+group { name: "popup_progressbar";
+   parts {
+      part { name: "base";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 360 360;
+            max: 360 360;
+         }
+      }
+      part { name: "top_pad";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 0 74;
+            rel1.relative: 0.0 0.0;
+            rel1.to: "base";
+            rel2.relative: 1.0 0.0;
+            rel2.to: "base";
+            align: 0.5 0.0;
+            fixed: 0 1;
+         }
+      }
+      part { name: "elm.swallow.content";
+         type: SWALLOW;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 98 98;
+            max: 98 98;
+            rel1.to: "top_pad";
+            rel1.relative: 0.0 1.0;
+            rel2.to: "top_pad";
+            rel2.relative: 1.0 1.0;
+            align: 0.5 0.0;
+            fixed: 1 1;
+         }
+      }
+      part { name: "before_text_pad";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 0 12;
+            rel1.to: "elm.swallow.content";
+            rel1.relative: 0.0 1.0;
+            rel2.to: "elm.swallow.content";
+            rel2.relative: 1.0 1.0;
+            align: 0.5 0.0;
+            fixed: 0 1;
+         }
+      }
+      part { name: "elm.text";
+         type: TEXTBLOCK;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 300 88;
+            max: 300 88;
+            rel1 {
+               relative: 0.0 1.0;
+               to_x: "base";
+               to_y: "before_text_pad";
+            }
+            rel2 {
+               relative: 1.0 0.0;
+               to_x: "base";
+               to_y: "bottom_pad";
+            }
+            text {
+               style: "popup_progress_style";
+               min: 0 1;
+            }
+         }
+      }
+
+      part { name: "bottom_pad";
+         type: SPACER;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 0 88;
+            rel1.to: "base";
+            rel1.relative: 0.0 1.0;
+            align: 0.5 1.0;
+            fixed: 0 1;
+         }
+      }
+   }
+}

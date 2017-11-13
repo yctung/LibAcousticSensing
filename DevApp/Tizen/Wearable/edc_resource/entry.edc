@@ -1,0 +1,117 @@
+/*
+ * Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+group { name: "entry_layout";
+   parts {
+      part { name: "bg";
+         type: RECT;
+         scale: 1;
+         description { state: "default" 0.0;
+            color: 0 0 0 0;
+         }
+      }
+      part { name: "top_padding";
+         type: RECT;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 0 30;
+            align: 0.5 0.0;
+            fixed: 0 1;
+            rel1 {
+               relative: 0 0;
+               to: "bg";
+            }
+            rel2 {
+               relative: 1 0;
+               to: "bg";
+            }
+            color: 0 0 0 0;
+         }
+      }
+      part { name: "left_padding";
+         type: RECT;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 82 0;
+            fixed: 1 0;
+            rel1 {
+               relative: 0 0;
+               to: "bg";
+            }
+            rel2 {
+               relative: 0 1;
+               to: "bg";
+            }
+            color: 0 0 0 0;
+            align: 0.0 0.5;
+         }
+      }
+      part { name: "right_padding";
+         type: RECT;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 82 0;
+            fixed: 1 0;
+            rel1 {
+               relative: 1 0;
+               to: "bg";
+            }
+            rel2 {
+               to: "bg";
+            }
+            color: 0 0 0 0;
+            align: 1.0 0.5;
+         }
+      }
+      part { name: "bg_entry";
+         type: RECT;
+         mouse_events: 0;
+         scale:1;
+         description { state: "default" 0.0;
+            min: 0 39;
+            max: -1 39;
+            fixed: 1 1;
+            rel1 {
+               relative: 0.0 1.0;
+               to_y: "top_padding";
+            }
+            color: 0 0 0 0;
+            align: 0 0;
+         }
+      }
+      part { name: "entry_part";
+         type: SWALLOW;
+         scale: 1;
+         description { state: "default" 0.0;
+            min: 0 39;
+            max: -1 39;
+            fixed: 1 0;
+            rel1 {
+               relative: 1.0 0.0;
+               to_x: "left_padding";
+               to_y: "bg_entry";
+            }
+            rel2 {
+               relative: 0.0 0.0;
+               to_x: "right_padding";
+               to_y: "bg_entry";
+            }
+            align: 0 0;
+         }
+      }
+   }
+}
