@@ -5,7 +5,7 @@
 Elm_Theme *theme;
 
 char *entry_menu_names[] = {
-	"Single line entry", "Password entry",
+	"Single line entry", "Password entry", "Done",
 	NULL
 };
 
@@ -48,10 +48,9 @@ _gl_menu_text_get(void *data, Evas_Object *obj, const char *part)
 			preference_get_string(DEVAPP_PREF_SERVER_PORT_KEY, &port);
 			sprintf(buf, "port=%s", port);
 		} else {
-			snprintf(buf, 1023, "%s", "Undefined");
+			//snprintf(buf, 1023, "%s", "Undefined");
+			snprintf(buf, 1023, "%s", entry_menu_names[index]);
 		}
-
-		//snprintf(buf, 1023, "%s", entry_menu_names[index]);
 
 		return strdup(buf);
 	}
@@ -189,6 +188,11 @@ static void _setting_port_entry_cb(void *data, Evas_Object *obj, void *event_inf
 	__single_line_entry_cb(data, obj, event_info, 1 /* server port */);
 }
 
+static void _setting_done_cb(void *data, Evas_Object *obj, void *event_info) {
+	Evas_Object *nf = (Evas_Object *)data;
+	elm_naviframe_item_pop(nf);
+}
+
 /* UI function to create entries */
 void setting_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -231,6 +235,10 @@ void setting_cb(void *data, Evas_Object *obj, void *event_info)
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
 	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _setting_port_entry_cb, nf);
+
+	id = calloc(sizeof(item_data), 1);
+	id->index = index++;
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _setting_done_cb, nf);
 
 	elm_genlist_item_append(genlist, ptc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 

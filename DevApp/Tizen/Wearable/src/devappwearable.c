@@ -3,7 +3,7 @@
 static char *main_menu_title = "LibAS DevApp";
 
 char *main_menu_names[] = {
-	"192.168.1.1", "Connect", NULL
+	"192.168.1.1", "Connect", "Exit", NULL
 };
 
 char *status_buf[1024];
@@ -82,6 +82,10 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	return EINA_FALSE;
 }
 
+static void _exit_cb(void *data, Evas_Object * obj, void *event_info) {
+	ui_app_exit();
+}
+
 static void
 create_list_view(appdata_s *ad)
 {
@@ -137,6 +141,10 @@ create_list_view(appdata_s *ad)
 	id = calloc(sizeof(item_data), 1);
 	id->index = index++;
 	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, status_cb, ad);
+
+	id = calloc(sizeof(item_data), 1);
+	id->index = index++;
+	id->item = elm_genlist_item_append(genlist, itc, id, NULL, ELM_GENLIST_ITEM_NONE, _exit_cb, ad);
 
 	/* Padding items */
 	elm_genlist_item_append(genlist, ptc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
