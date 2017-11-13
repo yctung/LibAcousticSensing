@@ -245,6 +245,7 @@ app_resume(void *data)
 {
 	/* Take necessary actions when application becomes visible. */
 	// keep app running on the foreground, ref: https://developer.tizen.org/community/tip-tech/keeping-screen-awake-until-pressing-hold-button?langswitch=en
+	// NOTE: we need <privilege>http://tizen.org/privilege/display</privilege>
 	device_power_request_lock(POWER_LOCK_DISPLAY, 0);
 }
 
