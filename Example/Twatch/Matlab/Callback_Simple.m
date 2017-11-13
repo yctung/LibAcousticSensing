@@ -14,6 +14,7 @@ function [] =  Callback_Simple ( obj, type, data )
             createUI(obj, data);
         else
             % Plot a simplified version of the data
+            data(:,1,2) = data(:,1,1);
             C1 = data(:,1,1);
             C2 = data(:,1,2);
             %all(C1 == C2);

@@ -1,6 +1,6 @@
 function BufferCallback_TWatchExperiment ()
     global FillUpBuffer savedLabels FillUpPointers AlreadyProcessed;
-    global CorrBuffer XYBuffer;
+    global CorrBuffer XYBuffer DistanceBuffer ConfidenceColorBuffer;
     global currentExpStep ongoingExperiment;
     global AcceptTaps TapReceived;
     global BN_A BN_B BN_P;
@@ -15,13 +15,15 @@ function BufferCallback_TWatchExperiment ()
     global NROWS NCOLS;
     global handles;
     
-    global confPlot currentPoint;
+    global currentPoint;
     global PS;
     global CORRSIZE;
     global StartTime;
+    global MICDISTANCE;
 
     
     global FLIP_X FLIP_Y;
+    global LASTN;
     
     if any(FillUpPointers <= AlreadyProcessed)
         return;
@@ -29,10 +31,18 @@ function BufferCallback_TWatchExperiment ()
     
     fig = findobj('Tag', 'PeakFig');
     
+    GREEN = [0 1 0];
+    YELLOW = [1 1 0];
+    RED = [1 0 0];
+    
     if isempty(fig)
-        FLIP_X =1;
-        FLIP_Y =1;
+        StartTime = datevec(now);
         
+        FLIP_X =1;
+        FLIP_Y =0;
+        
+        
+        LASTN = 200;
         CORRSIZE = 501;
         initialized = 0;
         doneTraining = 0;
@@ -40,13 +50,17 @@ function BufferCallback_TWatchExperiment ()
         NROWS = 4;
         NCOLS = 4;
         XYBuffer = zeros(2000, 2);
+        DistanceBuffer = zeros(2000, 2);
+        ConfidenceColorBuffer = zeros(2000, 2, 3);
+        MICDISTANCE = 0.142;
+        
         createUI();
         savedLabels = [];
         c1DownPeak = -1;
         c2DownPeak = -1;
         c3UpPeak = -1;
         
-        StartTime = datevec(now);
+        
     else
         AlreadyProcessed = AlreadyProcessed + 1;
         
@@ -73,7 +87,6 @@ function BufferCallback_TWatchExperiment ()
             c2downcorr = smooth(c2downcorr, 'moving', 10);
             c3upcorr = smooth(c3upcorr, 'moving', 10);
             
-            
             c1downcorr = c1downcorr(c1window(1):c1window(2));
             c2downcorr = c2downcorr(c2window(1):c2window(2));
             c3upcorr = c3upcorr(c3window(1):c3window(2));
@@ -91,9 +104,29 @@ function BufferCallback_TWatchExperiment ()
                 c2DownPeak = getPeaksForCorr(CorrBuffer(:, AlreadyProcessed, 2));
                 c3UpPeak = getPeaksForCorr(CorrBuffer(:, AlreadyProcessed, 3));
             else % We did initialize and found a peak before this. We're ready to go!
-                c1DownPeak = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 1), CorrBuffer(:, AlreadyProcessed, 1), c1DownPeak - c1window(1) + 1);
-                c2DownPeak = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 2), CorrBuffer(:, AlreadyProcessed, 2), c2DownPeak - c2window(1) + 1);
-                c3UpPeak = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 3), CorrBuffer(:, AlreadyProcessed, 3), c3UpPeak - c3window(1) + 1);
+                [c1Confident, c1DownPeak] = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 1), CorrBuffer(:, AlreadyProcessed, 1), c1DownPeak - c1window(1) + 1);
+                [c2Confident, c2DownPeak] = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 2), CorrBuffer(:, AlreadyProcessed, 2), c2DownPeak - c2window(1) + 1);
+                [c3Confident, c3UpPeak] = singleconftrack(CorrBuffer(:, AlreadyProcessed-1, 3), CorrBuffer(:, AlreadyProcessed, 3), c3UpPeak - c3window(1) + 1);
+                
+                
+                
+                if c1Confident && c3Confident
+                    ConfidenceColorBuffer(AlreadyProcessed, 1, :) = GREEN;
+                elseif c1Confident || c3Confident
+                    ConfidenceColorBuffer(AlreadyProcessed, 1, :) = YELLOW;
+                else
+                    ConfidenceColorBuffer(AlreadyProcessed, 1, :) = RED;
+                end
+                
+                
+                if c2Confident && c3Confident
+                    ConfidenceColorBuffer(AlreadyProcessed, 2, :) = GREEN;
+                elseif c2Confident || c3Confident
+                    ConfidenceColorBuffer(AlreadyProcessed, 2, :) = YELLOW;
+                else
+                    ConfidenceColorBuffer(AlreadyProcessed, 2, :) = RED;
+                end
+
             end
             
 %             if abs(c1DownPeak - c2DownPeak) > 25
@@ -121,19 +154,16 @@ function BufferCallback_TWatchExperiment ()
             PeakUp = [c1uppeak c2uppeak c3UpPeak];
             d13 = calcDistance(PeakDown, PeakUp, 1, 3, 0.14, 0.01);
             d23 = calcDistance(PeakDown, PeakUp, 2, 3, 0.06, 0.01);
+            [xm1, ym1] = calculateXY(d13, d23, MICDISTANCE);
             
-            AllInterMicDistances = [d13 d23];
-            [xm1, ym1] = calculateXY(AllInterMicDistances(1), AllInterMicDistances(2), 0.142);
             XYBuffer(AlreadyProcessed, :) = [xm1 ym1];
-            
-            LASTN = 100;   
+            DistanceBuffer(AlreadyProcessed, :) = [d13 d23];
             smoothedX = smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 1), 4);
             smoothedY = smooth(XYBuffer(max(1, AlreadyProcessed-LASTN):AlreadyProcessed, 2), 4);
-            set(confPlot, 'xdata', smoothedX);
-            set(confPlot, 'ydata', smoothedY);
             
-            x = smoothedX(end);
-            y = smoothedY(end);
+            
+            set(handles.xyplot, 'xdata', smoothedX);
+            set(handles.xyplot, 'ydata', smoothedY);            
             
             set(handles.c1CorrPlot, 'ydata', c1downcorr);
             set(handles.c2CorrPlot, 'ydata', c2downcorr);
@@ -146,23 +176,31 @@ function BufferCallback_TWatchExperiment ()
             set(handles.c3CorrPeak, 'ydata', c3upcorr(c3UpPeak-c3window(1)+1));
             
             
+            Xaxis = max(1, AlreadyProcessed-LASTN):AlreadyProcessed;
+            set(handles.d1PlotScatter, 'xdata', Xaxis);
+            set(handles.d1PlotScatter, 'ydata', DistanceBuffer(Xaxis, 1));
+            set(handles.d1PlotLine, 'xdata', Xaxis);
+            set(handles.d1PlotLine, 'ydata', DistanceBuffer(Xaxis, 1));
+            set(handles.d1PlotScatter, 'cdata', reshape(ConfidenceColorBuffer(Xaxis, 1, :), length(Xaxis), 3));
+            
+            set(handles.d2PlotScatter, 'xdata', Xaxis);
+            set(handles.d2PlotScatter, 'ydata', DistanceBuffer(Xaxis, 2));
+            set(handles.d2PlotLine, 'xdata', Xaxis);
+            set(handles.d2PlotLine, 'ydata', DistanceBuffer(Xaxis, 2));
+            set(handles.d2PlotScatter, 'cdata', reshape(ConfidenceColorBuffer(Xaxis, 2, :), length(Xaxis), 3));
+            
+            
             if doneTraining
+                x = smoothedX(end);
+                y = smoothedY(end);
                 
-                if FLIP_X    
-                    x = -x;
-                end
-                
-                if FLIP_Y
-                    y = -y;
-                end
-                
-                
+                if FLIP_X, x = -x; end
+                if FLIP_Y, y = -y; end
                 
                 width = maxX - minX;
                 height = maxY - minY;
                 x = (x - minX) / width;
                 y = (y - minY) / height;
-                
                 
                 
                 % Go through beier neely!
@@ -246,7 +284,19 @@ function Key_Down(~, event)
                 if ~doneTraining                    
                     disp('All done!');
                     set(currentPoint, 'visible', 'on');
-                    [minX, maxX, minY, maxY, recordedBorder] = getPoints(FLIP_X, FLIP_Y);
+                    [minX, maxX, minY, maxY, recordedBorder, left, top, right, bottom, middlehoriz, middlevert] = getPoints(FLIP_X, FLIP_Y);
+                    
+                    axes(handles.xyaxes);
+                    hold on;
+                    plot(left(:,1), left(:, 2), 'linewidth', 3, 'zdata', zeros(size(left, 1))+100);
+                    plot(right(:,1), right(:, 2), 'linewidth', 3, 'zdata', zeros(size(right, 1))+100);
+                    plot(top(:,1), top(:, 2), 'linewidth', 3, 'zdata', zeros(size(top, 1))+100);
+                    plot(bottom(:,1), bottom(:, 2), 'linewidth', 3, 'zdata', zeros(size(bottom, 1))+100);
+                    plot(middlehoriz(:,1), middlehoriz(:, 2), 'linewidth', 3, 'zdata', zeros(size(middlehoriz, 1))+100);
+                    plot(middlevert(:,1), middlevert(:, 2), 'linewidth', 3, 'zdata', zeros(size(middlevert, 1))+100);
+                    hold off;
+                    
+                    
                     referenceBorder = getReference;
                     
                     set(handles.instructionText, 'string', 'Finding deformation. Please wait.');
@@ -271,6 +321,9 @@ function Key_Down(~, event)
             end
         else
             ongoingExperiment = 1;
+            if currentExpStep > length(expSteps) 
+                return;
+            end
             currStep = expSteps(currentExpStep);
             if strcmp(get(currStep, 'type'), 'line')
                 set(currStep, 'color', CURRENT_COLOR);
@@ -298,19 +351,36 @@ function autotuneCallback (~, ~, ~)
     [~, c1ego] = max(c1upcorr);
     [~, c3ego] = max(c3downcorr);
 
-    while   (abs(c1ego - c3ego) < (PS.PERIOD*0.3)) || ...
-            (abs(c1ego - c3ego) > (PS.PERIOD*0.6))% Lots of space!
-        phoneSensor.jss.writeByte(int8(phoneSensor.REACTION_DELAY_SOUND));
-        phoneSensor.jss.writeInt(int32(300));
-        phoneSensor.jss.writeByte(int8(-1)); % Check
-        pause(0.5);
+    
+    while 1
+        % If they're too close to the border, shift them
+        if (c1ego - 100 <= 0 || c1ego + 400 > PS.PERIOD)
+            phoneSensor.jss.writeByte(int8(phoneSensor.REACTION_DELAY_SOUND));
+            phoneSensor.jss.writeInt(int32(100));
+            phoneSensor.jss.writeByte(int8(-1)); % Check
+        elseif (c3ego - 100 <= 0 || c3ego + 400 > PS.PERIOD)
+            watchSensor.jss.writeByte(int8(watchSensor.REACTION_DELAY_SOUND));
+            watchSensor.jss.writeInt(int32(100));
+            watchSensor.jss.writeByte(int8(-1)); % Check
         
+        % If they're too close together, shift them
+        elseif (abs(c1ego - c3ego) < (PS.PERIOD*0.3)) || ...
+            (abs(c1ego - c3ego) > (PS.PERIOD*0.6))
+            phoneSensor.jss.writeByte(int8(phoneSensor.REACTION_DELAY_SOUND));
+            phoneSensor.jss.writeInt(int32(300));
+            phoneSensor.jss.writeByte(int8(-1)); % Check
+        else
+            break
+        end
+        
+        
+        pause(0.5);
         
         lastWindow = FillUpBuffer(:, AlreadyProcessed, :);
         c1upcorr = abs(convn(lastWindow(:,1), PS.upchirp_data, 'same'));
         c3downcorr = abs(convn(lastWindow(:,3), PS.downchirp_data, 'same'));
         [~, c1ego] = max(c1upcorr);
-        [~, c3ego] = max(c3downcorr);
+        [~, c3ego] = max(c3downcorr);   
         
         set(handles.debugMessage, 'string', ...
             sprintf('Auto tune with already processed %d. \nc1Ego=%d, c3Ego=%d, Diff=%d\n. We are trying go higher than %d\n', ...
@@ -319,10 +389,9 @@ function autotuneCallback (~, ~, ~)
                 PS.PERIOD*0.3));
     end
     
-    
-        set(handles.debugMessage, 'string', ...
-            sprintf('Auto tune done with: c1Ego=%d, c3Ego=%d, Diff=%d\n.\n', ...
-                c1ego, c3ego, abs(c1ego-c3ego)));
+    set(handles.debugMessage, 'string', ...
+        sprintf('Auto tune done with: c1Ego=%d, c3Ego=%d, Diff=%d\n.\n', ...
+            c1ego, c3ego, abs(c1ego-c3ego)));
 end
 
 
@@ -372,9 +441,8 @@ function createUI()
     % lineCnts is the number of lines per figure
     global currentPoint;
     global expSteps currentExpStep expFig ongoingExperiment;
-    global confPlot statelessPlot;
     global handles;
-    global CORRSIZE;
+    global CORRSIZE LASTN MICDISTANCE;
     currentExpStep = 1;
     ongoingExperiment = 0;
     
@@ -477,34 +545,37 @@ function createUI()
     set(expFig, 'KeyPressFcn', @Key_Down);
     
     figure('position', secondHalf);
-    subplot(3,2,[1 3 5]);
-    confPlot = plot(0, 0, 'r');
+    handles.xyaxes = subplot(4,2,[1 3 5 7]);
+    hold on;
+    handles.xyplot = plot(0, 0, 'r');
+    hold off;
     
-    subplot(3,2,2);
+    subplot(4,2,2);
     hold on;
     handles.c1CorrPlot = plot(zeros(1, CORRSIZE));
     handles.c1CorrPeak = scatter(0,0);
     hold off;
     
-    subplot(3,2,4);
+    subplot(4,2,4);
     hold on;
     handles.c2CorrPlot = plot(zeros(1, CORRSIZE));
     handles.c2CorrPeak = scatter(0,0);
     hold off;
     
-    subplot(3,2,6);
+    subplot(4,2,6);
     hold on;
     handles.c3CorrPlot = plot(zeros(1, CORRSIZE));
     handles.c3CorrPeak = scatter(0,0);
     hold off;
+    
+    subplot(4,2,8);
+    hold on;
+    handles.d1PlotScatter = scatter(1:LASTN, zeros(1, LASTN), 10, 'filled');
+    handles.d2PlotScatter = scatter(1:LASTN, zeros(1, LASTN), 10, 'filled');
+    handles.d1PlotLine = plot(zeros(1, LASTN));
+    handles.d2PlotLine = plot(zeros(1, LASTN));
+    hold off;
 end
-
-
-
-
-
-
-
 
 
 
@@ -537,16 +608,7 @@ function drawbuttons
     end
     
     handles.highlightedPart = fill(0, 0, 'r');
-    
     hold off;
-    
-    %return;
-    %fprintf('Ready?\n');
-    %pause;
-    
-  
-    
-    %highlightButtonAt(0.23, 0.6);
 end
 
 

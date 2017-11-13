@@ -29,10 +29,16 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
             end
         elseif type == obj.CALLBACK_TYPE_DATA
              % Not data?
-            if (size(size(data), 2) == 2)
-                size(data);
-                return
+             
+            if all(data == [1 2])
+                return;
             end
+            %if (size(size(data), 2) == 2)
+            %    size(data);
+            %    fprintf(2, 'early exit\n');
+            %    size(data)
+            %    return
+            %end
 
             if ~DidMicModeCheck(ind1)
                 C1 = data(:, 1, 1);
@@ -47,6 +53,11 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
         
             % Just fill up the FillUpBuffer
             for chirpInd=1:size(data,2)
+                if ind1 == 3
+                    % Watch trick
+                    data(:, chirpInd, 2) = data(:, chirpInd, 1);
+                end
+                
                 FillUpPointers(ind1) = FillUpPointers(ind1) + 1;
                 FillUpPointers(ind2) = FillUpPointers(ind2) + 1;
                 FillUpBuffer(:, FillUpPointers(ind1), ind1) = data(:, chirpInd, 1);

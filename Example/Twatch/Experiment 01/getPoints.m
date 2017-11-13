@@ -1,4 +1,4 @@
-function [minX, maxX, minY, maxY, lineSegments] = getPoints (FLIP_X, FLIP_Y)
+function [minX, maxX, minY, maxY, lineSegments, left, top, right, bottom, middlehoriz, middlevert] = getPoints (FLIP_X, FLIP_Y)
     global XYBuffer savedLabels;    
     % First we'll interpolate 5 points within each segment
     % Mapping ground truth to data points:
@@ -13,6 +13,8 @@ function [minX, maxX, minY, maxY, lineSegments] = getPoints (FLIP_X, FLIP_Y)
     
     % Extract raw XY points from recording
     fprintf('\tExtracting points\n');
+    
+    
     left = XYBuffer(savedLabels == 4, :);
     top = XYBuffer(savedLabels == 1, :);
     right = XYBuffer(savedLabels == 2, :);

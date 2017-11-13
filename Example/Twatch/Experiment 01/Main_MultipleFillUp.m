@@ -38,7 +38,6 @@ PS.downchirp_data = downChirp;
 PS.detectEnabled = 0;
 PS.detectRef = 0;
 
-
 %% Set up sensing server
 % Only one plays up chirp
 % First one plays upSignal
@@ -48,15 +47,11 @@ SIGNALGAIN = 0.2;
 audioSources(1) = SetupAudioSource('upsound', upSignal);
 audioSources(1).preambleGain = 1;
 audioSources(1).signalGain = SIGNALGAIN;
-for asIdx=2:NUMSOURCES
-    audioSources(asIdx) = SetupAudioSource('downsound', downSignal);
-    audioSources(asIdx).preambleGain = 0;
-    audioSources(asIdx).signalGain = SIGNALGAIN;
-end
 
-for asIdx=3:NUMSOURCES
-    audioSources(asIdx).signalGain = 0;
-end
+audioSources(2) = SetupAudioSource('downsound', downSignal);
+audioSources(2).preambleGain = 0;
+audioSources(2).signalGain = SIGNALGAIN;
+    
 
 StartSensingServer(audioSources);
 
@@ -67,7 +62,6 @@ function as = SetupAudioSource (soundName, signal)
     import edu.umich.cse.yctung.*;
     FS = 48000;
     SIGNAL_GAIN = SIGNALGAIN;
-    
     
     PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
     PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
