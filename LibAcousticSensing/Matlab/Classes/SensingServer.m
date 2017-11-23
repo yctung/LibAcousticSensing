@@ -322,7 +322,14 @@ classdef SensingServer < handle
                     
                     % only parse the last audio data
                     % fprintf('callback is called for parsing audio data\n');
-                    feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
+                    ret = feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
+                    
+                    if ~isempty(ret)
+                        fprintf(2, 'send result back to phone\n');
+                        % TODO: send result back
+                        % we now use the audio stamp as a refernece
+                        obj.sendResult(-1, -1);
+                    end
                 end
             %**********************************************************
             % ACTION_SET: set matlab variable based on code

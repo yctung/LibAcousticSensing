@@ -1,4 +1,4 @@
-function [] = LatencyEstimateCallback( server, type, data )
+function [ret] = LatencyEstimateCallback( server, type, data )
 %SERVERDEVCALLBACK Summary of this function goes here
     global USER_FIG_TAG; USER_FIG_TAG = 'USER_FIG_TAG';
     global PS; % user parse setting
@@ -58,6 +58,8 @@ function [] = LatencyEstimateCallback( server, type, data )
 
             end
         end
+        
+        ret = -1;
 %--------------------------------------------------------------------------
 % 3. handle user data sent from device
 %    in this example, click the user button in device will set a tag to
