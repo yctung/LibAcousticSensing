@@ -71,7 +71,7 @@ function [] = ObjectDetectorCallback( server, type, data )
             % update line1: data 
             check1 = findobj('Tag','check01');
             if check1.Value == 1,
-                for chIdx = 1:2,
+                for chIdx = 1:1,
                     line = findobj('Tag',sprintf('line01_%02d',chIdx));
                     dataToPlot = data(:,end,chIdx);
                     set(line, 'yData', dataToPlot); % only show the 1st ch

@@ -23,7 +23,7 @@ import umich.cse.yctung.libacousticsensing.Utils;
 public class AudioController {
 	private final static String TAG = "AudioController"; 
 	public static boolean SHOW_DEBUG_INFO_TIME_MESSAGE = false;
-	public static boolean SHOW_DEBUG_INFO_AUDIO_RECORDING = true;
+	public static boolean SHOW_DEBUG_INFO_AUDIO_RECORDING = false;
 	
 	private static final int RECORDER_BYTE_PER_ELEMENT = 2; // 2 bytes in 16bit format
     private static final int RECORDER_BUFFER_ELEMENTS = 4800*2; // this is the size of audio buffer elements *** WARN: this number must be a multiple of  ***
@@ -134,17 +134,6 @@ public class AudioController {
 	
     private void startRecordAndThenPlayAudio() {
         // NOTE: it is necessary to ensure the audio is recording before playing the audio
-    	/*
-        if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_AND_RECORD) {
-            startRecording();
-            sensingTimer.sendMessageDelayed(Message.obtain(null, MESSAGE_TO_START_PLAY), DELAY_TO_START_PLAY);
-        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_PLAY_ONLY) {
-            startPlaying();
-        } else if (audioSetting.audioMode== RecordSetting.AUDIO_MODE_RECORD_ONLY) {
-            startRecording();
-        } else {
-            Log.e(LOG_TAG, "[ERROR]: undefined audioMode="+audioSetting.audioMode);
-        }*/
     	// TODO: add a small delay before playing to ensure we can capture the start of the preamble
     	startRecording();
     	startPlaying();
@@ -176,7 +165,7 @@ public class AudioController {
             if(startAndKeepRecording){
                 int byteRead = recorder.read(byteBuffer, 0, RECORDER_BUFFER_ELEMENTS*RECORDER_BYTE_PER_ELEMENT);
                 if(SHOW_DEBUG_INFO_AUDIO_RECORDING) Log.d(TAG, "byteRead = " + byteRead);
-                if (byteRead > 4) {
+                if (byteRead > 4 && SHOW_DEBUG_INFO_AUDIO_RECORDING) {
                     Log.w(TAG, "First 4 bytes = (" + byteBuffer[0] + "," + byteBuffer[1] + "," + byteBuffer[2] + "," + byteBuffer[3] + ")");
                 }
                 if(byteRead != RECORDER_BUFFER_ELEMENTS * RECORDER_BYTE_PER_ELEMENT) Log.e(TAG, "[ERROR]: byteRead in audioRecord not matched! = "+byteRead);
