@@ -295,7 +295,6 @@ public class MainActivity extends WearableActivity implements AcousticSensingCon
         prevValue[1] = sensorEvent.values[1];
         prevValue[2] = sensorEvent.values[2];
 
-
         if (xVal > MAG_THRESH && yVal > MAG_THRESH && zVal > MAG_THRESH)
             circGreaterBuffer[accCounter] = 1;
         else

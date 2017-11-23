@@ -42,6 +42,11 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
         
             % Just fill up the FillUpBuffer
             for chirpInd=1:size(data,2)
+                if ind1 == 3
+                    % Watch trick
+                    data(:, chirpInd, 2) = data(:, chirpInd, 1);
+                end
+                
                 FillUpPointers(ind1) = FillUpPointers(ind1) + 1;
                 FillUpPointers(ind2) = FillUpPointers(ind2) + 1;
                 FillUpBuffer(:, FillUpPointers(ind1), ind1) = data(:, chirpInd, 1);
