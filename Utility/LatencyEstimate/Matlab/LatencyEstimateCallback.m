@@ -21,42 +21,41 @@ function [] = LatencyEstimateCallback( server, type, data )
     end
 
     % parse audio data
-    if type == server.CALLBACK_TYPE_DATA,
+    
 %--------------------------------------------------------------------------
 % 1. init GUI
 %--------------------------------------------------------------------------
-        if server.userfig == -1, % need to create a new UI window
-            needToUpdateXLine2 = 1;
-            LINE_CNTS = [2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-            createUI(server, USER_FIG_TAG, data, LINE_CNTS);
+    if type == server.CALLBACK_TYPE_INIT, % need to create a new UI window
+        needToUpdateXLine2 = 1;
+        LINE_CNTS = [2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
+        createUI(server, USER_FIG_TAG, data, LINE_CNTS);
 %--------------------------------------------------------------------------
 % 2. data processing and update figures
 %--------------------------------------------------------------------------
-        else
-            % find detected objects by matched filter
-            % where the PS.signalToCorrelate is the reverse of sensing signal
-            % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
-            cons = convn(data, PS.signalToCorrelate, 'same');
-            detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
-            traceCnt = size(detects, 2);
-            chCnt = size(detects, 3);
-            
-            % update line1: data 
-            check1 = findobj('Tag','check01');
-            if check1.Value == 1,
-                for chIdx = 1:1,
-                    line = findobj('Tag',sprintf('line01_%02d',chIdx));
-                    dataToPlot = data(:,end,chIdx);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
-                end
-            end
+    elseif type == server.CALLBACK_TYPE_DATA,
+        % find detected objects by matched filter
+        % where the PS.signalToCorrelate is the reverse of sensing signal
+        % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
+        cons = convn(data, PS.signalToCorrelate, 'same');
+        detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
+        traceCnt = size(detects, 2);
+        chCnt = size(detects, 3);
 
-            % update line2: detected peaks
-            check2 = findobj('Tag','check02');
-            if check2.Value == 1,
-                for chIdx = 1:1, % TODO: based on channel
-            
-                end
+        % update line1: data 
+        check1 = findobj('Tag','check01');
+        if check1.Value == 1,
+            for chIdx = 1:1,
+                line = findobj('Tag',sprintf('line01_%02d',chIdx));
+                dataToPlot = data(:,end,chIdx);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+            end
+        end
+
+        % update line2: detected peaks
+        check2 = findobj('Tag','check02');
+        if check2.Value == 1,
+            for chIdx = 1:1, % TODO: based on channel
+
             end
         end
 %--------------------------------------------------------------------------

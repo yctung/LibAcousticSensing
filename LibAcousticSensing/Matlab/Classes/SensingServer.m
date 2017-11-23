@@ -32,8 +32,10 @@ classdef SensingServer < handle
         
         % Types of user-defined callback messages 
         CALLBACK_TYPE_ERROR     = -1;
+        CALLBACK_TYPE_INIT      = 0;
         CALLBACK_TYPE_DATA      = 1;
         CALLBACK_TYPE_USER      = 2;
+        
         
         SOCKET_TIME_OUT         = 60*60*24;
         
@@ -120,7 +122,7 @@ classdef SensingServer < handle
             
             % add some dummy data to init the userfig
             obj.userfig = -1; % init as a dummy figure handle
-            feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, 1:2); 
+            feval(obj.callback, obj, obj.CALLBACK_TYPE_INIT, 1:2); 
             % NOTE: the userfig must be initialized in the user-defined
             
             obj.audioAll = [];
