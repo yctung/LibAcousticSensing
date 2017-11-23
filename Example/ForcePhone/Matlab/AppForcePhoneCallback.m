@@ -20,110 +20,106 @@ function [] = AppForcePhoneCallback( obj, type, data )
     end
 
     % parse audio data
-    if type == obj.CALLBACK_TYPE_DATA,
+    if type == obj.CALLBACK_TYPE_INIT,
         LINE_CNTS = [2,2,4]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-        %hFig = findobj('Tag',FIG_CON_TAG);
-        if obj.userfig == -1, % need to create a new UI window
-            detectResultsEnd = 0;
-            detectResults = zeros(DETECT_RESULT_SIZE, 1);
-            detectResps = zeros(DETECT_RESULT_SIZE, 1);
-            
-            resultIdxSqueezeStart = 0;
-            resultIdxSqueezeEnd = 0;
-            
-            % very large buffer to save all results
-            detectResultsAll = zeros(20*60*10, 1);
-            detectResultsAllEnd = 0;
-            detectResultsAllSqueezeStartIdxs = [];
-            detectResultsAllSqueezeEndIdxs = [];
-            
-            createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
-        else
-            % process data
-            
-            % convlution of all data
-            cons = convn(data, PS.signalToCorrelate,'same');
-            detectChIdx = 1;
-            detectResultNow = squeeze(mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, detectChIdx)),1));
-            nowSize = length(detectResultNow);
-            detectResultsAll(detectResultsAllEnd+1:detectResultsAllEnd+nowSize) = detectResultNow;
-            detectResultsAllEnd = detectResultsAllEnd+nowSize;
-            
-            % line1: data 
-            check1 = findobj('Tag','check01');
-            if check1.Value == 1,
-                for chIdx = 1:2,
-                    line = findobj('Tag',sprintf('line01_%02d',chIdx));
-                    dataToPlot = data(:,end,chIdx);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
+        detectResultsEnd = 0;
+        detectResults = zeros(DETECT_RESULT_SIZE, 1);
+        detectResps = zeros(DETECT_RESULT_SIZE, 1);
+
+        resultIdxSqueezeStart = 0;
+        resultIdxSqueezeEnd = 0;
+
+        % very large buffer to save all results
+        detectResultsAll = zeros(20*60*10, 1);
+        detectResultsAllEnd = 0;
+        detectResultsAllSqueezeStartIdxs = [];
+        detectResultsAllSqueezeEndIdxs = [];
+
+        createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
+    elseif type == obj.CALLBACK_TYPE_DATA, % process data
+        
+        % convlution of all data
+        cons = convn(data, PS.signalToCorrelate,'same');
+        detectChIdx = 1;
+        detectResultNow = squeeze(mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, detectChIdx)),1));
+        nowSize = length(detectResultNow);
+        detectResultsAll(detectResultsAllEnd+1:detectResultsAllEnd+nowSize) = detectResultNow;
+        detectResultsAllEnd = detectResultsAllEnd+nowSize;
+
+        % line1: data 
+        check1 = findobj('Tag','check01');
+        if check1.Value == 1,
+            for chIdx = 1:2,
+                line = findobj('Tag',sprintf('line01_%02d',chIdx));
+                dataToPlot = data(:,end,chIdx);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+            end
+        end
+
+        % line2: con 
+        check2 = findobj('Tag','check02');
+        if check2.Value == 1,
+            for chIdx = 1:1,
+                line = findobj('Tag',sprintf('line02_%02d',chIdx));
+                %conToPlot = smooth(abs(cons(:,end,chIdx)),100);
+                conToPlot = abs(cons(:,end,chIdx)); % temporary disable smooth function
+                [~, temp] = max(conToPlot);
+                fprintf('peak idx = %d\n', temp);
+                set(line, 'yData', conToPlot); % only show the 1st ch
+            end
+        end
+
+        % line3: detect result
+        check3 = findobj('Tag','check03');
+        if check3.Value == 1,
+            line = findobj('Tag','line03_01');
+            if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
+                toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
+                detectResults(1:end-toShift) = detectResults(toShift+1:end);
+                detectResps(1:end-toShift) = detectResps(toShift+1:end);
+
+                detectResultsEnd = detectResultsEnd - nowSize;
+                resultIdxSqueezeStart = max(0, resultIdxSqueezeStart - toShift);
+                resultIdxSqueezeEnd = max(0, resultIdxSqueezeEnd - toShift);
+            end
+
+            detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
+            for endIdx = detectResultsEnd+nowSize:-1:detectResultsEnd+1,
+                SQUEEZE_DETECT_WIDTH = 40;
+                startIdx = endIdx - SQUEEZE_DETECT_WIDTH + 1;
+                if startIdx < 1 % not enough samples to detect squeeze
+                    break;
+                end
+                s = detectResults(startIdx:endIdx);
+                [~, peaks, status] = SqueezeTwiceDetect(s);
+                detectResps(endIdx) = status;
+
+                % return the result if need
+                if PS.detectEnabled,
+                    status
+                    obj.sendResult(status, 0.0);
                 end
             end
 
-            % line2: con 
-            check2 = findobj('Tag','check02');
-            if check2.Value == 1,
-                for chIdx = 1:1,
-                    line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    %conToPlot = smooth(abs(cons(:,end,chIdx)),100);
-                    conToPlot = abs(cons(:,end,chIdx)); % temporary disable smooth function
-                    [~, temp] = max(conToPlot);
-                    fprintf('peak idx = %d\n', temp);
-                    set(line, 'yData', conToPlot); % only show the 1st ch
-                end
-            end
 
-            % line3: detect result
-            check3 = findobj('Tag','check03');
-            if check3.Value == 1,
-                line = findobj('Tag','line03_01');
-                if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
-                    toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
-                    detectResults(1:end-toShift) = detectResults(toShift+1:end);
-                    detectResps(1:end-toShift) = detectResps(toShift+1:end);
-                    
-                    detectResultsEnd = detectResultsEnd - nowSize;
-                    resultIdxSqueezeStart = max(0, resultIdxSqueezeStart - toShift);
-                    resultIdxSqueezeEnd = max(0, resultIdxSqueezeEnd - toShift);
-                end
+            detectResultsEnd = detectResultsEnd+nowSize;
+            set(line, 'yData', detectResults); % only show the 1st ch
+            resultMin = min(detectResults);
+            resultMax = max(detectResults);
 
-                detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = detectResultNow;
-                for endIdx = detectResultsEnd+nowSize:-1:detectResultsEnd+1,
-                    SQUEEZE_DETECT_WIDTH = 40;
-                    startIdx = endIdx - SQUEEZE_DETECT_WIDTH + 1;
-                    if startIdx < 1 % not enough samples to detect squeeze
-                        break;
-                    end
-                    s = detectResults(startIdx:endIdx);
-                    [~, peaks, status] = SqueezeTwiceDetect(s);
-                    detectResps(endIdx) = status;
-                    
-                    % return the result if need
-                    if PS.detectEnabled,
-                        status
-                        obj.sendResult(status, 0.0);
-                    end
-                end
-                
-                
-                detectResultsEnd = detectResultsEnd+nowSize;
-                set(line, 'yData', detectResults); % only show the 1st ch
-                resultMin = min(detectResults);
-                resultMax = max(detectResults);
-                
-                % plot the resps code
-                line = findobj('Tag','line03_02');
-                yData = (detectResps == 3)*resultMax;
-                set(line, 'yData', yData);
-                
-                % plot vertical lines (for squeeze start and end)
-                
-                line = findobj('Tag','line03_03');
-                set(line, 'yData', [resultMin, resultMax]);
-                set(line, 'xData', [resultIdxSqueezeStart, resultIdxSqueezeStart]);
-                line = findobj('Tag','line03_04');
-                set(line, 'yData', [resultMin, resultMax]);
-                set(line, 'xData', [resultIdxSqueezeEnd, resultIdxSqueezeEnd]);
-            end
+            % plot the resps code
+            line = findobj('Tag','line03_02');
+            yData = (detectResps == 3)*resultMax;
+            set(line, 'yData', yData);
+
+            % plot vertical lines (for squeeze start and end)
+
+            line = findobj('Tag','line03_03');
+            set(line, 'yData', [resultMin, resultMax]);
+            set(line, 'xData', [resultIdxSqueezeStart, resultIdxSqueezeStart]);
+            line = findobj('Tag','line03_04');
+            set(line, 'yData', [resultMin, resultMax]);
+            set(line, 'xData', [resultIdxSqueezeEnd, resultIdxSqueezeEnd]);
         end
     elseif type == obj.CALLBACK_TYPE_USER,
         % parse user data

@@ -23,83 +23,79 @@ function [] = AppSvmTrainCallback( obj, type, data )
     CH_CNT_TO_SHOW = 1; % TOOD: set it based on device settings
     
     % parse audio data
-    if type == obj.CALLBACK_TYPE_DATA,
+    if type == obj.CALLBACK_TYPE_INIT,
         LINE_CNTS = [2,2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-        %hFig = findobj('Tag',FIG_CON_TAG);
-        if obj.userfig == -1, % need to create a new UI window
-            detectResultsEnd = 0;
-            detectResults = zeros(DETECT_RESULT_SIZE, 1);
-            recordedDataEnd = 0;
-            
-            createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
-        else
-            % save data to the recorded buffer if need
-            if isRecording,
-                % init recordedData if need
-                if recordedDataEnd == 0,
-                    recordedData = zeros(size(data,1), RECORDED_DATA_SIZE, size(data,2));
-                end
-                
-                recordedData(:,recordedDataEnd+1:recordedDataEnd+size(data,2),:) = data;
-                recordedDataEnd = recordedDataEnd+size(data,2);
-            end
-            % make prediction if need
-            if isPredicting,
-                [predictedIdx, predictedTag, predictedConfidence] = svm.predict(recordedData(:,recordedDataEnd,:));
-                nowSize = length(predictedTag);
-                textResult = findobj('Tag','textResult');
-                textResult.String = sprintf('Result: %s', predictedTag);
-            end
-            
-            % convlution of all data
-            %{
-            detectChIdx = 1;
-            dataTime = data(:,end,detectChIdx); 
-            FS = 48000;
-            DF = FS/length(dataTime);
-            freqs = -FS/2:DF:(FS/2-DF);
-            SMOOTH_FACTOR = 5;
-            dataFreq = smooth(fftshift(abs(fft(dataTime))), SMOOTH_FACTOR);
-            %}
-            features = svm.getFeatureFromData(data(:,end,:)); % only plot the latest data
-            
-            % return the result if need
-            if PS.detectEnabled,
-                %obj.jss.write()
-            end
-            
-            % line1: data 
-            check1 = findobj('Tag','check01');
-            if check1.Value == 1,
-                for chIdx = 1:CH_CNT_TO_SHOW,
-                    line = findobj('Tag',sprintf('line01_%02d',chIdx));
-                    dataToPlot = data(:,end,chIdx);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
-                end
+        detectResultsEnd = 0;
+        detectResults = zeros(DETECT_RESULT_SIZE, 1);
+        recordedDataEnd = 0;    
+        createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
+    elseif type == obj.CALLBACK_TYPE_DATA,
+        % save data to the recorded buffer if need
+        if isRecording,
+            % init recordedData if need
+            if recordedDataEnd == 0,
+                recordedData = zeros(size(data,1), RECORDED_DATA_SIZE, size(data,2));
             end
 
-            % line2: fft 
-            check2 = findobj('Tag','check02');
-            if check2.Value == 1,
-                line = findobj('Tag','line02_01');
-                set(line, 'yData', features); % only show the 1st ch
+            recordedData(:,recordedDataEnd+1:recordedDataEnd+size(data,2),:) = data;
+            recordedDataEnd = recordedDataEnd+size(data,2);
+        end
+        % make prediction if need
+        if isPredicting,
+            [predictedIdx, predictedTag, predictedConfidence] = svm.predict(recordedData(:,recordedDataEnd,:));
+            nowSize = length(predictedTag);
+            textResult = findobj('Tag','textResult');
+            textResult.String = sprintf('Result: %s', predictedTag);
+        end
+
+        % convlution of all data
+        %{
+        detectChIdx = 1;
+        dataTime = data(:,end,detectChIdx); 
+        FS = 48000;
+        DF = FS/length(dataTime);
+        freqs = -FS/2:DF:(FS/2-DF);
+        SMOOTH_FACTOR = 5;
+        dataFreq = smooth(fftshift(abs(fft(dataTime))), SMOOTH_FACTOR);
+        %}
+        features = svm.getFeatureFromData(data(:,end,:)); % only plot the latest data
+
+        % return the result if need
+        if PS.detectEnabled,
+            %obj.jss.write()
+        end
+
+        % line1: data 
+        check1 = findobj('Tag','check01');
+        if check1.Value == 1,
+            for chIdx = 1:CH_CNT_TO_SHOW,
+                line = findobj('Tag',sprintf('line01_%02d',chIdx));
+                dataToPlot = data(:,end,chIdx);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+            end
+        end
+
+        % line2: fft 
+        check2 = findobj('Tag','check02');
+        if check2.Value == 1,
+            line = findobj('Tag','line02_01');
+            set(line, 'yData', features); % only show the 1st ch
+        end
+
+        % line3: detect result
+        check3 = findobj('Tag','check03');
+        if check3.Value == 1 && isPredicting == 1
+            line = findobj('Tag','line03_01');
+            if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
+                toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
+                detectResults(1:end-toShift) = detectResults(toShift+1:end);
+                detectResultsEnd = detectResultsEnd - nowSize;
             end
 
-            % line3: detect result
-            check3 = findobj('Tag','check03');
-            if check3.Value == 1 && isPredicting == 1
-                line = findobj('Tag','line03_01');
-                if detectResultsEnd+nowSize > DETECT_RESULT_SIZE, % need to shift
-                    toShift = detectResultsEnd+nowSize - DETECT_RESULT_SIZE;
-                    detectResults(1:end-toShift) = detectResults(toShift+1:end);
-                    detectResultsEnd = detectResultsEnd - nowSize;
-                end
-
-                % update result
-                detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = predictedIdx;
-                detectResultsEnd = detectResultsEnd+nowSize;
-                set(line, 'yData', detectResults); % only show the 1st ch
-            end
+            % update result
+            detectResults(detectResultsEnd+1:detectResultsEnd+nowSize) = predictedIdx;
+            detectResultsEnd = detectResultsEnd+nowSize;
+            set(line, 'yData', detectResults); % only show the 1st ch
         end
     elseif type == obj.CALLBACK_TYPE_USER,
         % parse user data

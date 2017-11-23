@@ -20,76 +20,71 @@ function [] = ObjectDetectorCallback( server, type, data )
         return;
     end
 
-    % parse audio data
-    if type == server.CALLBACK_TYPE_DATA,
+    if type == server.CALLBACK_TYPE_INIT,
 %--------------------------------------------------------------------------
 % 1. init GUI
 %--------------------------------------------------------------------------
-        if server.userfig == -1, % need to create a new UI window
-            % very large buffer to save all results
-            
-            DOWNSAMPLE_FACTOR = 4;
-            tvgSetting.SOUND_SPEED = 340;
-            tvgSetting.TVG_ALPHA = 0.65 % for note 4
-            tvgSetting.TVG_BETA = 0;
-            tvgSetting.FS = PS.FS/DOWNSAMPLE_FACTOR;
-            
-            oriSize = PS.detectRangeEnd - PS.detectRangeStart + 1;
-            dsSize = floor(oriSize/DOWNSAMPLE_FACTOR);
-            
-            dsXMeters = LibSamplesToMeters(1:dsSize, 340, PS.FS/DOWNSAMPLE_FACTOR);
-            
-            dsDetectsAll = zeros(dsSize, 20*60*10, 2);
-            dsDetectsAllEnd = 0;
-            userStarts = zeros(500, 1);
-            userEnds = zeros(500, 1);
-            userStartsEnd = 0;
-            userEndsEnd = 0;
-            
-            
-            needToUpdateXLine2 = 1;
-            LINE_CNTS = [2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-            createUI(server, USER_FIG_TAG, data, LINE_CNTS);
+        DOWNSAMPLE_FACTOR = 4;
+        tvgSetting.SOUND_SPEED = 340;
+        tvgSetting.TVG_ALPHA = 0.65 % for note 4
+        tvgSetting.TVG_BETA = 0;
+        tvgSetting.FS = PS.FS/DOWNSAMPLE_FACTOR;
+
+        oriSize = PS.detectRangeEnd - PS.detectRangeStart + 1;
+        dsSize = floor(oriSize/DOWNSAMPLE_FACTOR);
+
+        dsXMeters = LibSamplesToMeters(1:dsSize, 340, PS.FS/DOWNSAMPLE_FACTOR);
+
+        dsDetectsAll = zeros(dsSize, 20*60*10, 2);
+        dsDetectsAllEnd = 0;
+        userStarts = zeros(500, 1);
+        userEnds = zeros(500, 1);
+        userStartsEnd = 0;
+        userEndsEnd = 0;
+
+
+        needToUpdateXLine2 = 1;
+        LINE_CNTS = [2,2]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
+        createUI(server, USER_FIG_TAG, data, LINE_CNTS);
+    elseif type == server.CALLBACK_TYPE_DATA,            
 %--------------------------------------------------------------------------
 % 2. data processing and update figures
 %--------------------------------------------------------------------------
-        else
-            % find detected objects by matched filter
-            % where the PS.signalToCorrelate is the reverse of sensing signal
-            % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
-            cons = convn(data, PS.signalToCorrelate, 'same');
-            detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
-            traceCnt = size(detects, 2);
-            chCnt = size(detects, 3);
-            dsDetects = zeros(dsSize, traceCnt, chCnt);
-            for chIdx = 1:chCnt
-                dsDetects(:,:,chIdx) = imresize(detects(:,:,chIdx), [dsSize, traceCnt], 'Bilinear'); % subsampled results
-            end
-            dsDetectsAll(:, dsDetectsAllEnd+1:dsDetectsAllEnd+traceCnt, 1:chCnt) = dsDetects;
-            dsDetectsAllEnd = dsDetectsAllEnd + traceCnt;
-            
-            % update line1: data 
-            check1 = findobj('Tag','check01');
-            if check1.Value == 1,
-                for chIdx = 1:1,
-                    line = findobj('Tag',sprintf('line01_%02d',chIdx));
-                    dataToPlot = data(:,end,chIdx);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
-                end
-            end
+        % find detected objects by matched filter
+        % where the PS.signalToCorrelate is the reverse of sensing signal
+        % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
+        cons = convn(data, PS.signalToCorrelate, 'same');
+        detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
+        traceCnt = size(detects, 2);
+        chCnt = size(detects, 3);
+        dsDetects = zeros(dsSize, traceCnt, chCnt);
+        for chIdx = 1:chCnt
+            dsDetects(:,:,chIdx) = imresize(detects(:,:,chIdx), [dsSize, traceCnt], 'Bilinear'); % subsampled results
+        end
+        dsDetectsAll(:, dsDetectsAllEnd+1:dsDetectsAllEnd+traceCnt, 1:chCnt) = dsDetects;
+        dsDetectsAllEnd = dsDetectsAllEnd + traceCnt;
 
-            % update line2: detected peaks
-            check2 = findobj('Tag','check02');
-            if check2.Value == 1,
-                for chIdx = 1:1, % TODO: based on channel
-                    line = findobj('Tag',sprintf('line02_%02d',chIdx));
-                    dataToPlot = LibTimeVaryingGainCorrect(dsDetects(:,end, chIdx), tvgSetting);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
-                    if needToUpdateXLine2
-                        set(line, 'xData', dsXMeters);
-                        if chIdx == 2
-                            needToUpdateXLine2 = 0;
-                        end
+        % update line1: data 
+        check1 = findobj('Tag','check01');
+        if check1.Value == 1,
+            for chIdx = 1:1,
+                line = findobj('Tag',sprintf('line01_%02d',chIdx));
+                dataToPlot = data(:,end,chIdx);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+            end
+        end
+
+        % update line2: detected peaks
+        check2 = findobj('Tag','check02');
+        if check2.Value == 1,
+            for chIdx = 1:1, % TODO: based on channel
+                line = findobj('Tag',sprintf('line02_%02d',chIdx));
+                dataToPlot = LibTimeVaryingGainCorrect(dsDetects(:,end, chIdx), tvgSetting);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+                if needToUpdateXLine2
+                    set(line, 'xData', dsXMeters);
+                    if chIdx == 2
+                        needToUpdateXLine2 = 0;
                     end
                 end
             end

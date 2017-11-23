@@ -22,73 +22,70 @@ function [] = AppDopplerDetectorCallback( obj, type, data )
     CH_CNT_TO_SHOW = 1; % TOOD: set it based on device settings
     
     % parse audio data
-    if type == obj.CALLBACK_TYPE_DATA,
+    if type == obj.CALLBACK_TYPE_INIT,
         LINE_CNTS = [2,2,3]; % size of it is the number of figure axes, and the number in it is the number of lines per axe
-        %hFig = findobj('Tag',FIG_CON_TAG);
-        if obj.userfig == -1, % need to create a new UI window
-            dataBuf = zeros(DATA_BUF_SIZE, 1);
-            peakBuf = zeros(PEAK_BUF_SIZE, 1);
-            peakRef = 0;
-            createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
-        else
-            % process data
-            freqMaxIdxs = zeros(dataCnt, 1);
-            for i = 1:dataCnt
-                % a. update data buf
-                debugChIdx = 1; % TODO: update to show both
-                dataBuf = [dataBuf(dataSize+1:end); data(:,i,debugChIdx)];
-                
-                % b. start doing fft to find freq shift
-                dataRef = dataBuf(end-dataSize*PS.combineFactor+1:end);
-                dataRef = downsample(dataRef, PS.downsampleFactor); % TODO: use other phase to increase stability
-                DF = PS.FS/length(dataRef);
-                dataFreq = abs(fft(dataRef));
-                dataFreq = dataFreq(1:ceil(length(dataFreq)/2)); % ignore negative freqs
-                [~, freqMaxIdxs(i)] = max(dataFreq(PS.detectRangeStart:PS.detectRangeEnd));
-                
-                peakBuf = [peakBuf(length(freqMaxIdxs)+1:end); freqMaxIdxs(i)];
-            end
-            
-            % line1: data 
-            check1 = findobj('Tag','check01');
-            if check1.Value == 1,
-                for chIdx = 1:CH_CNT_TO_SHOW,
-                    line = findobj('Tag',sprintf('line01_%02d',chIdx));
-                    dataToPlot = data(:,end,chIdx);
-                    set(line, 'yData', dataToPlot); % only show the 1st ch
-                end
-            end
+        dataBuf = zeros(DATA_BUF_SIZE, 1);
+        peakBuf = zeros(PEAK_BUF_SIZE, 1);
+        peakRef = 0;
+        createUI(obj, USER_FIG_TAG, data, LINE_CNTS);
+    elseif type == obj.CALLBACK_TYPE_DATA,
+        % process data
+        freqMaxIdxs = zeros(dataCnt, 1);
+        for i = 1:dataCnt
+            % a. update data buf
+            debugChIdx = 1; % TODO: update to show both
+            dataBuf = [dataBuf(dataSize+1:end); data(:,i,debugChIdx)];
 
-            % line2: freq
-            check2 = findobj('Tag','check02');
-            if check2.Value == 1,
-                line = findobj('Tag','line02_01');
-                set(line, 'yData', dataFreq(PS.detectRangeStart:PS.detectRangeEnd)); % only show the 1st ch
-            end
+            % b. start doing fft to find freq shift
+            dataRef = dataBuf(end-dataSize*PS.combineFactor+1:end);
+            dataRef = downsample(dataRef, PS.downsampleFactor); % TODO: use other phase to increase stability
+            DF = PS.FS/length(dataRef);
+            dataFreq = abs(fft(dataRef));
+            dataFreq = dataFreq(1:ceil(length(dataFreq)/2)); % ignore negative freqs
+            [~, freqMaxIdxs(i)] = max(dataFreq(PS.detectRangeStart:PS.detectRangeEnd));
 
-            % line3: detect result
-            check3 = findobj('Tag','check03');
-            [dfs, dvs, ads] = getResultBasedOnFreqDiffIdx(peakBuf-peakRef);
-            if check3.Value == 1,
-                line = findobj('Tag','line03_01');
-                set(line, 'yData', peakBuf); % only show the 1st ch
-                
-                line = findobj('Tag','line03_02');
-                set(line, 'yData', [peakRef, peakRef]);
-                set(line, 'xData', [0, length(peakBuf)-1]);
-                line = findobj('Tag','line03_03');
-                set(line, 'yData', ads);
-            end
-            
-            resultText = findobj('Tag','textResultFreq');
-            resultText.String = sprintf('Freq:    %dHz', dfs(end));
-            
-            resultText = findobj('Tag','textResultVel');
-            resultText.String = sprintf('Velocity:%dcm/s', round(dvs(end)));
-            
-            resultText = findobj('Tag','textResultDist');
-            resultText.String = sprintf('Distance:%dcm', round(ads(end)));
+            peakBuf = [peakBuf(length(freqMaxIdxs)+1:end); freqMaxIdxs(i)];
         end
+
+        % line1: data 
+        check1 = findobj('Tag','check01');
+        if check1.Value == 1,
+            for chIdx = 1:CH_CNT_TO_SHOW,
+                line = findobj('Tag',sprintf('line01_%02d',chIdx));
+                dataToPlot = data(:,end,chIdx);
+                set(line, 'yData', dataToPlot); % only show the 1st ch
+            end
+        end
+
+        % line2: freq
+        check2 = findobj('Tag','check02');
+        if check2.Value == 1,
+            line = findobj('Tag','line02_01');
+            set(line, 'yData', dataFreq(PS.detectRangeStart:PS.detectRangeEnd)); % only show the 1st ch
+        end
+
+        % line3: detect result
+        check3 = findobj('Tag','check03');
+        [dfs, dvs, ads] = getResultBasedOnFreqDiffIdx(peakBuf-peakRef);
+        if check3.Value == 1,
+            line = findobj('Tag','line03_01');
+            set(line, 'yData', peakBuf); % only show the 1st ch
+
+            line = findobj('Tag','line03_02');
+            set(line, 'yData', [peakRef, peakRef]);
+            set(line, 'xData', [0, length(peakBuf)-1]);
+            line = findobj('Tag','line03_03');
+            set(line, 'yData', ads);
+        end
+
+        resultText = findobj('Tag','textResultFreq');
+        resultText.String = sprintf('Freq:    %dHz', dfs(end));
+
+        resultText = findobj('Tag','textResultVel');
+        resultText.String = sprintf('Velocity:%dcm/s', round(dvs(end)));
+
+        resultText = findobj('Tag','textResultDist');
+        resultText.String = sprintf('Distance:%dcm', round(ads(end)));
     elseif type == obj.CALLBACK_TYPE_USER,
         % parse user data
         % must be 'pse' in this app

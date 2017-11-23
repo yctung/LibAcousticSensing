@@ -3,26 +3,24 @@ function [] = FreqRespAnalysisCallback( obj, type, data )
     global dataCellBufEnd;
     global PS;
     
-    if type == obj.CALLBACK_TYPE_DATA,
-        if obj.userfig == -1, % need to create a new UI window
-            dataCellBuf = {};
-            dataCellBufEnd = 0;
-            createUI(obj);
-        else
-            dataSize = size(data);
-            for traceIdx = 1:size(data,2)
-                dataCellBuf{ dataCellBufEnd + 1 } = squeeze(data(:,traceIdx,:));
-                dataCellBufEnd = dataCellBufEnd + 1;
-                
-                dataFreq = abs(fft(dataCellBuf{dataCellBufEnd}));
-                dataFreq = dataFreq(1:floor(size(dataFreq, 1) / 2),:);
-                for chIdx = 1:size(data, 3)    
-                    resp = log10(smooth(dataFreq(:, chIdx), 30));
-                    freqs = (1:length(resp)) ./length(resp) .* (PS.FS/2);
-                    line = findobj('Tag', sprintf('line%02d_%02d', chIdx, dataCellBufEnd));
-                    set(line, 'yData', resp); % only show the 1st ch
-                    set(line, 'xData', freqs);
-                end
+    if type == obj.CALLBACK_TYPE_INIT,
+        dataCellBuf = {};
+        dataCellBufEnd = 0;
+        createUI(obj);
+    elseif type == obj.CALLBACK_TYPE_DATA,
+        dataSize = size(data);
+        for traceIdx = 1:size(data,2)
+            dataCellBuf{ dataCellBufEnd + 1 } = squeeze(data(:,traceIdx,:));
+            dataCellBufEnd = dataCellBufEnd + 1;
+
+            dataFreq = abs(fft(dataCellBuf{dataCellBufEnd}));
+            dataFreq = dataFreq(1:floor(size(dataFreq, 1) / 2),:);
+            for chIdx = 1:size(data, 3)    
+                resp = log10(smooth(dataFreq(:, chIdx), 30));
+                freqs = (1:length(resp)) ./length(resp) .* (PS.FS/2);
+                line = findobj('Tag', sprintf('line%02d_%02d', chIdx, dataCellBufEnd));
+                set(line, 'yData', resp); % only show the 1st ch
+                set(line, 'xData', freqs);
             end
         end
     end
