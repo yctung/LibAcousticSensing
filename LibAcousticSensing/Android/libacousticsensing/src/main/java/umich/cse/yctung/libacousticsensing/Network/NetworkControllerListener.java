@@ -12,7 +12,7 @@ public interface NetworkControllerListener {
     void serverAskStopSensing();
     void audioReceivedFromServer(AudioSource audioSource);
     void audioDelayFromServer (int delayBySamples);
-    void resultReceviedFromServer(int result);
+    void resultReceviedFromServer(int audioSampleCnt, int result);
     void userStudyEnd();
     int consumeReceivedData(double dataReceived);
     void updateDebugStatus(boolean status, String stringToShow);

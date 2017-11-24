@@ -16,6 +16,10 @@ import android.widget.Spinner;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayDeque;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
 import umich.cse.yctung.libacousticsensing.Audio.AudioSource;
@@ -59,6 +63,9 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     private Context context;
     private boolean isSensing;
     private boolean needToStartSensingWhenReady;
+    private LatencyAnalyzer la;
+    private boolean needToAnalyzeLatency; // enable to save latency time stamps
+
     public AcousticSensingController(AcousticSensingControllerListener listener, Context context) {
         Constant.initGlobalConstant();
         Utils.requestPermissionsIfNeed(context);
@@ -71,6 +78,10 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         this.context = context;
         nc = new NetworkController(this);
         jc = new JNIController(Constant.ndkTraceFolderName);
+
+        // TODO: let remote server decide if we need to enable this (might have additonal overhead)
+        needToAnalyzeLatency = true;
+        la = new LatencyAnalyzer();
     }
 
     private boolean checkIfReadyToInit() {
@@ -172,6 +183,10 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         isSensing = false;
         listener.sensingEnd();
         ac = null; // TODO: keep audio controller alive to save init delay
+
+        if (needToAnalyzeLatency) {
+            String latencyAnalyzeResultString = la.generateMatchedString();
+        }
     }
 
     // funtion to show the customized dialog for initailzation
@@ -209,8 +224,6 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
                     public void onClick(DialogInterface dialog, int id) {
                     }
                 });
-
-
 
         return builder.create();
     }
@@ -289,7 +302,11 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     @Override
-    public void resultReceviedFromServer(int result) {
+    public void resultReceviedFromServer(int audioSampleCnt, int result) {
+        if (needToAnalyzeLatency) {
+            la.addResultStamp(audioSampleCnt);
+        }
+
         listener.updateResult(result, 0.0f);
     }
 
@@ -335,6 +352,10 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
 
     @Override
     public void audioRecorded(byte[] data, long audioTotalRecordedSampleCnt) {
+        if (needToAnalyzeLatency) {
+            la.addAudioStamp((int) audioTotalRecordedSampleCnt);
+        }
+
         if (setting.getParseMode() == setting.PARSE_MODE_REMOTE && nc.isConnected()) {
             nc.sendDataRequest(data);
         } else if (setting.getParseMode() == setting.PARSE_MDOE_STANDALONE && jc.isReadyToSense()) {
@@ -350,4 +371,63 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             }
         }
     }
+//=================================================================================================
+// Latency analysis
+//=================================================================================================
+    private class LatencyAnalyzer {
+        private class LatencyStamp {
+            int sampleCnt;
+            long time; // ms
+            public LatencyStamp(int sampleCnt, long time) {
+                this.sampleCnt = sampleCnt;
+                this.time = time;
+            }
+        }
+        Queue<LatencyStamp> audioStamps; // time stamps when the audio buffer is read
+        Queue<LatencyStamp> resultStamps; // time stamps when the sensing results are updated
+
+        public LatencyAnalyzer() {
+            audioStamps = new LinkedList();
+            resultStamps = new LinkedList();
+        }
+
+        public void addAudioStamp(int sampleCnt) {
+            addStamp(sampleCnt, audioStamps);
+        }
+
+        public void addResultStamp(int sampleCnt) {
+            addStamp(sampleCnt, resultStamps);
+        }
+
+        public String generateMatchedString() {
+            String ret = "";
+            LatencyStamp audioStamp;
+            LatencyStamp resultStamp;
+            while(!audioStamps.isEmpty() && !resultStamps.isEmpty()) {
+                audioStamp = audioStamps.peek();
+                resultStamp = resultStamps.peek();
+
+                if (audioStamp.sampleCnt == resultStamp.sampleCnt) { // find a match
+                    long latency = resultStamp.time - audioStamp.time;
+                    Log.d(LOG_TAG, "Find a matched latency record: " + latency + "(ms)");
+
+                    audioStamps.poll();
+                    resultStamps.poll();
+                } else if (audioStamp.sampleCnt < resultStamp.sampleCnt) {
+                    audioStamps.poll();
+                } else {
+                    resultStamps.poll();
+                }
+
+            }
+
+            return ret;
+        }
+
+        private void addStamp(int sampleCnt, Queue<LatencyStamp>target) {
+            long now = System.currentTimeMillis();
+            target.add(new LatencyStamp(sampleCnt, now));
+        }
+    }
+
 }

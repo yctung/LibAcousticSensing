@@ -305,7 +305,7 @@ classdef SensingServer < handle
                     end
 
                     obj.audioAll(obj.audioAllEnd+1:obj.audioAllEnd+size(audioNow,1), :) = audioNow;
-                    obj.audioAllEnd = obj.audioAllEnd+size(audioNow,1);
+                    obj.audioAllEnd = obj.audioAllEnd + size(audioNow,1);
                 end
                 
                 %fprintf('    get a audio data with size = %d\n', size(audioNow,1));
@@ -455,6 +455,7 @@ classdef SensingServer < handle
         
         function sendResult(obj, argInt, argFloat)
             obj.jss.writeByte(int8(obj.REACTION_SET_RESULT));
+            obj.jss.writeInt(int32(obj.audioAllEnd)); % time stamp for the result
             obj.jss.writeInt(int32(argInt));
             CHECK = -1;
             obj.jss.writeByte(int8(CHECK));
