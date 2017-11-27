@@ -8,11 +8,13 @@
 #include "uib_app_manager.h"
 #include "uib_views.h"
 #include "uib_views_inc.h"
+#include "libas.h"
 
 typedef struct _uib_view_main_control_context {
 	/* add your variables here */
 
 } uib_view_main_control_context;
+
 
 /**
  * @brief The user clicked the hoversel button and popped up the sel.
@@ -37,7 +39,7 @@ void view_main_hoversel_mode_onclicked(uib_view_main_view_context *vc, Evas_Obje
  *
  */
 void view_main_entry_server_ip_onclicked(uib_view_main_view_context *vc, Evas_Object *obj, void *event_info) {
-	elm_entry_input_panel_layout_set(obj,ELM_INPUT_PANEL_LAYOUT_NUMBERONLY);
+	elm_entry_input_panel_layout_set(obj, ELM_INPUT_PANEL_LAYOUT_IP);
 }
 
 /**
@@ -53,6 +55,63 @@ void view_main_entry_server_port_onclicked(uib_view_main_view_context *vc, Evas_
 	elm_entry_input_panel_layout_set(obj,ELM_INPUT_PANEL_LAYOUT_NUMBERONLY);
 }
 
+
+void _server_ip_selected_cb(void *data, Evas_Object *obj, void *event_info) {
+	uib_view_main_view_context *vc = (uib_view_main_view_context *) data;
+	const char* selected_ip = elm_object_item_part_text_get(event_info, NULL);
+	elm_object_text_set(vc->entry_server_ip, selected_ip);
+    elm_object_text_set(vc->hoversel_server_ip, selected_ip);
+
+}
+
+void _server_port_selected_cb(void *data, Evas_Object *obj, void *event_info) {
+	uib_view_main_view_context *vc = (uib_view_main_view_context *) data;
+	const char* selected_port = elm_object_item_part_text_get(event_info, NULL);
+	elm_object_text_set(vc->entry_server_port, selected_port);
+	elm_object_text_set(vc->hoversel_server_port, selected_port);
+}
+
+void _populate_server_ips(uib_view_main_view_context *vc) {
+	static const char *server_ips[]={ "10.0.0.12", "10.0.0.13", NULL };
+	size_t i=0;
+	while(server_ips[i]) {
+        elm_hoversel_item_add(vc->hoversel_server_ip, /* Hoversel object */
+							   server_ips[i], /* Item label */
+							   NULL, /* Icon file */
+							   ELM_ICON_NONE, /* Icon type */
+							   _server_ip_selected_cb, /* Clicked callback for the item */
+							   vc); /* Callback data */
+      if (i == 0) {
+    	  elm_object_text_set(vc->entry_server_ip, server_ips[i]);
+    	  elm_object_text_set(vc->hoversel_server_ip, server_ips[i]);
+      }
+	  i++;
+	};
+}
+
+void _populate_server_ports(uib_view_main_view_context *vc) {
+	static const char *server_ports[]={ "50005", "50006", NULL };
+	size_t i=0;
+	while(server_ports[i]) {
+      elm_hoversel_item_add(vc->hoversel_server_port, /* Hoversel object */
+    		  	  	  	  	   server_ports[i], /* Item label */
+							   NULL, /* Icon file */
+							   ELM_ICON_NONE, /* Icon type */
+							   _server_port_selected_cb, /* Clicked callback for the item */
+							   vc); /* Callback data */
+      if (i == 0) {
+    	  elm_object_text_set(vc->entry_server_port, server_ports[i]);
+    	  elm_object_text_set(vc->hoversel_server_port, server_ports[i]);
+      }
+	  i++;
+	};
+}
+
+void view_main_onuib_view_create(uib_view_main_view_context *vc, Evas_Object *obj, void *event_info) {
+  _populate_server_ips(vc);
+  _populate_server_ports(vc);
+}
+
 /**
  * @brief the user clicked the button (press/release).
  *
@@ -62,7 +121,22 @@ void view_main_entry_server_port_onclicked(uib_view_main_view_context *vc, Evas_
  * 		event_info is NULL
  *
  */
-void view_main_button_connect_init_onclicked(uib_view_main_view_context *vc, Evas_Object *obj, void *event_info) {
+void view_main_button_exit_onclicked(uib_view_main_view_context *vc, Evas_Object *obj, void *event_info) {
+	ui_app_exit();
+}
 
+/**
+ * @brief the user clicked the button (press/release).
+ *
+ * @param vc It is context of the view that this event occurred on. It has all of UI components that this view consist of.
+ * @param obj It is UI component itself that emits the event signal.
+ * @param event_info
+ * 		event_info is NULL
+ *
+ */
+void view_main_button_connect_onclicked(uib_view_main_view_context *vc, Evas_Object *obj, void *event_info) {
+	const char* server_ip = elm_object_item_part_text_get(vc->entry_server_ip, NULL);
+	const char* server_port = elm_object_item_part_text_get(vc->entry_server_port, NULL);
+	libas_init_as_remote_mode(server_ip, server_port);
 }
 

@@ -11,10 +11,12 @@
 
 
 /* event handler declarations */
+void view_main_onuib_view_create(uib_view_main_view_context*, Evas_Object*, void*);
 void view_main_entry_server_ip_onclicked(uib_view_main_view_context*, Evas_Object*, void*);
 void view_main_entry_server_port_onclicked(uib_view_main_view_context*, Evas_Object*, void*);
 void view_main_hoversel_mode_onclicked(uib_view_main_view_context*, Evas_Object*, void*);
-void view_main_button_connect_init_onclicked(uib_view_main_view_context*, Evas_Object*, void*);
+void view_main_button_connect_onclicked(uib_view_main_view_context*, Evas_Object*, void*);
+void view_main_button_exit_onclicked(uib_view_main_view_context*, Evas_Object*, void*);
 
 uib_view_context* uib_view_view_main_create(Evas_Object* parent, void* create_callback_param) {
 	uib_view_main_view_context* vc = calloc(1, sizeof(uib_view_main_view_context));
@@ -30,10 +32,12 @@ uib_view_context* uib_view_view_main_create(Evas_Object* parent, void* create_ca
 	uib_views_get_instance()->set_targeted_view((uib_view_context*)vc);
 
 	//bind event handler
+	evas_object_smart_callback_add(vc->root_container, "uib,view,create", (Evas_Smart_Cb)view_main_onuib_view_create, vc);
 	evas_object_smart_callback_add(vc->entry_server_ip, "clicked", (Evas_Smart_Cb)view_main_entry_server_ip_onclicked, vc);
 	evas_object_smart_callback_add(vc->entry_server_port, "clicked", (Evas_Smart_Cb)view_main_entry_server_port_onclicked, vc);
 	evas_object_smart_callback_add(vc->hoversel_mode, "clicked", (Evas_Smart_Cb)view_main_hoversel_mode_onclicked, vc);
-	evas_object_smart_callback_add(vc->button_connect_init, "clicked", (Evas_Smart_Cb)view_main_button_connect_init_onclicked, vc);
+	evas_object_smart_callback_add(vc->button_connect, "clicked", (Evas_Smart_Cb)view_main_button_connect_onclicked, vc);
+	evas_object_smart_callback_add(vc->button_exit, "clicked", (Evas_Smart_Cb)view_main_button_exit_onclicked, vc);
 
 
 	evas_object_data_set(vc->root_container, KEY_VIEW_CONTEXT, vc);
@@ -149,15 +153,43 @@ void uib_view_main_config_HD_portrait() {
 			elm_object_style_set(vc->button_reset,"default");
 			evas_object_show(vc->button_reset);
 		}
-		if (!vc->button_connect_init) {
-			vc->button_connect_init = elm_button_add(vc->grid_main);
+		if (!vc->button_connect) {
+			vc->button_connect = elm_button_add(vc->grid_main);
 		}
-		if (vc->button_connect_init) {
-			evas_object_size_hint_align_set(vc->button_connect_init, -1.0, -1.0);			evas_object_size_hint_weight_set(vc->button_connect_init, 1.0, 1.0);			elm_object_text_set(vc->button_connect_init,_UIB_LOCALE("Connect/Init"));
-			elm_object_style_set(vc->button_connect_init,"default");
-			evas_object_show(vc->button_connect_init);
+		if (vc->button_connect) {
+			evas_object_size_hint_align_set(vc->button_connect, -1.0, -1.0);			evas_object_size_hint_weight_set(vc->button_connect, 1.0, 1.0);			elm_object_text_set(vc->button_connect,_UIB_LOCALE("Connect"));
+			elm_object_style_set(vc->button_connect,"default");
+			evas_object_show(vc->button_connect);
 		}
-		elm_grid_pack(vc->grid_main, vc->entry_server_ip, 270, 161, 407, 48);		elm_grid_pack(vc->grid_main, vc->label1, 44, 65, 197, 24);		elm_grid_pack(vc->grid_main, vc->label_server_ip, 93, 175, 139, 24);		elm_grid_pack(vc->grid_main, vc->label_server_port, 87, 248, 181, 36);		elm_grid_pack(vc->grid_main, vc->entry_server_port, 291, 237, 402, 48);		elm_grid_pack(vc->grid_main, vc->button_settings, 96, 385, 286, 49);		elm_grid_pack(vc->grid_main, vc->label_mode, 117, 115, 139, 24);		elm_grid_pack(vc->grid_main, vc->hoversel_mode, 275, 105, 556, 46);		elm_grid_pack(vc->grid_main, vc->button_reset, 105, 452, 419, 48);		elm_grid_pack(vc->grid_main, vc->button_connect_init, 101, 321, 453, 49);		evas_object_show(vc->grid_main);
+		if (!vc->hoversel_server_ip) {
+			vc->hoversel_server_ip= elm_hoversel_add(vc->grid_main);
+		}
+		if(vc->hoversel_server_ip) {
+			Evas_Object *win = elm_object_top_widget_get(vc->grid_main);
+			elm_hoversel_hover_parent_set(vc->hoversel_server_ip,win);
+			evas_object_size_hint_align_set(vc->hoversel_server_ip, -1.0, -1.0);			evas_object_size_hint_weight_set(vc->hoversel_server_ip, 1.0, 1.0);			elm_object_text_set(vc->hoversel_server_ip,_UIB_LOCALE("Server IPs"));
+			elm_object_disabled_set(vc->hoversel_server_ip, EINA_FALSE);
+			evas_object_show(vc->hoversel_server_ip);
+		}
+		if (!vc->hoversel_server_port) {
+			vc->hoversel_server_port= elm_hoversel_add(vc->grid_main);
+		}
+		if(vc->hoversel_server_port) {
+			Evas_Object *win = elm_object_top_widget_get(vc->grid_main);
+			elm_hoversel_hover_parent_set(vc->hoversel_server_port,win);
+			evas_object_size_hint_align_set(vc->hoversel_server_port, -1.0, -1.0);			evas_object_size_hint_weight_set(vc->hoversel_server_port, 1.0, 1.0);			elm_object_text_set(vc->hoversel_server_port,_UIB_LOCALE("Server ports"));
+			elm_object_disabled_set(vc->hoversel_server_port, EINA_FALSE);
+			evas_object_show(vc->hoversel_server_port);
+		}
+		if (!vc->button_exit) {
+			vc->button_exit = elm_button_add(vc->grid_main);
+		}
+		if (vc->button_exit) {
+			evas_object_size_hint_align_set(vc->button_exit, -1.0, -1.0);			evas_object_size_hint_weight_set(vc->button_exit, 1.0, 1.0);			elm_object_text_set(vc->button_exit,_UIB_LOCALE("Exit"));
+			elm_object_style_set(vc->button_exit,"default");
+			evas_object_show(vc->button_exit);
+		}
+		elm_grid_pack(vc->grid_main, vc->entry_server_ip, 269, 185, 407, 48);		elm_grid_pack(vc->grid_main, vc->label1, 44, 65, 197, 24);		elm_grid_pack(vc->grid_main, vc->label_server_ip, 85, 199, 139, 24);		elm_grid_pack(vc->grid_main, vc->label_server_port, 84, 372, 181, 36);		elm_grid_pack(vc->grid_main, vc->entry_server_port, 278, 362, 402, 48);		elm_grid_pack(vc->grid_main, vc->button_settings, 123, 784, 286, 49);		elm_grid_pack(vc->grid_main, vc->label_mode, 89, 114, 139, 24);		elm_grid_pack(vc->grid_main, vc->hoversel_mode, 275, 105, 556, 46);		elm_grid_pack(vc->grid_main, vc->button_reset, 510, 784, 419, 48);		elm_grid_pack(vc->grid_main, vc->button_connect, 280, 552, 471, 74);		elm_grid_pack(vc->grid_main, vc->hoversel_server_ip, 274, 268, 557, 52);		elm_grid_pack(vc->grid_main, vc->hoversel_server_port, 278, 462, 561, 57);		elm_grid_pack(vc->grid_main, vc->button_exit, 406, 891, 210, 49);		evas_object_show(vc->grid_main);
 	}
 }
 

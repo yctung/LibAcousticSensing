@@ -6,6 +6,11 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>org.tizen.nativecore.apichecker.apicheckerbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.tizen.efluibuilder.builder</name>
 			<arguments>
 			</arguments>
@@ -28,6 +33,7 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.tizen.efluibuilder.nature</nature>
+		<nature>org.tizen.nativecore.apichecker.apicheckernature</nature>
 	</natures>
 	<filteredResources>
 		<filter>

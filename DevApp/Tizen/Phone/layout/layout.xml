@@ -13,7 +13,7 @@
 					weight_v="1" editable="true" scroll="false" weight_h="1"
 					single_line="true" align_h="fill" password="false"
 					file_text_format="plain_utf8" disable="false" id="entry_server_ip"
-					text="10.0.0.12" pack_x="270" pack_y="161" pack_w="407" pack_h="48">
+					text="10.0.0.12" pack_x="269" pack_y="185" pack_w="407" pack_h="48">
 					<event function_name="view_main_entry_server_ip_onclicked"
 						signal="clicked" />
 				</entry>
@@ -22,26 +22,26 @@
 					text="Debug Info" pack_x="44" pack_y="65" pack_w="197" pack_h="24"></label>
 				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
 					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0"
-					id="label_server_ip" text="Server IP" pack_x="93" pack_y="175"
+					id="label_server_ip" text="Server IP" pack_x="85" pack_y="199"
 					pack_w="139" pack_h="24"></label>
 				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
 					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0"
-					id="label_server_port" text="Server Port" pack_x="87" pack_y="248"
+					id="label_server_port" text="Server Port" pack_x="84" pack_y="372"
 					pack_w="181" pack_h="36"></label>
 				<entry context_menu="true" align_v="fill" visible="true"
 					weight_v="1" editable="true" scroll="false" weight_h="1"
 					single_line="true" align_h="fill" password="false"
 					file_text_format="plain_utf8" disable="false" id="entry_server_port"
-					text="50005" pack_x="291" pack_y="237" pack_w="402" pack_h="48">
+					text="50005" pack_x="278" pack_y="362" pack_w="402" pack_h="48">
 					<event function_name="view_main_entry_server_port_onclicked"
 						signal="clicked" />
 				</entry>
 				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
 					align_h="fill" disable="false" style="default" id="button_settings"
-					text="Settings" pack_x="96" pack_y="385" pack_w="286" pack_h="49"></button>
+					text="Settings" pack_x="123" pack_y="784" pack_w="286" pack_h="49"></button>
 				<label align_v="fill" visible="true" weight_v="1" line_wrap="none"
 					weight_h="1" ellipsis="true" align_h="fill" wrap_width="0" id="label_mode"
-					text="Mode" pack_x="117" pack_y="115" pack_w="139" pack_h="24"></label>
+					text="Mode" pack_x="89" pack_y="114" pack_w="139" pack_h="24"></label>
 				<hoversel align_v="fill" visible="true" weight_v="1"
 					weight_h="1" align_h="fill" disable="false" id="hoversel_mode"
 					text="Remote" pack_x="275" pack_y="105" pack_w="556" pack_h="46">
@@ -52,15 +52,29 @@
 				</hoversel>
 				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
 					align_h="fill" disable="false" style="default" id="button_reset"
-					text="Reset settings" pack_x="105" pack_y="452" pack_w="419"
+					text="Reset settings" pack_x="510" pack_y="784" pack_w="419"
 					pack_h="48"></button>
 				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
-					align_h="fill" disable="false" style="default" id="button_connect_init"
-					text="Connect/Init" pack_x="101" pack_y="321" pack_w="453" pack_h="49">
-					<event function_name="view_main_button_connect_init_onclicked"
+					align_h="fill" disable="false" style="default" id="button_connect"
+					text="Connect" pack_x="280" pack_y="552" pack_w="471" pack_h="74">
+					<event function_name="view_main_button_connect_onclicked"
+						signal="clicked" />
+				</button>
+				<hoversel align_v="fill" visible="true" weight_v="1"
+					weight_h="1" align_h="fill" disable="false" id="hoversel_server_ip"
+					text="Server IPs" pack_x="274" pack_y="268" pack_w="557" pack_h="52">
+				</hoversel>
+				<hoversel align_v="fill" visible="true" weight_v="1"
+					weight_h="1" align_h="fill" disable="false" id="hoversel_server_port"
+					text="Server ports" pack_x="278" pack_y="462" pack_w="561" pack_h="57"></hoversel>
+				<button align_v="fill" visible="true" weight_v="1" weight_h="1"
+					align_h="fill" disable="false" style="default" id="button_exit"
+					text="Exit" pack_x="406" pack_y="891" pack_w="210" pack_h="49">
+					<event function_name="view_main_button_exit_onclicked"
 						signal="clicked" />
 				</button>
 			</grid>
+			<event function_name="view_main_onuib_view_create" signal="uib,view,create" />
 		</view>
 	</views>
 </document>

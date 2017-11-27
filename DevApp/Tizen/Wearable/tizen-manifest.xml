@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <manifest xmlns="http://tizen.org/ns/packages" api-version="3.0" package="umich.cse.yctung.libas.devapppwearable" version="1.0.0">
-	<profile name="wearable" />
-	<ui-application appid="umich.cse.yctung.libas.devapppwearable" exec="devappwearable" type="capp" multiple="false" taskmanage="true" nodisplay="false">
-		<icon>devappwearable.png</icon>
-		<label>devappwearable</label>
-	</ui-application>
-	<privileges>
-		<privilege>http://tizen.org/privilege/recorder</privilege>
+    <profile name="wearable"/>
+    <ui-application appid="umich.cse.yctung.libas.devapppwearable" exec="devappwearable" multiple="false" nodisplay="false" taskmanage="true" type="capp">
+        <label>devappwearable</label>
+        <icon>devappwearable.png</icon>
+    </ui-application>
+    <privileges>
         <privilege>http://tizen.org/privilege/mediastorage</privilege>
         <privilege>http://tizen.org/privilege/download</privilege>
         <privilege>http://tizen.org/privilege/network.get</privilege>
         <privilege>http://tizen.org/privilege/push</privilege>
         <privilege>http://tizen.org/privilege/internet</privilege>
+        <privilege>http://tizen.org/privilege/display</privilege>
+        <privilege>http://tizen.org/privilege/recorder</privilege>
         <privilege>http://tizen.org/privilege/externalstorage.appdata</privilege>
         <privilege>http://tizen.org/privilege/externalstorage</privilege>
-        <privilege>http://tizen.org/privilege/display</privilege>
     </privileges>
 </manifest>

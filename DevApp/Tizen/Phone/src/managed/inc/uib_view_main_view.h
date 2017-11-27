@@ -44,7 +44,10 @@ typedef struct _uib_view_main_view_context {
 	Elm_Object_Item *hoverselitem_remote_mode;
 	Elm_Object_Item *hoverselitem_standalone;
 	Evas_Object *button_reset;
-	Evas_Object *button_connect_init;
+	Evas_Object *button_connect;
+	Evas_Object *hoversel_server_ip;
+	Evas_Object *hoversel_server_port;
+	Evas_Object *button_exit;
 } uib_view_main_view_context;
 
 
