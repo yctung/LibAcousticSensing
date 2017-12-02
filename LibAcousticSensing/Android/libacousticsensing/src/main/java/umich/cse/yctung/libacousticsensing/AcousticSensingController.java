@@ -17,8 +17,11 @@ import android.widget.Spinner;
 import com.google.gson.Gson;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.Vector;
 
 import umich.cse.yctung.libacousticsensing.Audio.AudioController;
 import umich.cse.yctung.libacousticsensing.Audio.AudioControllerListener;
@@ -185,7 +188,9 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         ac = null; // TODO: keep audio controller alive to save init delay
 
         if (needToAnalyzeLatency) {
-            String latencyAnalyzeResultString = la.generateMatchedString();
+            la.analyze();
+            listener.updateDebugStatus(true, "Avg latency = " + la.resultAvgLatency);
+            listener.showToast("Avg latency = " + la.resultAvgLatency);
         }
     }
 
@@ -399,10 +404,21 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             addStamp(sampleCnt, resultStamps);
         }
 
-        public String generateMatchedString() {
-            String ret = "";
+        public double avgLatency = -1;
+
+        public Vector<Integer> resultSampleCnts, resultLatencies;
+        public double resultAvgLatency = -1;
+        public void analyze() {
+
             LatencyStamp audioStamp;
             LatencyStamp resultStamp;
+
+            int cnt = 0;
+            double sum = 0;
+
+            resultSampleCnts = new Vector<>();
+            resultLatencies = new Vector<>();
+
             while(!audioStamps.isEmpty() && !resultStamps.isEmpty()) {
                 audioStamp = audioStamps.peek();
                 resultStamp = resultStamps.peek();
@@ -411,6 +427,12 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
                     long latency = resultStamp.time - audioStamp.time;
                     Log.d(LOG_TAG, "Find a matched latency record: " + latency + "(ms)");
 
+                    cnt ++;
+                    sum += latency;
+
+                    resultSampleCnts.add(audioStamp.sampleCnt);
+                    resultLatencies.add((int)latency);
+
                     audioStamps.poll();
                     resultStamps.poll();
                 } else if (audioStamp.sampleCnt < resultStamp.sampleCnt) {
@@ -418,10 +440,9 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
                 } else {
                     resultStamps.poll();
                 }
-
             }
 
-            return ret;
+            resultAvgLatency = cnt == 0 ? -1 : sum / cnt;
         }
 
         private void addStamp(int sampleCnt, Queue<LatencyStamp>target) {
