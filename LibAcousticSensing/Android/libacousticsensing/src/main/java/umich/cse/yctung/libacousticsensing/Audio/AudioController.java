@@ -26,6 +26,7 @@ public class AudioController {
 
     private static final int RECORDER_BYTE_PER_ELEMENT = 2; // 2 bytes in 16bit format
     private static final int RECORDER_BUFFER_ELEMENTS = 4800*2; // this is the size of audio buffer elements *** WARN: this number must be a multiple of  ***
+    //private static final int RECORDER_BUFFER_ELEMENTS = 4800*4; // this is the size of audio buffer elements *** WARN: this number must be a multiple of  ***
 
 
     private static final int MESSAGE_TO_START_PLAY = 1;

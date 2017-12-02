@@ -151,6 +151,9 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         boolean ret = jc.init(audioSource);
 
         this.audioMode = AUDIO_MODE_DEFAULT; // TODO: decide if it is set in java or matlab
+
+        listener.isConnected(true, "JNI is ready");
+
         return ret;
     }
 
@@ -370,6 +373,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
                 stopSensingNow();
             } else if (ret != 0) { // has some data to return
                 listener.dataJNICallback(ret /* return structure addr */);
+                la.addResultStamp((int) audioTotalRecordedSampleCnt);
                 // *** just debug ***
                 Log.d(LOG_TAG, "ret = " + ret);
                 jc.debugDumpAddAudioRet(ret);

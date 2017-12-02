@@ -302,7 +302,9 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             return;
         }
 
-        progressConnecting.show();
+        if (ass.getParseMode() == AcousticSensingSetting.PARSE_MODE_REMOTE) {
+            progressConnecting.show();
+        }
     }
 
     void retryInitIfNeed() {
