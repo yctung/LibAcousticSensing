@@ -62,7 +62,7 @@ public class NetworkController {
 	private final static boolean SAVE_LATEST_LOADED_AUDIO_TO_FILE = false;
 	private final static int SOCKET_CONNECTION_CREATE_TIMEOUT = 500; // ms
 	private final static int SOCKET_DATA_TRANSMIT_TIMEOUT = 0; // 0 means never timeout
-	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 10; //ms
+	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 5; //ms
 
 //==================================================================================================
 //	Internal status

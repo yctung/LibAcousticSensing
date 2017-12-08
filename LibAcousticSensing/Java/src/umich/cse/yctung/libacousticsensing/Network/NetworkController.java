@@ -63,7 +63,7 @@ public class NetworkController {
 	private final static boolean SAVE_LATEST_LOADED_AUDIO_TO_FILE = false;
 	private final static int SOCKET_CONNECTION_CREATE_TIMEOUT = 500; // ms
 	private final static int SOCKET_DATA_TRANSMIT_TIMEOUT = 0; // 0 means never timeout
-	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 10; //ms
+	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 1; //ms
 
 //==================================================================================================
 //	Internal status
@@ -268,17 +268,17 @@ public class NetworkController {
 					}
 				} else if (reaction == REACTION_SET_RESULT) {
 					// TODO: update result to user-app callbacks
+					int audioSampleCnt = dataIn.readInt();
 					int argInt = dataIn.readInt();
 					// TODO: add write float
 					byte check = dataIn.readByte();
 
-					Log.d(LOG_TAG, "received result = "+argInt+", check = "+check);
+					//Log.d(LOG_TAG, "received result sampleCnt = "+ audioSampleCnt +", argInt = "+argInt+", check = "+check);
 					if(check != -1){
 						Log.e(LOG_TAG, "Check is not -1 -> some packet might be dropped or there is a bug in matlab server");
 						listener.updateDebugStatus(false, "result loaded fails (check != -1)");
 					} else {
-
-						listener.resultReceviedFromServer(argInt);
+						listener.resultReceviedFromServer(audioSampleCnt, argInt);
 					}
 
 				}

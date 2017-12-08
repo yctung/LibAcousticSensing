@@ -9,8 +9,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * @author yctung
@@ -33,7 +37,7 @@ public class JavaSensingServer extends Thread {
 	private DataOutputStream dataOut = null;
 	private DataInputStream dataIn = null;
 	
-	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 5; //ms, NOTE: should set this value as small as possible
+	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 1; //ms, NOTE: should set this value as small as possible
 	
 	// Types of actions (for identifying packets sent to the server)
 	private final static int ACTION_CONNECT = 1; 	// ACTION_CONNECT format: | ACTION_CONNECT | xxx parater setting
@@ -43,6 +47,11 @@ public class JavaSensingServer extends Thread {
 	private final static int ACTION_INIT 	= 4;
 	private final static int ACTION_SENSING_END = 5;
 	private final static int ACTION_USER 	= 6;
+	
+	// Analysis related variable
+	int dataByteCnt;
+	public boolean needToAnalyzeLatency;
+	public LatencyAnalyzer la;
 	
 //===============================================================
 //	Constructors	
@@ -62,6 +71,10 @@ public class JavaSensingServer extends Thread {
 		shutdown = false;
 		serverSocket = null;
 		clientSocket = null;
+		
+		dataByteCnt = 0;
+		needToAnalyzeLatency = false;
+		la = new LatencyAnalyzer();
 	}
 
 //===============================================================
@@ -238,6 +251,13 @@ public class JavaSensingServer extends Thread {
                 else if (action == ACTION_DATA) { // acoustic sensing data received
                 	threadMessage("--- ACTION_DATA ---");
                     byte[] dataBytes = readFullData();
+                    
+                    // TODO: revise the name to make this function easy to read, we should use the data byte cnt as the marker
+                    if (needToAnalyzeLatency) {
+                    	la.addAudioStamp(dataByteCnt);
+                    }
+                    
+                    dataByteCnt += dataBytes.length;
                     fireDataEvent(new SocketEvent(this, action, dataBytes));
                 }
                 //**********************************************************
@@ -412,5 +432,87 @@ public class JavaSensingServer extends Thread {
 			System.err.println("thread(" + threadName + "): '" + CLASS_NAME + ":" + id + "' -> " + msg);
 		}
 	}
+	
+	 //=================================================================================================
+	 // Latency analysis
+	 //=================================================================================================
+	     private class LatencyAnalyzer {
+	         private class LatencyStamp {
+	             int sampleCnt;
+	             long time; // ms
+	             public LatencyStamp(int sampleCnt, long time) {
+	                 this.sampleCnt = sampleCnt;
+	                 this.time = time;
+	             }
+	         }
+	         Queue<LatencyStamp> audioStamps; // time stamps when the audio buffer is read
+	         Queue<LatencyStamp> resultStamps; // time stamps when the sensing results are updated
+
+	         public LatencyAnalyzer() {
+	             audioStamps = new LinkedList<LatencyStamp>();
+	             resultStamps = new LinkedList<LatencyStamp>();
+	         }
+
+	         public void addAudioStamp(int sampleCnt) {
+	        	 threadErrMessage("addAudioStamp() at sampleCnt = " + sampleCnt);
+	             addStamp(sampleCnt, audioStamps);
+	         }
+
+	         public void addResultStamp(int sampleCnt) {
+	        	 threadErrMessage("addResultStamp() at sampleCnt = " + sampleCnt);
+	             addStamp(sampleCnt, resultStamps);
+	         }
+
+	         public double avgLatency = -1;
+
+	         public Vector<Integer> resultSampleCnts, resultLatencies;
+	         public double resultAvgLatency = -1;
+	         public void analyze() {
+	        	 threadErrMessage("analyze()");
+
+	             LatencyStamp audioStamp;
+	             LatencyStamp resultStamp;
+
+	             int cnt = 0;
+	             double sum = 0;
+
+	             resultSampleCnts = new Vector<Integer>();
+	             resultLatencies = new Vector<Integer>();
+
+	             while(!audioStamps.isEmpty() && !resultStamps.isEmpty()) {
+	                 audioStamp = audioStamps.peek();
+	                 resultStamp = resultStamps.peek();
+
+	                 if (audioStamp.sampleCnt == resultStamp.sampleCnt) { // find a match
+	                     long latency = resultStamp.time - audioStamp.time;
+	                     threadMessage("Find a matched latency record (" + 
+	                    		 audioStamp.sampleCnt + "," + 
+	                    		 audioStamp.time + "," +
+	                    		 resultStamp.time + "): " + 
+	                    		 latency + "(ms)");
+
+	                     cnt ++;
+	                     sum += latency;
+
+	                     resultSampleCnts.add(audioStamp.sampleCnt);
+	                     resultLatencies.add((int)latency);
+
+	                     audioStamps.poll();
+	                     resultStamps.poll();
+	                 } else if (audioStamp.sampleCnt < resultStamp.sampleCnt) {
+	                     audioStamps.poll();
+	                 } else {
+	                     resultStamps.poll();
+	                 }
+	             }
+
+	             resultAvgLatency = cnt == 0 ? -1 : sum / cnt;
+	         }
+
+	         private void addStamp(int sampleCnt, Queue<LatencyStamp>target) {
+	             long now = System.currentTimeMillis();
+	             target.add(new LatencyStamp(sampleCnt, now));
+	         }
+	     }
 	
 }

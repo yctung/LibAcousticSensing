@@ -36,11 +36,21 @@ function [ret] = LatencyEstimateCallback( server, type, data )
         % find detected objects by matched filter
         % where the PS.signalToCorrelate is the reverse of sensing signal
         % and PS.detectRangeStart:PS.detectRangeEnd are determined by the GUI
-        cons = convn(data, PS.signalToCorrelate, 'same');
-        detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
-        traceCnt = size(detects, 2);
-        chCnt = size(detects, 3);
-
+        
+        REPEAT_CNT = 5;
+        
+        for repeat = 1:REPEAT_CNT,
+            cons = convn(data, PS.signalToCorrelate, 'same');
+        end
+        
+        if REPEAT_CNT > 0
+            detects = abs(cons(PS.detectRangeStart:PS.detectRangeEnd, :, :));
+            traceCnt = size(detects, 2);
+            chCnt = size(detects, 3);
+        end
+        
+        
+        
         % update line1: data 
         check1 = findobj('Tag','check01');
         if check1.Value == 1,

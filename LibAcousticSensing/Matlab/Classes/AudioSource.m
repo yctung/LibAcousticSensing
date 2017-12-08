@@ -62,9 +62,10 @@ classdef AudioSource < handle
 
             if exist('preambleSource', 'var')
                 obj.preambleSource = preambleSource();
+                obj.preambleGain = 0.9; % TODO: include thin the preamble itself?
             else
                 obj.preambleSource = PreambleSource();
-                obj.preambleGain=0.9;
+                obj.preambleGain = 0.9;
             end
             
             assert(obj.FS == obj.preambleSource.FS, '[ERROR]: source sampel rate should equal the preamble sameple rate');

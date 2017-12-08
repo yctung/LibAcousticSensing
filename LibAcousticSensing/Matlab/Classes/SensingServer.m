@@ -36,7 +36,6 @@ classdef SensingServer < handle
         CALLBACK_TYPE_DATA      = 1;
         CALLBACK_TYPE_USER      = 2;
         
-        
         SOCKET_TIME_OUT         = 60*60*24;
         
         DEVICE_AUDIO_MODE_RECORD_ONLY       = 1;
@@ -92,7 +91,6 @@ classdef SensingServer < handle
         audioAll;
         audioAllEnd;
         
-        
         startSensingAfterConnectionInit; % set this variable to 0 if users want to manually trigger the senisng after the connection is established
         
         keepReading;
@@ -100,6 +98,12 @@ classdef SensingServer < handle
         % recevied trace variables
         userDevice;
         traceChannelCnt; 
+        
+        % latency analysis
+        appCallbackLatencyResult; % format [marker1, marker2, maerk ..., delay1, delay2, ...etc], this is set from device
+        
+        needToAnalyzeAppCallbackLatency; % app callback is the callback assigned by app
+        needToAnalyzeSocketCallbackLatency; % socket callback is called by the internal JavaSensingServer
     end
     
     methods
@@ -136,6 +140,8 @@ classdef SensingServer < handle
             set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
             set(obj.jss,'OpDataCallback',@(h,e)obj.onDataCallback(h,e));
             %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);
+            
+            obj.needToAnalyzeSocketCallbackLatency = 0;
             
             obj.setWaitFlag('NONE');
         end
@@ -245,6 +251,11 @@ classdef SensingServer < handle
         function waitfor(obj, flag)
             waitfor(obj.fig, 'UserData', flag);
         end
+        
+        function enableSocketCallbackAnalysis(obj)
+            obj.jss.needToAnalyzeLatency = true; % enable latency analysis in the java sensing server
+            obj.needToAnalyzeSocketCallbackLatency = 1;
+        end
 %==========================================================================
 %  Internal UI/networking functions for parsing recevied packets
 %  NOTE: callbacks are triggered from a seperate java thread 
@@ -290,6 +301,10 @@ classdef SensingServer < handle
             %**********************************************************
             elseif action == obj.ACTION_DATA,
                 % a. parse the recieved payload as audio
+                if obj.needToAnalyzeSocketCallbackLatency == 1, % need to analyze the latency of java socket callback
+                    obj.jss.la.addResultStamp(obj.audioAllEnd * obj.traceChannelCnt * 2);
+                end
+                
                 dataTemp = double(typecast(event.dataBytes,'int16'));
                 if obj.traceChannelCnt == 1, % single-chanell ->ex: iphone
                     audioNow = dataTemp;
@@ -430,7 +445,7 @@ classdef SensingServer < handle
             obj.jss.writeInt(int32(obj.audioSource.repeatCnt));
     
             % c. write preamble
-            preambleShortRange = floor(obj.audioSource.preambleSource.preambleToAdd*obj.audioSource.preambleGain*SHORT_MAX_RANGE);
+            preambleShortRange = floor(obj.audioSource.preambleSource.preambleToAdd.*obj.audioSource.preambleGain.*SHORT_MAX_RANGE);
             obj.jss.writeInt(int32(length(preambleShortRange)));
             preambleShort = int16(preambleShortRange);
             % *** just for debug ***

@@ -194,6 +194,13 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             la.analyze();
             listener.updateDebugStatus(true, "Avg latency = " + la.resultAvgLatency);
             listener.showToast("Avg latency = " + la.resultAvgLatency);
+
+            String resultToSet = la.getLatencyResult();
+            if (setting.getParseMode() == setting.PARSE_MDOE_STANDALONE) {
+                Utils.writeStringToFile("appCallbackLatencyResult = " + resultToSet + ";", Constant.libFolderPath + "latencyResult.m");
+            } else if (nc != null && nc.isConnected()) {
+                nc.sendSetAction(NetworkController.SET_TYPE_VALUE_STRING, "appCallbackLatencyResult", resultToSet.getBytes()); // TODO: modify it based on device
+            }
         }
     }
 
@@ -447,6 +454,22 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
             }
 
             resultAvgLatency = cnt == 0 ? -1 : sum / cnt;
+        }
+
+        String getLatencyResult() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for (int i = 0; i < resultSampleCnts.size(); i++) {
+                sb.append(resultSampleCnts.get(i));
+                if (i != resultSampleCnts.size() - 1) sb.append(",");
+            }
+            sb.append(";");
+            for (int i = 0; i < resultLatencies.size(); i++) {
+                sb.append(resultLatencies.get(i));
+                if (i != resultLatencies.size() - 1) sb.append(",");
+            }
+            sb.append("]");
+            return sb.toString();
         }
 
         private void addStamp(int sampleCnt, Queue<LatencyStamp>target) {

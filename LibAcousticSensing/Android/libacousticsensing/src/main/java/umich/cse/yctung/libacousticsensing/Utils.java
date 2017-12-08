@@ -12,8 +12,10 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -127,6 +129,21 @@ public class Utils {
         }
     }
 
+    public static boolean writeStringToFile(String dataToWrite, String pathToWrite) {
+        try {
+            File file = new File(pathToWrite);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileOutputStream out = new FileOutputStream(file);
+            out.write(dataToWrite.getBytes());
+        } catch (IOException e) {
+            Log.e(Constant.LOG_TAG, "Write file failed to path = " + pathToWrite);
+            return false;
+        }
+
+        return true;
+    }
 
     public static String[] doubleArrayToStringArray(double[] dataArray) {
         String[] resultArray = new String[dataArray.length];

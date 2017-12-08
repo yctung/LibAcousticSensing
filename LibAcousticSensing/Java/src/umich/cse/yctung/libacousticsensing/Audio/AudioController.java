@@ -169,7 +169,11 @@ public class AudioController {
                     Log.w(TAG, "First 4 bytes = (" + byteBuffer[0] + "," + byteBuffer[1] + "," + byteBuffer[2] + "," + byteBuffer[3] + ")");
                 }
                 if(byteRead != RECORDER_BUFFER_ELEMENTS * RECORDER_BYTE_PER_ELEMENT) Log.e(TAG, "[ERROR]: byteRead in audioRecord not matched! = "+byteRead);
-                audioTotalRecordedSampleCnt += byteRead / (recordSetting.recordChCnt * RECORDER_BYTE_PER_ELEMENT); // only recorded the number of "sample" in each channel as a reference point
+                //audioTotalRecordedSampleCnt += byteRead / (recordSetting.recordChCnt * RECORDER_BYTE_PER_ELEMENT); // only recorded the number of "sample" in each channel as a reference point
+                audioTotalRecordedSampleCnt += byteRead / (1 * RECORDER_BYTE_PER_ELEMENT); // only recorded the number of "sample" in each channel as a reference point
+                // TODO: modify audioTotalRecordedSampleCnt based on the real record setting
+                
+                
                 listener.audioRecorded(byteBuffer.clone(), audioTotalRecordedSampleCnt);
                 
                 // TODO: save audio to file if need

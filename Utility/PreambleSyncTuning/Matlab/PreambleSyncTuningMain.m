@@ -9,15 +9,14 @@ close all;
 import edu.umich.cse.yctung.*
 JavaSensingServer.closeAll(); % close all previous open socket
 
-
 %--------------------------------------------------------------------------
 % 1. signal settings
 %--------------------------------------------------------------------------
 FS = 48000;
 PERIOD = 2400;
 CHIRP_LEN = 1200;
-CHIRP_FREQ_START = 18000;
-CHIRP_FREQ_END = 24000;
+CHIRP_FREQ_START = 5000;
+CHIRP_FREQ_END = 10000;
 APPLY_FADING_TO_SIGNAL = 1;
 FADING_RATIO = 0.1; % smaller means less fading window
 REPEAT_CNT = 10;
@@ -46,62 +45,50 @@ time = (0:CHIRP_LEN-1)./FS;
 signal(1:CHIRP_LEN) = chirp(time, CHIRP_FREQ_START, time(end), CHIRP_FREQ_END);
 as = AudioSource('dummySound', signal, FS, REPEAT_CNT, SIGNAL_GAIN, preamble);
 
-
-
 %--------------------------------------------------------------------------
-% 3. parse settings (later used in callback)
+% 4. create server
 %--------------------------------------------------------------------------
-global PS; PS = struct(); % parse setting, easy for the callback to get
-PS.FS = FS;
-PS.detectRangeStart = 580;
-PS.detectRangeEnd = 600;
-PS.detectEnabled = 0;
-PS.detectRef = 0;
-
-% add hamming window
-if APPLY_FADING_TO_SIGNAL == 1,
-    FADDING_WIN_SIZE = floor(CHIRP_LEN*FADING_RATIO);
-    win = hamming(FADDING_WIN_SIZE); % fading by a hamming window
-    win = win-min(win);
-    win = win./max(win);
-    [~,maxIdx] = max(win);
-    winStart = win(1:maxIdx);
-    winEnd = win(maxIdx+1:end);
-
-    w = ones(CHIRP_LEN, 1);
-    w(1:length(winStart)) = winStart;
-    w(end-length(winEnd)+1:end) = winEnd;
-    
-    signalWithoutHamming = signal; % keep the original sync signals
-    signal(1:CHIRP_LEN) = signal(1:CHIRP_LEN).*w; % apply fadding to the sync signal
-end
-
-signal = signal./max(abs(signal));
-signal = signal(:);
-
-PS.signalToCorrelate = signal(CHIRP_LEN:-1:1); % reverse the chirp is the optimal matched filter to detect chirp singals
-
-as.signal = signal;
-as.repeatCnt = 20*60*4;
-as.signalGain = 0.8;
-
-% modify preamble
-ps = PreambleBuilder('CHIRP', [22000, 18000], [500, 1000], 48000, 10, 4800, 4800, 0.1);
-as.preambleSource = ps;
+% NOTE: no parsing since we only care about the preabmel
 
 global ss; % TODO: find a better way instead of using a global variable
-ss = SensingServer(SERVER_PORT, @PreambleSyncTuningCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
+ss = SensingServer(SERVER_PORT, @DummyCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
-%ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
-%ss2.startSensingAfterConnectionInit = 0; % avoid auto sensing
+%--------------------------------------------------------------------------
+% 5. loop for experiemnts on testing preamble detection
+%--------------------------------------------------------------------------
 
-%{
-pause(1.0);
-for i=1:1000
-    fprintf('busy...\n');
-    temp = rand(1000,1000)*rand(1000,1000);
-    pause(1.0);
+PREAMBLE_GAINS = [0.05:0.01:0.1];
+%PREAMBLE_GAINS = [0:0.001:0.01];
+PREAMBLE_GAIN_CNT = length(PREAMBLE_GAINS);
+REPEAT_CNT = 25;
+%REPEAT_CNT = 10;
+
+fprintf(2,'<<<<<< wiats for device connected >>>>>>\n');
+%waitfor(0,'UserData','ACTION_INIT');
+ss.waitfor('ACTION_INIT');
+
+preambleDetectResults = zeros(PREAMBLE_GAIN_CNT, REPEAT_CNT);
+for gainIdx = PREAMBLE_GAIN_CNT:-1:2,
+    ss.audioSource.preambleGain = PREAMBLE_GAINS(gainIdx) 
+    ss.sendMediaData();
+    
+    for repeatIdx = 1:REPEAT_CNT,
+        pause(3.0);
+
+        fprintf(2,'<<<<<< sensing (%d,%d) starts >>>>>>\n',gainIdx,repeatIdx);
+        ss.startSensing();
+
+        fprintf(2,'       wiats ACTION_SENSING_END\n');
+        ss.waitfor('ACTION_SENSING_END');
+        preambleDetectResults(gainIdx, repeatIdx) = ss.isPreambleDetectedCorrectly;
+        
+        ss.setWaitFlag('NONE'); % reset the flag for the next wait
+
+        % TODO: check senisng result
+        fprintf(2,'<<<<<< sensing (%d,%d) ends >>>>>>\n',gainIdx,repeatIdx);
+    end
 end
-%}
-%ss.startServer(as,);
+mean(preambleDetectResults,2)
+
+save('TempResultForPaper/resultTunePreambleGain_temp', 'preambleDetectResults', 'PREAMBLE_GAINS');
