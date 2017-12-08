@@ -207,6 +207,16 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
 
+    public void showMessage (final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView)findViewById(R.id.debugMessages)).setText(message);
+            }
+        });
+    }
+
+
     //=================================================================================================
     //  Acoustic sensing callbacks
     //=================================================================================================
@@ -217,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             public void run() {
                 //textViewDebugInfo.setText(stringToShow);
                 Log.e(TAG, stringToShow);
+                showMessage(stringToShow);
                 //updateStatus(Status.WAITING);
                 // This could be caused by error.
                 //if (!status) turnOffConnection();
@@ -230,23 +241,27 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     @Override
     public void showToast(String stringToShow) {
         Log.e(TAG, "Show toast: " + stringToShow);
+        showMessage(stringToShow);
     }
 
     @Override
     public void sensingStarted () {
         Log.e(TAG, "Sensing started.");
         updateStatus(Status.SENSING);
+        showMessage("Sensing started");
     }
 
     @Override
     public void sensingEnd() {
         Log.e(TAG, "Sensing end");
         updateStatus(Status.WAITING);
+        showMessage("Sensing ended");
     }
 
     @Override
     public void serverClosed () {
         Log.e(TAG, "Server is resetting.");
+        showMessage("Server is resetting");
         turnOffConnection();
     }
 

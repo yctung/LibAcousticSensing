@@ -13,37 +13,43 @@ global AcceptTaps TapReceived;
 global MICDISTANCE MIC1D MIC2D WMD;
 global CONFNEARWINDOW;
 global FLIP_X FLIP_Y;
-global CORRSMOOTHING;
+global BANDPASS;
+global WINDOWLEFT WINDOWRIGHT
+global REFBORDER;
+REFBORDER = 'deskgold.mat';
 
-%global DEBUG_SHOW serchChIdxs;
-
+MICDISTANCE = 0.142;
+MIC1D = 0.14;
+MIC2D = 0.06;
+WMD = 0.01;
 CONFNEARWINDOW = 2;
-FLIP_X = 0;
+FLIP_X = 1;
 FLIP_Y = 0;
-CORRSMOOTHING = 5;
-%DISTSMOOTHING = 5;
-MICDISTANCE = 0.42;%0.18; %0.81; %0.49; %0.37; 
-MIC1D = 0.01;
-MIC2D = 0.42; %0.18; %0.66; %0.38 - pixel turned; %0.25 - pixe facing;
-WMD = 0.03;
+
+BANDPASS = 0; %0;
+
+WINDOWLEFT = 100;
+WINDOWRIGHT = 200;
 
 AcceptTaps = 0;
 TapReceived = 0;
-%DidMicModeCheck = [0 0 1 1];
-DidMicModeCheck = [1 1 1 1];
-
-
-%DEBUG_SHOW = 1;
-%serchChIdxs = [1];
+DidMicModeCheck = [0 0 1 1];
 
 %% Initialize global variables
-PS.bandpassFilter = 0;
+% FillUpBuffer is <Audio signal, Chirp number, Buffer Index>
+%PS.PERIOD = 2400;
+%PS.downPass = [2000 6000];
+%PS.upPass = [2000 6000];
+%PS.downPass = [8000 12000];
+
 PS.downPass = [2000 6000]; PS.upPass = [2000 6000];
-[upChirp, upSignal] = Local_Helper_CreateSignal('up');
-[downChirp, downSignal] = Local_Helper_CreateSignal('down');    
+%PS.downPass = [2000 5000]; PS.upPass = [7000 9000];
+
+[upChirp, upSignal] = Local_Helper_CreateSignal ('up');
+[downChirp, downSignal] = Local_Helper_CreateSignal ('down');    
 
 
-FillUpBuffer = zeros(PS.PERIOD, 2000, 4);
+FillUpBuffer = zeros(PS.PERIOD, 4000, 4);
 FillUpPointers = zeros(1, 4);
 AlreadyProcessed = 0;
 
@@ -57,7 +63,7 @@ PS.detectRef = 0;
 % First one plays upSignal
 
 global SIGNALGAIN;
-SIGNALGAIN = 1;
+SIGNALGAIN = 0.2;
 audioSources(1) = SetupAudioSource('upsound', upSignal);
 audioSources(1).preambleGain = 1;
 audioSources(1).signalGain = SIGNALGAIN;
@@ -65,11 +71,7 @@ audioSources(1).signalGain = SIGNALGAIN;
 audioSources(2) = SetupAudioSource('downsound', downSignal);
 audioSources(2).preambleGain = 0;
 audioSources(2).signalGain = SIGNALGAIN;
-
-
-audioSources(3) = SetupAudioSource('downsound', downSignal);
-audioSources(3).preambleGain = 0;
-audioSources(3).signalGain = 0;
+    
 
 StartSensingServer(audioSources);
 
@@ -81,27 +83,14 @@ function as = SetupAudioSource (soundName, signal)
     FS = 48000;
     SIGNAL_GAIN = SIGNALGAIN;
     
-%     PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
-%     %PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
-%     PREAMBLE_FREQS = [1000, 2000];    % [start freq, end freq] in Hz
-%     PREAMBLE_LENS = [500, 1000];        % [length of real signals, length of single repeatition]
-%     PREAMBLE_FS = 48000;                % sample rate (should be consistent to the sensing signals)
-%     PREAMBLE_REPEAT_CNT = 10;           % number of sync to be played
-%     PREAMBLE_START_OFFSET = 24000;       % number of silent samples before the preamble is played
-%     PREAMBLE_END_OFFSET = 48000;         % number of silent samples after the preamble is played
-%     PREAMBLE_FADING_RATIO = -1;         % -1 menas no fading
-%     preamble = PreambleBuilder(PREAMBLE_TYPE, PREAMBLE_FREQS, PREAMBLE_LENS, PREAMBLE_FS, PREAMBLE_REPEAT_CNT, PREAMBLE_START_OFFSET, PREAMBLE_END_OFFSET, PREAMBLE_FADING_RATIO);
-%     REPEAT_CNT = 20*60*4;
-%     
-
-
     PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
-    PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
-    PREAMBLE_LENS = [500, 1000];        % [length of real signals, length of single repeatition]
+    %PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
+    PREAMBLE_FREQS = [7000, 5000];
+    PREAMBLE_LENS = [5000, 2000];        % [length of real signals, length of single repeatition]
     PREAMBLE_FS = 48000;                % sample rate (should be consistent to the sensing signals)
     PREAMBLE_REPEAT_CNT = 10;           % number of sync to be played
     PREAMBLE_START_OFFSET = 4800;       % number of silent samples before the preamble is played
-    PREAMBLE_END_OFFSET = 48000;         % number of silent samples after the preamble is played
+    PREAMBLE_END_OFFSET = 48000*5;         % number of silent samples after the preamble is played
     PREAMBLE_FADING_RATIO = -1;         % -1 menas no fading
     preamble = PreambleBuilder(PREAMBLE_TYPE, PREAMBLE_FREQS, PREAMBLE_LENS, PREAMBLE_FS, PREAMBLE_REPEAT_CNT, PREAMBLE_START_OFFSET, PREAMBLE_END_OFFSET, PREAMBLE_FADING_RATIO);
     REPEAT_CNT = 20*60*4;
@@ -121,17 +110,14 @@ function StartSensingServer (audioSources)
     JavaSensingServer.closeAll(); 
     pause(1.0);
     
-    %analysisFunction = @BigscreenCallback;
-    analysisFunction = @GeneralCallback;
-    %analysisFunction = @BufferCallback_Triple;
+    analysisFunction = @GeneralCallback; %DesktopExperiment;
     %analysisFunction = @BufferCallback_PeakFeedback;
-    
     
     %clear sensingServers;
     
     phoneSensor = SensingServer(...
             50005, ...
-            CallbackFactory_FillUpIndices(1,5,analysisFunction), ...
+            CallbackFactory_FillUpIndices(1,2,analysisFunction), ...
             SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, ...
             audioSources(1));
     phoneSensor.startSensingAfterConnectionInit = 0;
@@ -145,20 +131,8 @@ function StartSensingServer (audioSources)
             audioSources(2));
     watchSensor.startSensingAfterConnectionInit = 0;
     
-    
-    
-    phoneSensor2 = SensingServer(...
-            50007, ...
-            CallbackFactory_FillUpIndices(2,6,analysisFunction), ...
-            SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, ...
-            audioSources(2));
-    phoneSensor2.startSensingAfterConnectionInit = 0;
-    
-      
     phoneSensor.addSlaveServer(watchSensor);
-    phoneSensor.addSlaveServer(phoneSensor2);
 end
-
 
 
 
@@ -170,10 +144,8 @@ function [chirpSignal, playSignal] = Local_Helper_CreateSignal (direction)
     
     
     FS = 48000;
-    PERIOD = 12000; %6000; %24000; %2400;
-    CHIRP_LEN = 1200; %5000; %2400;%1200;
-    %CHIRP_FREQ_START = 800;% 18000; %18000;
-    %CHIRP_FREQ_END = 1200; %24000;
+    PERIOD = 3000;
+    CHIRP_LEN = 1200; 
     FADING_RATIO = 0.5;
     
     PS.FS = FS;

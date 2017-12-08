@@ -51,9 +51,9 @@ function [callback] = CallbackFactory_FillUpIndices (ind1, ind2, CallOnceFull)
                 end
             end
         
-            ind1
-            ind2
-            size(data)
+            %ind1
+            %ind2
+            %size(data)
             
             % Just fill up the FillUpBuffer
             for chirpInd=1:size(data,2)
