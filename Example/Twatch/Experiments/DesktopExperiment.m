@@ -64,7 +64,6 @@ function BufferCallback_TWatchExperiment ()
     else
         AlreadyProcessed = AlreadyProcessed + 1;
         
-        
         NowTime = datevec(now);
         % We should have received this many by now. 
         elapsed = (NowTime - StartTime);
@@ -583,6 +582,17 @@ function createUI()
     xlim([-0.1 1.1]);
     ylim([-0.1 1.1]);
     hold off;
+    
+    
+    
+    outerpos = handles.expAx.OuterPosition;
+    ti = handles.expAx.TightInset; 
+    left = outerpos(1) + ti(1);
+    bottom = outerpos(2) + ti(2);
+    ax_width = outerpos(3) - ti(1) - ti(3);
+    ax_height = outerpos(4) - ti(2) - ti(4);
+    handles.expAx.Position = [left bottom ax_width ax_height];
+
     
     set(expFig, 'KeyPressFcn', @Key_Down);
     

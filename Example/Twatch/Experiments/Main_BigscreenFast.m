@@ -14,6 +14,9 @@ global MICDISTANCE MIC1D MIC2D WMD;
 global CONFNEARWINDOW;
 global FLIP_X FLIP_Y;
 global CORRSMOOTHING;
+global WINDOWLEFT WINDOWRIGHT;
+global REFBORDER;
+REFBORDER = 'tvgold.mat';
 
 %global DEBUG_SHOW serchChIdxs;
 
@@ -33,6 +36,9 @@ TapReceived = 0;
 DidMicModeCheck = [1 1 1 1];
 
 
+WINDOWLEFT = 100;
+WINDOWRIGHT = 300;
+
 %DEBUG_SHOW = 1;
 %serchChIdxs = [1];
 
@@ -43,7 +49,7 @@ PS.downPass = [2000 6000]; PS.upPass = [2000 6000];
 [downChirp, downSignal] = Local_Helper_CreateSignal('down');    
 
 
-FillUpBuffer = zeros(PS.PERIOD, 2000, 4);
+FillUpBuffer = zeros(PS.PERIOD, 6000, 4);
 FillUpPointers = zeros(1, 4);
 AlreadyProcessed = 0;
 
@@ -57,7 +63,7 @@ PS.detectRef = 0;
 % First one plays upSignal
 
 global SIGNALGAIN;
-SIGNALGAIN = 1;
+SIGNALGAIN = 0.2;
 audioSources(1) = SetupAudioSource('upsound', upSignal);
 audioSources(1).preambleGain = 1;
 audioSources(1).signalGain = SIGNALGAIN;
@@ -81,27 +87,14 @@ function as = SetupAudioSource (soundName, signal)
     FS = 48000;
     SIGNAL_GAIN = SIGNALGAIN;
     
-%     PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
-%     %PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
-%     PREAMBLE_FREQS = [1000, 2000];    % [start freq, end freq] in Hz
-%     PREAMBLE_LENS = [500, 1000];        % [length of real signals, length of single repeatition]
-%     PREAMBLE_FS = 48000;                % sample rate (should be consistent to the sensing signals)
-%     PREAMBLE_REPEAT_CNT = 10;           % number of sync to be played
-%     PREAMBLE_START_OFFSET = 24000;       % number of silent samples before the preamble is played
-%     PREAMBLE_END_OFFSET = 48000;         % number of silent samples after the preamble is played
-%     PREAMBLE_FADING_RATIO = -1;         % -1 menas no fading
-%     preamble = PreambleBuilder(PREAMBLE_TYPE, PREAMBLE_FREQS, PREAMBLE_LENS, PREAMBLE_FS, PREAMBLE_REPEAT_CNT, PREAMBLE_START_OFFSET, PREAMBLE_END_OFFSET, PREAMBLE_FADING_RATIO);
-%     REPEAT_CNT = 20*60*4;
-%     
-
-
+     
     PREAMBLE_TYPE = 'CHIRP';            % only support chirp preambles now
     PREAMBLE_FREQS = [22000, 15000];    % [start freq, end freq] in Hz
     PREAMBLE_LENS = [500, 1000];        % [length of real signals, length of single repeatition]
     PREAMBLE_FS = 48000;                % sample rate (should be consistent to the sensing signals)
     PREAMBLE_REPEAT_CNT = 10;           % number of sync to be played
-    PREAMBLE_START_OFFSET = 4800;       % number of silent samples before the preamble is played
-    PREAMBLE_END_OFFSET = 48000;         % number of silent samples after the preamble is played
+    PREAMBLE_START_OFFSET = 4800; %5*48000;       % number of silent samples before the preamble is played
+    PREAMBLE_END_OFFSET = 48000*5;         % number of silent samples after the preamble is played
     PREAMBLE_FADING_RATIO = -1;         % -1 menas no fading
     preamble = PreambleBuilder(PREAMBLE_TYPE, PREAMBLE_FREQS, PREAMBLE_LENS, PREAMBLE_FS, PREAMBLE_REPEAT_CNT, PREAMBLE_START_OFFSET, PREAMBLE_END_OFFSET, PREAMBLE_FADING_RATIO);
     REPEAT_CNT = 20*60*4;
@@ -123,6 +116,7 @@ function StartSensingServer (audioSources)
     
     %analysisFunction = @BigscreenCallback;
     analysisFunction = @GeneralCallback;
+    %analysisFunction = @DummyCallback;
     %analysisFunction = @BufferCallback_Triple;
     %analysisFunction = @BufferCallback_PeakFeedback;
     
@@ -170,17 +164,14 @@ function [chirpSignal, playSignal] = Local_Helper_CreateSignal (direction)
     
     
     FS = 48000;
-    PERIOD = 12000; %6000; %24000; %2400;
-    CHIRP_LEN = 1200; %5000; %2400;%1200;
-    %CHIRP_FREQ_START = 800;% 18000; %18000;
-    %CHIRP_FREQ_END = 1200; %24000;
+    PERIOD = 4000;
+    CHIRP_LEN = 1200; 
     FADING_RATIO = 0.5;
     
     PS.FS = FS;
     PS.PERIOD = PERIOD;
     
-    
-    time = (0:CHIRP_LEN-1)./FS; 
+    time = (0:CHIRP_LEN-1)./FS;
     
     playSignal = zeros(PERIOD, 1);
     if strcmp(direction, 'up')

@@ -1,4 +1,4 @@
-function Replay 
+function AnalysisReplay 
     createControlUI;
     %doExperiment;
 end
@@ -155,43 +155,72 @@ function doExperiment (~, ~, ~)
     ReplayMode = 1;
 
     
-    %filename = 'experiments/sm1403.mat';
-    %MICDISTANCE = 0.142;
-    %MIC1D = 0.14;
-    %MIC2D = 0.06;
-    %WMD = 0.01;
-    %FLIP_X = 1;
-    %FLIP_Y = 0;
+    
+    %global LoadBorderNow;
+    %global BorderFilename;
     
     %filename = 'experiments/desktopbestgold.mat';
     % This only holds for desktop experiments.
-     %OVERRIDEBN = 1;
+     
+    %OVERRIDEBN = 1;
      %BN_A = 4.292396; 
      %BN_B = 13.556328;
      %BN_P = 0.000000;
      
      
+%     OVERRIDEBORDER = 1;
+%     tvgold = load('tvgold.mat');
+%     recordedBorder = tvgold.recordedBorder;
+%     minX = tvgold.minX;
+%     maxX = tvgold.maxX;
+%     minY = tvgold.minY;
+%     maxY = tvgold.maxY;
+%     left = tvgold.left;
+%     right = tvgold.right;
+%     top = tvgold.top;
+%     bottom = tvgold.bottom;
+%     middlehoriz = tvgold.middlehoriz;
+%     middlevert = tvgold.middlevert;
 %     
-%     OVERRIDEBORDER = 0;
-%     deskgold = load('deskgold.mat');
-%     recordedBorder = deskgold.recordedBorder;
-%     minX = deskgold.minX;
-%     maxX = deskgold.maxX;
-%     minY = deskgold.minY;
-%     maxY = deskgold.maxY;
-%     left = deskgold.left;
-%     right = deskgold.right;
-%     top = deskgold.top;
-%     bottom = deskgold.bottom;
-%     middlehoriz = deskgold.middlehoriz;
-%     middlevert = deskgold.middlevert;
-%     
+%     OVERRIDEBN = 1;
+%     BN_A = tvgold.BN_A;
+%     BN_B = tvgold.BN_B;
+%     BN_P = tvgold.BN_P;
+    
+     %BN_A = 4.292396; 
+     %BN_B = 13.556328;
+     %BN_P = 0.000000;
+    
+     
     %filename = 'experiments/desktopbestgold.mat';
     %filename = 'experiments/deskborders02.mat';
     %filename = 'experiments/desktake2-uptopoint14.mat';
     %filename = 'experiments/hamedexperiment1.mat';
-    filename = 'experiments/tvgoldnew.mat';
+    %filename = 'experiments/tvgoldnew.mat';
     
+    
+    %LoadBorderNow = 1;
+    %BorderFilename = 'FullExperimentalData/borders/ycborderdesktop.mat';
+    %filename = 'FullExperimentalData/data/ycdeskunguided.mat';
+    %filename = 'FullExperimentalData/data/ycdeskgoodinteractive.mat';
+    %filename = 'FullExperimentalData/data/yctvall';
+    
+    
+    WINDOWLEFT = 100;
+    %filename = 'FullExperimentalData/data/yctvall';
+    %filename = 'FullExperimentalData/data/takbigscreenfull';
+    %filename = 'FullExperimentalData/data/takbigscreenfull';
+    %filename = 'FullExperimentalData/data/mert-full-bigscreen';
+    %filename = 'FullExperimentalData/data/arunbigscreenfull';
+    %filename = 'FullExperimentalData/data/danielintractivebigsreen';
+    %WINDOWRIGHT = 300;
+    
+    
+    %filename = 'FullExperimentalData/data/takdesktopfull';
+    %filename = 'FullExperimentalData/data/mert-desktop-until7';
+    filename = 'FullExperimentalData/data/arun-desktop-upto-14';
+    WINDOWRIGHT = 200;
+
     data = load(filename);
     
     PS = data.PS;
@@ -207,15 +236,14 @@ function doExperiment (~, ~, ~)
     FLIP_X = data.FLIP_X;
     FLIP_Y = data.FLIP_Y;
     
-    WINDOWLEFT = 100;
-    WINDOWRIGHT = 300;
     
     % The labels don't matter. We will re-find them based on spaces anyway
     AlreadyProcessed = EgoFromWindow-2;
     TotalWindows = data.AlreadyProcessed;
     for win=EgoFromWindow:TotalWindows
+        [win TotalWindows]
         FillUpPointers = zeros(1, 4) + win;
-        GeneralCallback;
+        ReplayCallback;
         pause(0.001);
     end
     
@@ -230,12 +258,26 @@ function doExperiment (~, ~, ~)
     fprintf('Pixel error = %f (std %f)\n', pxlmu, sqrt(pxlV));
     
     
+    %save('lastRelayErrors', 'normederrors', 'pxlerrors');
+    %save('results_yctvallgoldresults', 'ExperimentResultBuffer');
+    %save('results_taktvallgoldresults', 'ExperimentResultBuffer');
+    %save('results_merttvallgoldresults', 'ExperimentResultBuffer');
+    %save('results_aruntvallgoldresults', 'ExperimentResultBuffer');
+    %save('results_aruntvallNOTGOLDresults', 'ExperimentResultBuffer');
+    %save('results_danieltvallgoldresults', 'ExperimentResultBuffer');
+    %save('results_mertDesk', 'ExperimentResultBuffer');
+    %save('results_arunDesk', 'ExperimentResultBuffer');
+    
+    %save('taktvgoldresults', 'ExperimentResultBuffer');
+   
+    
     %normederrors;
     %pxlerrors;
     % Now, we can save XYBuffer PeakUpBuffer PeakDownBuffer for offset
     % testing and Beier Neely deformation mapping.
-    save('lastReplayOutput', 'XYBuffer', 'PeakUpBuffer', ...
-        'TotalWindows', 'PeakDownBuffer', 'savedLabels', ...
-        'recordedBorder', 'minX', 'maxX', 'minY', 'maxY', ...
-        'left', 'top', 'right', 'bottom', 'middlehoriz', 'middlevert');
+    
+%     save('lastReplayOutput', 'XYBuffer', 'PeakUpBuffer', ...
+%         'TotalWindows', 'PeakDownBuffer', 'savedLabels', ...
+%         'recordedBorder', 'minX', 'maxX', 'minY', 'maxY', ...
+%         'left', 'top', 'right', 'bottom', 'middlehoriz', 'middlevert');
 end

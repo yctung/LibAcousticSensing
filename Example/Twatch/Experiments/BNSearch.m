@@ -1,5 +1,36 @@
 function [minA, minB, minP, minerror] = BNSearch(recordedBorder, referenceBorder)
     [minA, minB, minP, minerror] = gradientdescent(recordedBorder, referenceBorder);
+    
+    figure;
+    subplot(2,2,1);
+    hold on;
+    title('Recorded data');
+    for lidx=1:length(recordedBorder)
+        plot(recordedBorder(lidx,[1 3]), recordedBorder(lidx, [2 4])); 
+    end
+    bPoints = [recordedBorder(:, [1 2]); recordedBorder(:, [3 4])];
+    scatter(bPoints(:, 1), bPoints(:, 2), 'g');
+    hold off;
+    
+    subplot(2,2,2);
+    hold on;
+    title('Reference data');
+    for lidx=1:length(referenceBorder)
+        plot(referenceBorder(lidx,[1 3]), referenceBorder(lidx, [2 4])); 
+    end
+    hold off;
+    
+    
+    deformedBorder = doBNLocal(recordedBorder, referenceBorder, minA, minB, minP);
+    subplot(2,2,4);
+    hold on;
+    for lidx=1:length(deformedBorder)
+        plot(deformedBorder(lidx,[1 3]), deformedBorder(lidx, [2 4])); 
+    end
+    deformedBoundaryPoints = [deformedBorder(:, [1 2]); deformedBorder(:, [3 4])];
+    scatter(deformedBoundaryPoints(:, 1), deformedBoundaryPoints(:, 2), 'g');
+    title('Deformed data');
+    hold off;
 end
 
 
@@ -11,25 +42,49 @@ function [minA, minB, minP, minerror] = gradientdescent(recordedBorder, referenc
     % a8.8,  b50
     
     delta = 1;
-    MoveBy = 1000;
+    MoveBy = 150;%100;% //1000; %1000
     
     errors = zeros(1, 10);
-    for i=1:10
-        deformedBorder = doBNLocal(recordedBorder, referenceBorder, a, b, p);
-        error1 = calcErrorLocal(deformedBorder, referenceBorder);
-        errors(i) = error1;
-        fprintf('A=%f, B=%f, P=%f; Error = %f\n', a, b, p, error1);
+    Iterations = 25;
+    counter = 1;
+    
+    deformedBorder = doBNLocal(recordedBorder, referenceBorder, a, b, p);
+    prevError = calcErrorLocal(deformedBorder, referenceBorder);
+    errors(counter) = prevError;
+    counter = counter + 1;
+
+        
+    while Iterations > 0
+        fprintf('A=%f, B=%f, P=%f; MoveBy=%d. Error = %f\n', a, b, p, MoveBy, prevError);
         
         deformedBorder = doBNLocal(recordedBorder, referenceBorder, a+delta, b, p);
         error2 = calcErrorLocal(deformedBorder, referenceBorder);
-        newA = a + (error1 - error2)*MoveBy; % Move in the opposite direction
+        newA = a + (prevError - error2)*MoveBy; % Move in the opposite direction
 
         deformedBorder = doBNLocal(recordedBorder, referenceBorder, a, b+delta, p);
         error2 = calcErrorLocal(deformedBorder, referenceBorder);
-        newB = b + (error1 - error2)*MoveBy; % Move in the opposite direction
+        newB = b + (prevError - error2)*MoveBy; % Move in the opposite direction
         
-        a = newA;
-        b = newB;
+        if newA < 0 || newB < 0
+            break;
+        end
+        
+        
+        deformedBorder = doBNLocal(recordedBorder, referenceBorder, newA, newB, p);
+        newerror = calcErrorLocal(deformedBorder, referenceBorder);
+        if newerror > prevError
+            MoveBy = MoveBy/2;
+            if MoveBy <= 1, break; end
+        else
+            prevError = newerror;
+            errors(counter) = prevError;
+            counter = counter + 1;
+            a = newA;
+            b = newB;
+            Iterations = Iterations - 1;
+        end
+        
+        
     end
     
     minA = a;

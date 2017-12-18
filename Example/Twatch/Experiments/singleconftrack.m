@@ -1,4 +1,4 @@
-function [confident, newpeak]= singleconftrack (prevcorr, thiscorr, fromPeak, varargin)
+function [confident, newpeak]= singleconftrack (prevcorr, thiscorr, fromPeak, ConfThresh, NearWindow)
     previous_peaks = findNeighborPeaks(prevcorr, fromPeak);
     
     hypotheses = -3:3;
@@ -13,15 +13,10 @@ function [confident, newpeak]= singleconftrack (prevcorr, thiscorr, fromPeak, va
     secondLargest = sorted(2);
     confident = 1;
     
-    if length(varargin) == 0
-        ConfThresh = 2.0;
-    else
-        ConfThresh = varargin{1};
-    end
-    
     if largest < ConfThresh*secondLargest
         confident = 0;
-        nearNeighborWindow = 2:6;
+        nearNeighborWindow = (4-NearWindow):(4+NearWindow);
+        %nearNeighborWindow = 2:6;
         [~, maxHypIdx] = max(thiscorr(hyp_peaks(nearNeighborWindow,3)));
         this_peaks = hyp_peaks(maxHypIdx+nearNeighborWindow(1)-1, :);
     end
