@@ -165,6 +165,7 @@ classdef SensingServer < handle
             obj.audioToProcessAll = zeros(length(obj.audioSource.signal), obj.audioSource.repeatCnt, obj.traceChannelCnt);
             obj.audioToProcessAllEnd = 0;
             obj.traceParser = TraceParser(obj.audioSource, obj.traceChannelCnt,obj);
+            obj.isPreambleDetectedCorrectly = -2;
             obj.jss.writeByte(int8(obj.REACTION_ASK_SENSING));
             obj.isSensing = 1;
             obj.buttonStartOrStopSensing.String = 'Stop Sensing';

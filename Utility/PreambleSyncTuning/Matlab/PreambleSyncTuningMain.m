@@ -19,7 +19,8 @@ CHIRP_FREQ_START = 5000;
 CHIRP_FREQ_END = 10000;
 APPLY_FADING_TO_SIGNAL = 1;
 FADING_RATIO = 0.1; % smaller means less fading window
-REPEAT_CNT = 10000; % we now let this loop to stop sensing
+%REPEAT_CNT = 10000; % we now let this loop to stop sensing
+REPEAT_CNT = 10; % we now let this loop to stop sensing
 SIGNAL_GAIN = 0.0; % make the dummy signal
 
 %--------------------------------------------------------------------------
@@ -57,13 +58,13 @@ ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 %--------------------------------------------------------------------------
 % 5. loop for experiemnts on testing preamble detection
 %--------------------------------------------------------------------------
-PREAMBLE_GAINS = [0.5];
+PREAMBLE_GAINS = [0.01];
 %PREAMBLE_GAINS = [0.1:0.1:1.0];
 %PREAMBLE_GAINS = [0.05:0.01:0.1];
 %PREAMBLE_GAINS = [0:0.001:0.01];
 PREAMBLE_GAIN_CNT = length(PREAMBLE_GAINS);
-%REPEAT_CNT = 25;
-REPEAT_CNT = 10;
+REPEAT_CNT = 50;
+%REPEAT_CNT = 10;
 
 fprintf(2,'<<<<<< wiats for device connected >>>>>>\n');
 %waitfor(0,'UserData','ACTION_INIT');
@@ -84,14 +85,19 @@ for gainIdx = PREAMBLE_GAIN_CNT:-1:1,
 
         fprintf(2,'       wiats ACTION_SENSING_END\n');
         %ss.waitfor('ACTION_SENSING_END');
-        pause(5.0);
-        ss.stopSensing();
+
+        pause(3.0);
+        if ss.isPreambleDetectedCorrectly == 1 % sensing will stop automatically if syn fails
+            ss.stopSensing();
+        end
+
+        pause(3.0); % additional pause for tizen
         
         preambleDetectResults(gainIdx, repeatIdx) = ss.isPreambleDetectedCorrectly;
         
         % just for debug
         expIdxsToNow = [PREAMBLE_GAIN_CNT:-1:gainIdx];
-        fprintf(2, 'current gain = %.2f, ret = %d, exp = %d / %d\n', gain, ss.isPreambleDetectedCorrectly, sum(preambleDetectResults(gainIdx, 1:repeatIdx)), repeatIdx);
+        fprintf(2, 'current gain = %.2f, ret = %d, exp = %d / %d\n', gain, ss.isPreambleDetectedCorrectly, sum(preambleDetectResults(gainIdx, 1:repeatIdx) == 1), repeatIdx);
         
         ss.setWaitFlag('NONE'); % reset the flag for the next wait
 
@@ -99,6 +105,5 @@ for gainIdx = PREAMBLE_GAIN_CNT:-1:1,
         fprintf(2,'<<<<<< sensing (%d,%d) ends >>>>>>\n',gainIdx,repeatIdx);
     end
 end
-mean(preambleDetectResults,2)
-
+mean(preambleDetectResults == 1, 2)
 %save('TempResultForPaper/resultTunePreambleGain_temp', 'preambleDetectResults', 'PREAMBLE_GAINS');

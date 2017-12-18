@@ -132,9 +132,12 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
             pilotEndOffsets(chToSearchIdx) = -1;
             
             % dump debug figures when detect fails
-            h_f = figure(778899);
+            figure(778898);
             plot(signalAll);
+            title('audio');
             
+            figure(778899);
+            plot(0,0); % clean
             hold on;
             conPlot = con;
             title(sprintf('Pilot search fail %d at ch %d', searchIdx, chIdx)); hold on;
@@ -145,6 +148,7 @@ function [ pilotEndOffsets, pilotDiffers ] = FindPilotAutoSearch( signalAll, pre
             plot([0,length(conPlot)], [conMean+conStd, conMean+conStd], '-c', 'linewidth', 2); 
             plot(validPeakIdxs, conPlot(validPeakIdxs), 'o', 'linewidth', 2);
             legend('con','thres','mean','mean+std','peaks');
+            title('preamble detect');
             
             hold off;
         end
