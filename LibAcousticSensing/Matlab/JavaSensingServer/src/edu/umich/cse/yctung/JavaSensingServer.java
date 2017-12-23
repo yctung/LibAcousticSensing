@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * the concept of this code comes from the matSock library and undocumented Matlab
  */
 public class JavaSensingServer extends Thread {
-	private static final String VERSION_DESC = "1.0.1: add latency analyzer"; 
+	private static final String VERSION_DESC = "1.0.2: temporaly disable latency analyzer"; 
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
 	public static boolean SHOW_DEBUG_MESSAGE = true;
@@ -52,7 +52,8 @@ public class JavaSensingServer extends Thread {
 	// Analysis related variable
 	int dataByteCnt;
 	public boolean needToAnalyzeLatency;
-	public LatencyAnalyzer la;
+	public LatencyAnalyzer la; // NOTE: la is not initialized since a not import correclty issue
+	// TODO: fix this bug, maybe try to move the LatencyAnalyzer to another public class?
 	
 //===============================================================
 //	Constructors	
@@ -80,7 +81,8 @@ public class JavaSensingServer extends Thread {
 		
 		dataByteCnt = 0;
 		needToAnalyzeLatency = false;
-		la = new LatencyAnalyzer();
+		// TODO: init la after solving the import issue
+		//la = new LatencyAnalyzer();
 	}
 
 //===============================================================
