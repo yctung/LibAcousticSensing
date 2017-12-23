@@ -300,14 +300,14 @@ classdef SensingServer < handle
             %**********************************************************
             % ACTION_DATA: received audio data 
             %**********************************************************
-            elseif action == obj.ACTION_DATA,
+            elseif action == obj.ACTION_DATA
                 % a. parse the recieved payload as audio
-                if obj.needToAnalyzeSocketCallbackLatency == 1, % need to analyze the latency of java socket callback
+                if obj.needToAnalyzeSocketCallbackLatency == 1 % need to analyze the latency of java socket callback
                     obj.jss.la.addResultStamp(obj.audioAllEnd * obj.traceChannelCnt * 2);
                 end
                 
                 dataTemp = double(typecast(event.dataBytes,'int16'));
-                if obj.traceChannelCnt == 1, % single-chanell ->ex: iphone
+                if obj.traceChannelCnt == 1 % single-chanell ->ex: iphone
                     audioNow = dataTemp;
                 else % stereo-recroding
                     audioNow = [dataTemp(1:2:end), dataTemp(2:2:end)];
@@ -329,7 +329,7 @@ classdef SensingServer < handle
                 audioToProcess = obj.traceParser.parse(audioNow);
                 
                 
-                if ~isempty(audioToProcess),
+                if ~isempty(audioToProcess)
                     processCnt = size(audioToProcess,2); % number of trace to be processed
                     % size(audioToProcess)
                     % size(obj.audioToProcessAll(:,obj.audioToProcessAllEnd+1:obj.audioToProcessAllEnd+processCnt,:))
