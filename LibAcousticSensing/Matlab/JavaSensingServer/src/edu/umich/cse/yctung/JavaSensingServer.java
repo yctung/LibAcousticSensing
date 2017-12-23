@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * the concept of this code comes from the matSock library and undocumented Matlab
  */
 public class JavaSensingServer extends Thread {
+	private static final String VERSION_DESC = "1.0.1: add latency analyzer"; 
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
 	public static boolean SHOW_DEBUG_MESSAGE = true;
@@ -63,6 +64,11 @@ public class JavaSensingServer extends Thread {
 		jss.start(); // now everything is in the seperate thread
 		servers.put(port, jss);
 		return jss;
+	}
+	
+	public static String version() {
+		threadErrMessage("JavaSensingVersion = " +VERSION_DESC);
+		return VERSION_DESC;
 	}
 	
 	// Private constructor
@@ -436,7 +442,7 @@ public class JavaSensingServer extends Thread {
 	 //=================================================================================================
 	 // Latency analysis
 	 //=================================================================================================
-	     private class LatencyAnalyzer {
+	     protected class LatencyAnalyzer {
 	         private class LatencyStamp {
 	             int sampleCnt;
 	             long time; // ms
