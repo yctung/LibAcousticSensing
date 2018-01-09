@@ -1,8 +1,9 @@
-function [] = FreqRespAnalysisCallback( obj, type, data )
+function [ret] = FreqRespAnalysisCallback( obj, type, data )
     global dataCellBuf; % save this data buffer for the future reference
     global dataCellBufEnd;
     global PS;
     
+    ret = [];
     if type == obj.CALLBACK_TYPE_INIT,
         dataCellBuf = {};
         dataCellBufEnd = 0;
