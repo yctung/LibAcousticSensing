@@ -14,7 +14,12 @@ filePath = strcat(prefdir,'/javaclasspath.txt')
 try
     fid = fopen(filePath, 'wt');
     %fprintf(fid, pathToAdd);  % add folder of *.class files
-    fprintf(fid, '%s/JavaSensingServer/prebuild/java17/bin',pwd);
+    parts = strsplit(version('-java'), ' ');
+    vs = strsplit(parts{2}, '.');
+    
+    fprintf(2, 'Your Matlab is using %s.%s\n', vs{1}, vs{2});
+    
+    fprintf(fid, '%s/JavaSensingServer/prebuild/java%s%s/bin',pwd, vs{1}, vs{2});
     fclose(fid);
     
     
