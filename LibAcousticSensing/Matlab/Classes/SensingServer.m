@@ -136,7 +136,7 @@ classdef SensingServer < handle
             
             % create java sensing server
             obj.jss = edu.umich.cse.yctung.JavaSensingServer.create(port);
-            % obj.jss.SHOW_DEBUG_MESSAGE = false; % yctung: temporarly remove it since access java class variable might not be allowed in High Sierra
+            obj.jss.SHOW_DEBUG_MESSAGE = false; % yctung: temporarly remove it since access java class variable might not be allowed in High Sierra
             set(obj.jss,'OpAcceptCallback',@(~,~)obj.onAcceptCallback);
             set(obj.jss,'OpDataCallback',@(h,e)obj.onDataCallback(h,e));
             %set(obj.jss,'OpDataCallback',@JavaServerOnDataCallback);
@@ -338,13 +338,16 @@ classdef SensingServer < handle
                     
                     % only parse the last audio data
                     % fprintf('callback is called for parsing audio data\n');
-                    ret = feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
                     
-                    if ~isempty(ret)
-                        fprintf(2, 'send result back to phone\n');
-                        % TODO: send result back
-                        % we now use the audio stamp as a refernece
-                        obj.sendResult(-1, -1);
+                    if nargout(obj.callback) == 0 % no output
+                        feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
+                    else
+                        ret = feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
+                        if ~isempty(ret)
+                            fprintf(2, 'send result back to phone\n');
+                            % we now use the audio stamp as a refernece
+                            obj.sendResult(-1, -1);
+                        end
                     end
                 end
             %**********************************************************
