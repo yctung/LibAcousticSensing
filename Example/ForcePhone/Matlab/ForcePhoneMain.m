@@ -22,10 +22,16 @@ FADING_RATIO = 0.5;
 
 global PS; PS = struct(); % parse setting, easy for the callback to get
 PS.FS = FS;
+PS.USER_CODE_TOUCH_START = int16(1);
+PS.USER_CODE_TOUCH_END = int16(0);
+PS.detectChIdx = 1;
 PS.detectRangeStart = 580;
 PS.detectRangeEnd = 600;
 PS.detectEnabled = 0;
-PS.detectRef = 0;
+PS.vibLatest = 0;
+PS.vibRef = 0;
+PS.touched = 0;
+
 
 signal = zeros(PERIOD, 1);
 
@@ -68,7 +74,7 @@ as.preambleSource = ps;
 %}
 
 global ss; % TODO: find a better way instead of using a global variable
-ss = SensingServer(SERVER_PORT, @AppForcePhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
+ss = SensingServer(SERVER_PORT, @ForcePhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
 %ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);

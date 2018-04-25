@@ -10,7 +10,8 @@ public class JNICallback {
         System.loadLibrary("jnicallback");
     }
 
-    private native void debugTest();
+    public native void dataCallback(long retAddr);
+    public native void debugTest();
 
     public JNICallback() {
         debugTest();

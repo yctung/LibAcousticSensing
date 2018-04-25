@@ -38,6 +38,7 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(debugTest)(JNI_FUNC_NO_PARAM){
     debug("Here is the ndk debug message");
 }
 
+// DEPRECATED: we now use the setting directly from Matlab
 // function to init the audio source setting
 static bool sAudioSourceIsSet = false;
 // TODO: find a better "cross-platform" function signature
@@ -97,6 +98,9 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(initSenseSetting)(JNI_FUNC_PARAM char* logFolde
     strcpy(gLogFolderPath, logFolderPath);
     debug("gLogFolderPath = %s", gLogFolderPath);
 
+    // init Matlab code setting
+    //ForcePhoneCallback_initialize();
+
 #ifdef DEV_NDK // release resources
     env->ReleaseStringUTFChars(logFolderPathIn, logFolderPath);
 #endif
@@ -122,12 +126,29 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(finalize)(JNI_FUNC_NO_PARAM){
     sAudioSourceIsSet = false;
     sParseSettingIsSet = false;
     sSenseSettingIsSet = false;
+    ForcePhoneCallback_terminate();
 }
 
-// a reference class used to pass memory between jni efficiently
-struct AddAudioRet{
+
+// NOTE: this strctu should be consistent to the strcture in the libas_core.cpp
+struct AddAudioRet {
     int chCnt;
     int traceCnt;
     int sampleCnt;
     float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
 };
+
+#define AUDIO_CH_CNT_MAX 2
+#define AUDIO_REPEAT_CNT 500
+#define PULSE_DETECTION_MAX_RANGE_SAMPLES (2400)
+float gConBufs[AUDIO_CH_CNT_MAX][AUDIO_REPEAT_CNT][PULSE_DETECTION_MAX_RANGE_SAMPLES];
+
+JNI_FUNC_HEAD void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
+    AddAudioRet *r = (AddAudioRet *)retAddr;
+    debug("retAddr (jlong) = %ld", retAddr);
+    debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d", r->chCnt, r->traceCnt, r->sampleCnt);
+
+    // TODO: fetch the audio for processing by the audio setting
+    float *audioToProcess = &r->data[0][0][0];
+
+}

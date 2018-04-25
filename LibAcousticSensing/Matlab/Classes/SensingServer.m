@@ -36,6 +36,10 @@ classdef SensingServer < handle
         CALLBACK_TYPE_DATA      = 1;
         CALLBACK_TYPE_USER      = 2;
         
+        % Mode
+        MODE_REMOTE = 1;
+        MODE_STANDALONE = 2;
+        
         SOCKET_TIME_OUT         = 60*60*24;
         
         DEVICE_AUDIO_MODE_RECORD_ONLY       = 1;
