@@ -20,7 +20,7 @@ void b_abs(const double x_data[], const int x_size[1], double y_data[], int
   int k;
   y_size[0] = (short)x_size[0];
   for (k = 0; k + 1 <= x_size[0]; k++) {
-    y_data[k] = std::abs(x_data[k]);
+    y_data[k] = fabs(x_data[k]);
   }
 }
 

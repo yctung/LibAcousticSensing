@@ -13,7 +13,7 @@
 #define CONVN_H
 
 /* Include files */
-#include <cmath>
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +21,7 @@
 #include "ForcePhoneCallback_types.h"
 
 /* Function Declarations */
-extern void convn(const double A[2400], const double B[1200], double C[2400]);
+extern void convn(const double A[4800], const double B[1200], double C[4800]);
 
 #endif
 

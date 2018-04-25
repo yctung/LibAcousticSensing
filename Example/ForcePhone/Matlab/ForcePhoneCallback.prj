@@ -1,18 +1,18 @@
 <deployment-project plugin="plugin.coder" plugin-version="R2016a">
-  <configuration build-checksum="699226382" file="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab/ForcePhoneCallback.prj" location="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab" name="ForcePhoneCallback" target="target.unifiedcoder" target-name="MATLAB Coder">
+  <configuration build-checksum="2045062049" file="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab/ForcePhoneCallback.prj" location="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab" name="ForcePhoneCallback" target="target.unifiedcoder" target-name="MATLAB Coder">
     <profile key="profile.mex">
-      <param.BuiltInstrumentedMex />
+      <param.BuiltInstrumentedMex>false</param.BuiltInstrumentedMex>
       <param.RanInstrumentedMex>false</param.RanInstrumentedMex>
       <param.WorkingFolder>option.WorkingFolder.Project</param.WorkingFolder>
       <param.SpecifiedWorkingFolder />
       <param.BuildFolder>option.BuildFolder.Project</param.BuildFolder>
       <param.SpecifiedBuildFolder />
       <param.SearchPaths />
-      <param.ResponsivenessChecks />
-      <param.ExtrinsicCalls />
-      <param.IntegrityChecks />
-      <param.SaturateOnIntegerOverflow />
-      <param.GlobalDataSyncMethod />
+      <param.ResponsivenessChecks>true</param.ResponsivenessChecks>
+      <param.ExtrinsicCalls>true</param.ExtrinsicCalls>
+      <param.IntegrityChecks>true</param.IntegrityChecks>
+      <param.SaturateOnIntegerOverflow>true</param.SaturateOnIntegerOverflow>
+      <param.GlobalDataSyncMethod>option.GlobalDataSyncMethod.SyncAlways</param.GlobalDataSyncMethod>
       <param.EnableVariableSizing>true</param.EnableVariableSizing>
       <param.DynamicMemoryAllocation>option.DynamicMemoryAllocation.Threshold</param.DynamicMemoryAllocation>
       <param.DynamicMemoryAllocationThreshold>65536</param.DynamicMemoryAllocationThreshold>
@@ -23,7 +23,7 @@
       <param.GenerateComments>true</param.GenerateComments>
       <param.MATLABSourceComments>false</param.MATLABSourceComments>
       <param.ReservedNameArray />
-      <param.EnableDebugging />
+      <param.EnableDebugging>false</param.EnableDebugging>
       <param.GenerateReport>true</param.GenerateReport>
       <param.LaunchReport>false</param.LaunchReport>
       <param.ReportPotentialDifferences>false</param.ReportPotentialDifferences>
@@ -39,13 +39,13 @@
       <param.CustomSource />
       <param.CustomLibrary />
       <param.PostCodeGenCommand />
-      <param.mex.GenCodeOnly />
+      <param.mex.GenCodeOnly>false</param.mex.GenCodeOnly>
       <param.ConstantFoldingTimeout>40000</param.ConstantFoldingTimeout>
       <param.CompileTimeRecursionLimit>50</param.CompileTimeRecursionLimit>
       <param.EnableRuntimeRecursion>true</param.EnableRuntimeRecursion>
       <param.PreserveVariableNames>option.PreserveVariableNames.None</param.PreserveVariableNames>
       <param.TargetLang>option.TargetLang.C</param.TargetLang>
-      <param.EchoExpressions />
+      <param.EchoExpressions>true</param.EchoExpressions>
       <param.InlineThreshold>10</param.InlineThreshold>
       <param.InlineThresholdMax>200</param.InlineThresholdMax>
       <param.InlineStackLimit>4000</param.InlineStackLimit>
@@ -53,11 +53,11 @@
       <param.MemcpyThreshold>64</param.MemcpyThreshold>
       <param.EnableOpenMP>true</param.EnableOpenMP>
       <param.InitFltsAndDblsToZero>true</param.InitFltsAndDblsToZero>
-      <param.ConstantInputs />
+      <param.ConstantInputs>option.ConstantInputs.CheckValues</param.ConstantInputs>
       <param.EnableCRICodeCoverage>true</param.EnableCRICodeCoverage>
       <param.EnableJIT>false</param.EnableJIT>
-      <param.EnableJITSilentBailOut />
-      <param.CheckForIssuesJIT />
+      <param.EnableJITSilentBailOut>false</param.EnableJITSilentBailOut>
+      <param.CheckForIssuesJIT>true</param.CheckForIssuesJIT>
       <unset>
         <param.BuiltInstrumentedMex />
         <param.RanInstrumentedMex />
@@ -180,7 +180,7 @@
       <param.CustomSource />
       <param.CustomLibrary />
       <param.PostCodeGenCommand />
-      <param.TargetLangStandard>C++03 (ISO)</param.TargetLangStandard>
+      <param.TargetLangStandard>C89/C90 (ANSI)</param.TargetLangStandard>
       <param.CodeReplacementLibrary>None</param.CodeReplacementLibrary>
       <param.DeprecatedCRLFlag>false</param.DeprecatedCRLFlag>
       <param.SameHardware>true</param.SameHardware>
@@ -811,7 +811,7 @@
     <param.AutoInferUnboundedSizeThreshold>2048</param.AutoInferUnboundedSizeThreshold>
     <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
     <param.EnableScreener>true</param.EnableScreener>
-    <param.AnnotationChecksum>2798930165</param.AnnotationChecksum>
+    <param.AnnotationChecksum>1764607306</param.AnnotationChecksum>
     <var.LegacyTarget />
     <var.MirrorOnOpen>false</var.MirrorOnOpen>
     <param.FixedPointEnabled>false</param.FixedPointEnabled>
@@ -820,9 +820,9 @@
     <param.unifiedParamStorage />
     <var.gc.lastOutputRoot>codegen/lib/ForcePhoneCallback</var.gc.lastOutputRoot>
     <var.gc.lastOutputType>C_CODE</var.gc.lastOutputType>
-    <var.gc.preBuildChecksum>3256747135</var.gc.preBuildChecksum>
+    <var.gc.preBuildChecksum>2045062049</var.gc.preBuildChecksum>
     <var.cfi.lastOutputRoot>codegen/mex/ForcePhoneCallback</var.cfi.lastOutputRoot>
-    <var.cfi.preBuildChecksum>1288002662</var.cfi.preBuildChecksum>
+    <var.cfi.preBuildChecksum>1549702192</var.cfi.preBuildChecksum>
     <var.lastCfiTestSnippet>ForcePhoneStandaloneMain</var.lastCfiTestSnippet>
     <var.outdatedOnRestore>false</var.outdatedOnRestore>
     <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab/ForcePhoneCallback.m&lt;/file&gt;&lt;file&gt;/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/LibAcousticSensing/Matlab/Functions/CreateCallbackReturn.m&lt;/file&gt;&lt;file&gt;/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/LibAcousticSensing/Matlab/Functions/SetCallbackReturnDouble.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;3760647738&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
@@ -991,7 +991,7 @@
     </unset>
     <fileset.entrypoints>
       <file custom-data-expanded="false" value="${PROJECT_ROOT}/ForcePhoneCallback.m">
-        <Marker>1524328733708</Marker>
+        <Marker>1524698750003</Marker>
       </file>
     </fileset.entrypoints>
     <fileset.testbench>
@@ -1026,7 +1026,7 @@
               <Alignment>-1</Alignment>
             </type>
             <type typeId="1">
-              <Class>int16</Class>
+              <Class>int32</Class>
               <Size>1 x 1</Size>
               <Value />
               <InitialValue />
@@ -1035,7 +1035,7 @@
             </type>
             <type typeId="2">
               <Class>double</Class>
-              <Size>2400 x 1</Size>
+              <Size>2400 x 2</Size>
               <Value />
               <InitialValue />
               <UserDefined>false</UserDefined>

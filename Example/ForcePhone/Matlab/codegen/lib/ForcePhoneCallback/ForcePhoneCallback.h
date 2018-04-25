@@ -13,7 +13,7 @@
 #define FORCEPHONECALLBACK_H
 
 /* Include files */
-#include <cmath>
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,8 +21,8 @@
 #include "ForcePhoneCallback_types.h"
 
 /* Function Declarations */
-extern void ForcePhoneCallback(const struct0_T *context, short type, const
-  double data[2400], const struct1_T *user, struct2_T *ret);
+extern void ForcePhoneCallback(const struct0_T *context, int type, const double
+  data[4800], const struct1_T *user, struct2_T *ret);
 
 #endif
 

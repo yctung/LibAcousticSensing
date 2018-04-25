@@ -25,11 +25,11 @@
 #define typedef_struct0_T
 
 typedef struct {
-  int16_T mode;
-  int16_T CALLBACK_TYPE_ERROR;
-  int16_T CALLBACK_TYPE_INIT;
-  int16_T CALLBACK_TYPE_DATA;
-  int16_T CALLBACK_TYPE_USER;
+  int32_T mode;
+  int32_T CALLBACK_TYPE_ERROR;
+  int32_T CALLBACK_TYPE_INIT;
+  int32_T CALLBACK_TYPE_DATA;
+  int32_T CALLBACK_TYPE_USER;
 } struct0_T;
 
 #endif                                 /*typedef_struct0_T*/
@@ -38,8 +38,8 @@ typedef struct {
 #define typedef_struct1_T
 
 typedef struct {
-  int16_T code;
-  int16_T valInt;
+  int32_T code;
+  int32_T valInt;
 } struct1_T;
 
 #endif                                 /*typedef_struct1_T*/
@@ -62,8 +62,8 @@ extern emlrtCTX emlrtRootTLSGlobal;
 extern emlrtContext emlrtContextGlobal;
 
 /* Function Declarations */
-extern void ForcePhoneCallback(struct0_T *context, int16_T type, real_T data
-  [2400], struct1_T *user, struct2_T *ret);
+extern void ForcePhoneCallback(struct0_T *context, int32_T type, real_T data
+  [4800], struct1_T *user, struct2_T *ret);
 extern void ForcePhoneCallback_api(const mxArray * const prhs[4], const mxArray *
   plhs[1]);
 extern void ForcePhoneCallback_atexit(void);

@@ -40,27 +40,30 @@
 #include "ForcePhoneCallback_initialize.h"
 
 /* Function Declarations */
-static void argInit_2400x1_real_T(double result[2400]);
-static short argInit_int16_T();
+static void argInit_2400x2_real_T(double result[4800]);
+static int argInit_int32_T();
 static double argInit_real_T();
 static struct0_T argInit_struct0_T();
 static struct1_T argInit_struct1_T();
 static void main_ForcePhoneCallback();
 
 /* Function Definitions */
-static void argInit_2400x1_real_T(double result[2400])
+static void argInit_2400x2_real_T(double result[4800])
 {
   int idx0;
+  int idx1;
 
   /* Loop over the array to initialize each element. */
   for (idx0 = 0; idx0 < 2400; idx0++) {
-    /* Set the value of the array element.
-       Change this value to the value that the application requires. */
-    result[idx0] = argInit_real_T();
+    for (idx1 = 0; idx1 < 2; idx1++) {
+      /* Set the value of the array element.
+         Change this value to the value that the application requires. */
+      result[idx0 + 2400 * idx1] = argInit_real_T();
+    }
   }
 }
 
-static short argInit_int16_T()
+static int argInit_int32_T()
 {
   return 0;
 }
@@ -76,11 +79,11 @@ static struct0_T argInit_struct0_T()
 
   /* Set the value of each structure field.
      Change this value to the value that the application requires. */
-  result.mode = argInit_int16_T();
-  result.CALLBACK_TYPE_ERROR = argInit_int16_T();
-  result.CALLBACK_TYPE_INIT = argInit_int16_T();
-  result.CALLBACK_TYPE_DATA = argInit_int16_T();
-  result.CALLBACK_TYPE_USER = argInit_int16_T();
+  result.mode = argInit_int32_T();
+  result.CALLBACK_TYPE_ERROR = argInit_int32_T();
+  result.CALLBACK_TYPE_INIT = argInit_int32_T();
+  result.CALLBACK_TYPE_DATA = argInit_int32_T();
+  result.CALLBACK_TYPE_USER = argInit_int32_T();
   return result;
 }
 
@@ -90,14 +93,14 @@ static struct1_T argInit_struct1_T()
 
   /* Set the value of each structure field.
      Change this value to the value that the application requires. */
-  result.code = argInit_int16_T();
-  result.valInt = argInit_int16_T();
+  result.code = argInit_int32_T();
+  result.valInt = argInit_int32_T();
   return result;
 }
 
 static void main_ForcePhoneCallback()
 {
-  double dv0[2400];
+  double dv1[4800];
   struct0_T r1;
   struct1_T r2;
   struct2_T ret;
@@ -107,10 +110,10 @@ static void main_ForcePhoneCallback()
   /* Initialize function input argument 'data'. */
   /* Initialize function input argument 'user'. */
   /* Call the entry-point 'ForcePhoneCallback'. */
-  argInit_2400x1_real_T(dv0);
+  argInit_2400x2_real_T(dv1);
   r1 = argInit_struct0_T();
   r2 = argInit_struct1_T();
-  ForcePhoneCallback(&r1, argInit_int16_T(), dv0, &r2, &ret);
+  ForcePhoneCallback(&r1, argInit_int32_T(), dv1, &r2, &ret);
 }
 
 int main(int, const char * const [])

@@ -14,9 +14,11 @@
 #include "convn.h"
 
 /* Function Definitions */
-void convn(const double A[2400], const double B[1200], double C[2400])
+void convn(const double A[4800], const double B[1200], double C[4800])
 {
+  int k;
   int iC;
+  int iA;
   int iB;
   int i;
   int firstRowA;
@@ -24,33 +26,37 @@ void convn(const double A[2400], const double B[1200], double C[2400])
   int a_length;
   int cidx;
   int r;
-  memset(&C[0], 0, 2400U * sizeof(double));
-  iC = 0;
-  iB = 0;
-  for (i = 0; i < 1200; i++) {
-    if (i < 600) {
-      firstRowA = 600 - i;
-    } else {
-      firstRowA = 0;
-    }
+  memset(&C[0], 0, 4800U * sizeof(double));
+  for (k = 0; k < 2; k++) {
+    iC = (k > 0) * 2400;
+    iA = k * 2400;
+    iB = 0;
+    for (i = 0; i < 1200; i++) {
+      if (i < 600) {
+        firstRowA = 600 - i;
+      } else {
+        firstRowA = 0;
+      }
 
-    if (i + 2400 <= 2999) {
-      b_i = 2400;
-    } else {
-      b_i = 3000 - i;
-    }
+      if (i + 2400 <= 2999) {
+        b_i = 2400;
+      } else {
+        b_i = 3000 - i;
+      }
 
-    a_length = b_i - firstRowA;
-    cidx = iC;
-    for (r = 1; r <= a_length; r++) {
-      C[cidx] += B[iB] * A[firstRowA];
-      firstRowA++;
-      cidx++;
-    }
+      a_length = b_i - firstRowA;
+      firstRowA += iA;
+      cidx = iC;
+      for (r = 1; r <= a_length; r++) {
+        C[cidx] += B[iB] * A[firstRowA];
+        firstRowA++;
+        cidx++;
+      }
 
-    iB++;
-    if (i >= 600) {
-      iC++;
+      iB++;
+      if (i >= 600) {
+        iC++;
+      }
     }
   }
 }

@@ -29,71 +29,72 @@
 <a name="17"><font color="#888888 "><i>   17   </i></font></a><font color="#992211">#</font><font color="#992211"><b>include</b></font> <font color="#992211">&quot;ForcePhoneCallback_data.h&quot;</font>
 <a name="18"><font color="#888888 "><i>   18   </i></font></a>
 <a name="19"><font color="#888888 "><i>   19   </i></font></a><font color="#117755"><i>/* Function Definitions */</i></font>
-<a name="20"><font color="#888888 "><i>   20   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_ForcePhoneCallback">ForcePhoneCallback</a>(<font color="#112266"><b>const</b></font> <a href="ForcePhoneCallback_types_h.html#type_struct0_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_struct0_T');" target="_self"><font color="#1122aa">struct0_T</font></a> *context, <font color="#112266"><b>short</b></font> type, <font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> data
-<a name="21"><font color="#888888 "><i>   21   </i></font></a>  [2400], <font color="#112266"><b>const</b></font> <a href="ForcePhoneCallback_types_h.html#type_struct1_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_struct1_T');" target="_self"><font color="#1122aa">struct1_T</font></a> *user, <a href="ForcePhoneCallback_types_h.html#type_struct2_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_struct2_T');" target="_self"><font color="#1122aa">struct2_T</font></a> *ret)
+<a name="20"><font color="#888888 "><i>   20   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_ForcePhoneCallback">ForcePhoneCallback</a>(<font color="#112266"><b>const</b></font> <a href="ForcePhoneCallback_types_h.html#type_struct0_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_struct0_T');" target="_self"><font color="#1122aa">struct0_T</font></a> *context, <font color="#112266"><b>int</b></font> type, <font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> data
+<a name="21"><font color="#888888 "><i>   21   </i></font></a>  [4800], <font color="#112266"><b>const</b></font> <a href="ForcePhoneCallback_types_h.html#type_struct1_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_struct1_T');" target="_self"><font color="#1122aa">struct1_T</font></a> *user, <a href="ForcePhoneCallback_types_h.html#type_struct2_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_struct2_T');" target="_self"><font color="#1122aa">struct2_T</font></a> *ret)
 <a name="22"><font color="#888888 "><i>   22   </i></font></a><b>{</b>
 <a name="23"><font color="#888888 "><i>   23   </i></font></a>  <font color="#112266"><b>int</b></font> i0;
 <a name="24"><font color="#888888 "><i>   24   </i></font></a>  <font color="#112266"><b>int</b></font> i1;
-<a name="25"><font color="#888888 "><i>   25   </i></font></a>  <font color="#112266"><b>double</b></font> tmp_data[2400];
+<a name="25"><font color="#888888 "><i>   25   </i></font></a>  <font color="#112266"><b>double</b></font> dv0[4800];
 <a name="26"><font color="#888888 "><i>   26   </i></font></a>  <font color="#112266"><b>int</b></font> tmp_size[1];
 <a name="27"><font color="#888888 "><i>   27   </i></font></a>  <font color="#112266"><b>int</b></font> loop_ub;
-<a name="28"><font color="#888888 "><i>   28   </i></font></a>  <font color="#112266"><b>double</b></font> b_tmp_data[2400];
-<a name="29"><font color="#888888 "><i>   29   </i></font></a>  <font color="#112266"><b>int</b></font> b_tmp_size[1];
-<a name="30"><font color="#888888 "><i>   30   </i></font></a>  <font color="#112266"><b>double</b></font> vib;
-<a name="31"><font color="#888888 "><i>   31   </i></font></a>
-<a name="32"><font color="#888888 "><i>   32   </i></font></a>  <font color="#117755"><i>/*  This callback only focuses on handling the data, no GUI anymore */</i></font>
-<a name="33"><font color="#888888 "><i>   33   </i></font></a>  <font color="#117755"><i>/*  To convert this to the offline mode, use the */</i></font>
-<a name="34"><font color="#888888 "><i>   34   </i></font></a>  ret-&gt;initialized = -1;
-<a name="35"><font color="#888888 "><i>   35   </i></font></a>  ret-&gt;valInt1 = 0;
-<a name="36"><font color="#888888 "><i>   36   </i></font></a>  ret-&gt;valInt2 = 0;
-<a name="37"><font color="#888888 "><i>   37   </i></font></a>  ret-&gt;valDouble1 = 0.0;
-<a name="38"><font color="#888888 "><i>   38   </i></font></a>  ret-&gt;valDouble2 = 0.0;
-<a name="39"><font color="#888888 "><i>   39   </i></font></a>
-<a name="40"><font color="#888888 "><i>   40   </i></font></a>  <font color="#117755"><i>/* ret = 0; */</i></font>
-<a name="41"><font color="#888888 "><i>   41   </i></font></a>  <font color="#112266"><b>if</b></font> (type == context-&gt;CALLBACK_TYPE_INIT) <b>{</b>
-<a name="42"><font color="#888888 "><i>   42   </i></font></a>    <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched = 0.0;
-<a name="43"><font color="#888888 "><i>   43   </i></font></a>  <b>}</b> <font color="#112266"><b>else</b></font> <font color="#112266"><b>if</b></font> (type == context-&gt;CALLBACK_TYPE_DATA) <b>{</b>
-<a name="44"><font color="#888888 "><i>   44   </i></font></a>    <font color="#117755"><i>/*  estimate vibration by sound correlation */</i></font>
-<a name="45"><font color="#888888 "><i>   45   </i></font></a>    <font color="#112266"><b>if</b></font> (<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeStart &gt; <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeEnd) <b>{</b>
-<a name="46"><font color="#888888 "><i>   46   </i></font></a>      i0 = 0;
-<a name="47"><font color="#888888 "><i>   47   </i></font></a>      i1 = 0;
-<a name="48"><font color="#888888 "><i>   48   </i></font></a>    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="49"><font color="#888888 "><i>   49   </i></font></a>      i0 = (<font color="#112266"><b>int</b></font>)<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeStart - 1;
-<a name="50"><font color="#888888 "><i>   50   </i></font></a>      i1 = (<font color="#112266"><b>int</b></font>)<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeEnd;
-<a name="51"><font color="#888888 "><i>   51   </i></font></a>    <b>}</b>
-<a name="52"><font color="#888888 "><i>   52   </i></font></a>
-<a name="53"><font color="#888888 "><i>   53   </i></font></a>    <a href="convn_cpp.html#fcn_convn" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_convn');" target="_self"><font color="#1122aa">convn</font></a>(data, <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.signalToCorrelate, tmp_data);
-<a name="54"><font color="#888888 "><i>   54   </i></font></a>    tmp_size[0] = i1 - i0;
-<a name="55"><font color="#888888 "><i>   55   </i></font></a>    loop_ub = i1 - i0;
-<a name="56"><font color="#888888 "><i>   56   </i></font></a>    <font color="#112266"><b>for</b></font> (i1 = 0; i1 &lt; loop_ub; i1++) <b>{</b>
-<a name="57"><font color="#888888 "><i>   57   </i></font></a>      b_tmp_data[i1] = tmp_data[i0 + i1];
-<a name="58"><font color="#888888 "><i>   58   </i></font></a>    <b>}</b>
-<a name="59"><font color="#888888 "><i>   59   </i></font></a>
-<a name="60"><font color="#888888 "><i>   60   </i></font></a>    <a href="abs_cpp.html#fcn_b_abs" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_abs');" target="_self"><font color="#1122aa">b_abs</font></a>(b_tmp_data, tmp_size, tmp_data, b_tmp_size);
-<a name="61"><font color="#888888 "><i>   61   </i></font></a>    vib = <a href="mean_cpp.html#fcn_mean" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_mean');" target="_self"><font color="#1122aa">mean</font></a>(tmp_data, b_tmp_size);
-<a name="62"><font color="#888888 "><i>   62   </i></font></a>    <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibLatest = vib;
-<a name="63"><font color="#888888 "><i>   63   </i></font></a>    <font color="#112266"><b>if</b></font> (<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched == 1.0) <b>{</b>
-<a name="64"><font color="#888888 "><i>   64   </i></font></a>      ret-&gt;initialized = 1;
-<a name="65"><font color="#888888 "><i>   65   </i></font></a>      ret-&gt;valDouble1 = std::abs(vib - <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibRef) / <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibRef;
-<a name="66"><font color="#888888 "><i>   66   </i></font></a>
-<a name="67"><font color="#888888 "><i>   67   </i></font></a>      <font color="#117755"><i>/* ret = 0.5; */</i></font>
-<a name="68"><font color="#888888 "><i>   68   </i></font></a>    <b>}</b>
-<a name="69"><font color="#888888 "><i>   69   </i></font></a>  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="70"><font color="#888888 "><i>   70   </i></font></a>    <font color="#112266"><b>if</b></font> (type == context-&gt;CALLBACK_TYPE_USER) <b>{</b>
-<a name="71"><font color="#888888 "><i>   71   </i></font></a>      <font color="#112266"><b>if</b></font> (user-&gt;code == <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.USER_CODE_TOUCH_START) <b>{</b>
-<a name="72"><font color="#888888 "><i>   72   </i></font></a>        <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched = 1.0;
-<a name="73"><font color="#888888 "><i>   73   </i></font></a>        <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibRef = <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibLatest;
-<a name="74"><font color="#888888 "><i>   74   </i></font></a>      <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="75"><font color="#888888 "><i>   75   </i></font></a>        <font color="#112266"><b>if</b></font> (user-&gt;code == <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.USER_CODE_TOUCH_END) <b>{</b>
-<a name="76"><font color="#888888 "><i>   76   </i></font></a>          <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched = 0.0;
-<a name="77"><font color="#888888 "><i>   77   </i></font></a>        <b>}</b>
-<a name="78"><font color="#888888 "><i>   78   </i></font></a>      <b>}</b>
-<a name="79"><font color="#888888 "><i>   79   </i></font></a>    <b>}</b>
-<a name="80"><font color="#888888 "><i>   80   </i></font></a>  <b>}</b>
-<a name="81"><font color="#888888 "><i>   81   </i></font></a><b>}</b>
-<a name="82"><font color="#888888 "><i>   82   </i></font></a>
-<a name="83"><font color="#888888 "><i>   83   </i></font></a><font color="#117755"><i>/* End of code generation (ForcePhoneCallback.cpp) */</i></font>
-<a name="84"><font color="#888888 "><i>   84   </i></font></a></pre>
+<a name="28"><font color="#888888 "><i>   28   </i></font></a>  <font color="#112266"><b>double</b></font> tmp_data[2400];
+<a name="29"><font color="#888888 "><i>   29   </i></font></a>  <font color="#112266"><b>double</b></font> b_tmp_data[2400];
+<a name="30"><font color="#888888 "><i>   30   </i></font></a>  <font color="#112266"><b>int</b></font> b_tmp_size[1];
+<a name="31"><font color="#888888 "><i>   31   </i></font></a>  <font color="#112266"><b>double</b></font> vib;
+<a name="32"><font color="#888888 "><i>   32   </i></font></a>
+<a name="33"><font color="#888888 "><i>   33   </i></font></a>  <font color="#117755"><i>/*  This callback only focuses on handling the data, no GUI anymore */</i></font>
+<a name="34"><font color="#888888 "><i>   34   </i></font></a>  <font color="#117755"><i>/*  To convert this to the offline mode, use the */</i></font>
+<a name="35"><font color="#888888 "><i>   35   </i></font></a>  ret-&gt;initialized = -1;
+<a name="36"><font color="#888888 "><i>   36   </i></font></a>  ret-&gt;valInt1 = 0;
+<a name="37"><font color="#888888 "><i>   37   </i></font></a>  ret-&gt;valInt2 = 0;
+<a name="38"><font color="#888888 "><i>   38   </i></font></a>  ret-&gt;valDouble1 = 0.0;
+<a name="39"><font color="#888888 "><i>   39   </i></font></a>  ret-&gt;valDouble2 = 0.0;
+<a name="40"><font color="#888888 "><i>   40   </i></font></a>
+<a name="41"><font color="#888888 "><i>   41   </i></font></a>  <font color="#117755"><i>/* ret = 0; */</i></font>
+<a name="42"><font color="#888888 "><i>   42   </i></font></a>  <font color="#112266"><b>if</b></font> (type == context-&gt;CALLBACK_TYPE_INIT) <b>{</b>
+<a name="43"><font color="#888888 "><i>   43   </i></font></a>    <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched = 0.0;
+<a name="44"><font color="#888888 "><i>   44   </i></font></a>  <b>}</b> <font color="#112266"><b>else</b></font> <font color="#112266"><b>if</b></font> (type == context-&gt;CALLBACK_TYPE_DATA) <b>{</b>
+<a name="45"><font color="#888888 "><i>   45   </i></font></a>    <font color="#117755"><i>/*  estimate vibration by sound correlation */</i></font>
+<a name="46"><font color="#888888 "><i>   46   </i></font></a>    <font color="#112266"><b>if</b></font> (<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeStart &gt; <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeEnd) <b>{</b>
+<a name="47"><font color="#888888 "><i>   47   </i></font></a>      i0 = 0;
+<a name="48"><font color="#888888 "><i>   48   </i></font></a>      i1 = 0;
+<a name="49"><font color="#888888 "><i>   49   </i></font></a>    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="50"><font color="#888888 "><i>   50   </i></font></a>      i0 = (<font color="#112266"><b>int</b></font>)<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeStart - 1;
+<a name="51"><font color="#888888 "><i>   51   </i></font></a>      i1 = (<font color="#112266"><b>int</b></font>)<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectRangeEnd;
+<a name="52"><font color="#888888 "><i>   52   </i></font></a>    <b>}</b>
+<a name="53"><font color="#888888 "><i>   53   </i></font></a>
+<a name="54"><font color="#888888 "><i>   54   </i></font></a>    <a href="convn_cpp.html#fcn_convn" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_convn');" target="_self"><font color="#1122aa">convn</font></a>(data, <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.signalToCorrelate, dv0);
+<a name="55"><font color="#888888 "><i>   55   </i></font></a>    tmp_size[0] = i1 - i0;
+<a name="56"><font color="#888888 "><i>   56   </i></font></a>    loop_ub = i1 - i0;
+<a name="57"><font color="#888888 "><i>   57   </i></font></a>    <font color="#112266"><b>for</b></font> (i1 = 0; i1 &lt; loop_ub; i1++) <b>{</b>
+<a name="58"><font color="#888888 "><i>   58   </i></font></a>      tmp_data[i1] = dv0[(i0 + i1) + 2400 * ((<font color="#112266"><b>int</b></font>)<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.detectChIdx - 1)];
+<a name="59"><font color="#888888 "><i>   59   </i></font></a>    <b>}</b>
+<a name="60"><font color="#888888 "><i>   60   </i></font></a>
+<a name="61"><font color="#888888 "><i>   61   </i></font></a>    <a href="abs_cpp.html#fcn_b_abs" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_abs');" target="_self"><font color="#1122aa">b_abs</font></a>(tmp_data, tmp_size, b_tmp_data, b_tmp_size);
+<a name="62"><font color="#888888 "><i>   62   </i></font></a>    vib = <a href="mean_cpp.html#fcn_mean" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_mean');" target="_self"><font color="#1122aa">mean</font></a>(b_tmp_data, b_tmp_size);
+<a name="63"><font color="#888888 "><i>   63   </i></font></a>    <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibLatest = vib;
+<a name="64"><font color="#888888 "><i>   64   </i></font></a>    <font color="#112266"><b>if</b></font> (<a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched == 1.0) <b>{</b>
+<a name="65"><font color="#888888 "><i>   65   </i></font></a>      ret-&gt;initialized = 1;
+<a name="66"><font color="#888888 "><i>   66   </i></font></a>      ret-&gt;valDouble1 = fabs(vib - <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibRef) / <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibRef;
+<a name="67"><font color="#888888 "><i>   67   </i></font></a>
+<a name="68"><font color="#888888 "><i>   68   </i></font></a>      <font color="#117755"><i>/* ret = 0.5; */</i></font>
+<a name="69"><font color="#888888 "><i>   69   </i></font></a>    <b>}</b>
+<a name="70"><font color="#888888 "><i>   70   </i></font></a>  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="71"><font color="#888888 "><i>   71   </i></font></a>    <font color="#112266"><b>if</b></font> (type == context-&gt;CALLBACK_TYPE_USER) <b>{</b>
+<a name="72"><font color="#888888 "><i>   72   </i></font></a>      <font color="#112266"><b>if</b></font> (user-&gt;code == <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.USER_CODE_TOUCH_START) <b>{</b>
+<a name="73"><font color="#888888 "><i>   73   </i></font></a>        <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched = 1.0;
+<a name="74"><font color="#888888 "><i>   74   </i></font></a>        <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibRef = <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.vibLatest;
+<a name="75"><font color="#888888 "><i>   75   </i></font></a>      <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="76"><font color="#888888 "><i>   76   </i></font></a>        <font color="#112266"><b>if</b></font> (user-&gt;code == <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.USER_CODE_TOUCH_END) <b>{</b>
+<a name="77"><font color="#888888 "><i>   77   </i></font></a>          <a href="ForcePhoneCallback_data_cpp.html#var_PS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PS');" target="_self"><font color="#1122aa">PS</font></a>.touched = 0.0;
+<a name="78"><font color="#888888 "><i>   78   </i></font></a>        <b>}</b>
+<a name="79"><font color="#888888 "><i>   79   </i></font></a>      <b>}</b>
+<a name="80"><font color="#888888 "><i>   80   </i></font></a>    <b>}</b>
+<a name="81"><font color="#888888 "><i>   81   </i></font></a>  <b>}</b>
+<a name="82"><font color="#888888 "><i>   82   </i></font></a><b>}</b>
+<a name="83"><font color="#888888 "><i>   83   </i></font></a>
+<a name="84"><font color="#888888 "><i>   84   </i></font></a><font color="#117755"><i>/* End of code generation (ForcePhoneCallback.cpp) */</i></font>
+<a name="85"><font color="#888888 "><i>   85   </i></font></a></pre>
 </td></tr></table>
 </p>
 </body>

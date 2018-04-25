@@ -26,49 +26,55 @@
 <a name="14"><font color="#888888 "><i>   14   </i></font></a><font color="#992211">#</font><font color="#992211"><b>include</b></font> <font color="#992211">&quot;convn.h&quot;</font>
 <a name="15"><font color="#888888 "><i>   15   </i></font></a>
 <a name="16"><font color="#888888 "><i>   16   </i></font></a><font color="#117755"><i>/* Function Definitions */</i></font>
-<a name="17"><font color="#888888 "><i>   17   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_convn">convn</a>(<font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> A[2400], <font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> B[1200], <font color="#112266"><b>double</b></font> C[2400])
+<a name="17"><font color="#888888 "><i>   17   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_convn">convn</a>(<font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> A[4800], <font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> B[1200], <font color="#112266"><b>double</b></font> C[4800])
 <a name="18"><font color="#888888 "><i>   18   </i></font></a><b>{</b>
-<a name="19"><font color="#888888 "><i>   19   </i></font></a>  <font color="#112266"><b>int</b></font> iC;
-<a name="20"><font color="#888888 "><i>   20   </i></font></a>  <font color="#112266"><b>int</b></font> iB;
-<a name="21"><font color="#888888 "><i>   21   </i></font></a>  <font color="#112266"><b>int</b></font> i;
-<a name="22"><font color="#888888 "><i>   22   </i></font></a>  <font color="#112266"><b>int</b></font> firstRowA;
-<a name="23"><font color="#888888 "><i>   23   </i></font></a>  <font color="#112266"><b>int</b></font> b_i;
-<a name="24"><font color="#888888 "><i>   24   </i></font></a>  <font color="#112266"><b>int</b></font> a_length;
-<a name="25"><font color="#888888 "><i>   25   </i></font></a>  <font color="#112266"><b>int</b></font> cidx;
-<a name="26"><font color="#888888 "><i>   26   </i></font></a>  <font color="#112266"><b>int</b></font> r;
-<a name="27"><font color="#888888 "><i>   27   </i></font></a>  memset(&amp;C[0], 0, 2400U * <font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="28"><font color="#888888 "><i>   28   </i></font></a>  iC = 0;
-<a name="29"><font color="#888888 "><i>   29   </i></font></a>  iB = 0;
-<a name="30"><font color="#888888 "><i>   30   </i></font></a>  <font color="#112266"><b>for</b></font> (i = 0; i &lt; 1200; i++) <b>{</b>
-<a name="31"><font color="#888888 "><i>   31   </i></font></a>    <font color="#112266"><b>if</b></font> (i &lt; 600) <b>{</b>
-<a name="32"><font color="#888888 "><i>   32   </i></font></a>      firstRowA = 600 - i;
-<a name="33"><font color="#888888 "><i>   33   </i></font></a>    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="34"><font color="#888888 "><i>   34   </i></font></a>      firstRowA = 0;
-<a name="35"><font color="#888888 "><i>   35   </i></font></a>    <b>}</b>
-<a name="36"><font color="#888888 "><i>   36   </i></font></a>
-<a name="37"><font color="#888888 "><i>   37   </i></font></a>    <font color="#112266"><b>if</b></font> (i + 2400 &lt;= 2999) <b>{</b>
-<a name="38"><font color="#888888 "><i>   38   </i></font></a>      b_i = 2400;
-<a name="39"><font color="#888888 "><i>   39   </i></font></a>    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="40"><font color="#888888 "><i>   40   </i></font></a>      b_i = 3000 - i;
-<a name="41"><font color="#888888 "><i>   41   </i></font></a>    <b>}</b>
-<a name="42"><font color="#888888 "><i>   42   </i></font></a>
-<a name="43"><font color="#888888 "><i>   43   </i></font></a>    a_length = b_i - firstRowA;
-<a name="44"><font color="#888888 "><i>   44   </i></font></a>    cidx = iC;
-<a name="45"><font color="#888888 "><i>   45   </i></font></a>    <font color="#112266"><b>for</b></font> (r = 1; r &lt;= a_length; r++) <b>{</b>
-<a name="46"><font color="#888888 "><i>   46   </i></font></a>      C[cidx] += B[iB] * A[firstRowA];
-<a name="47"><font color="#888888 "><i>   47   </i></font></a>      firstRowA++;
-<a name="48"><font color="#888888 "><i>   48   </i></font></a>      cidx++;
-<a name="49"><font color="#888888 "><i>   49   </i></font></a>    <b>}</b>
-<a name="50"><font color="#888888 "><i>   50   </i></font></a>
-<a name="51"><font color="#888888 "><i>   51   </i></font></a>    iB++;
-<a name="52"><font color="#888888 "><i>   52   </i></font></a>    <font color="#112266"><b>if</b></font> (i &gt;= 600) <b>{</b>
-<a name="53"><font color="#888888 "><i>   53   </i></font></a>      iC++;
-<a name="54"><font color="#888888 "><i>   54   </i></font></a>    <b>}</b>
-<a name="55"><font color="#888888 "><i>   55   </i></font></a>  <b>}</b>
-<a name="56"><font color="#888888 "><i>   56   </i></font></a><b>}</b>
-<a name="57"><font color="#888888 "><i>   57   </i></font></a>
-<a name="58"><font color="#888888 "><i>   58   </i></font></a><font color="#117755"><i>/* End of code generation (convn.cpp) */</i></font>
-<a name="59"><font color="#888888 "><i>   59   </i></font></a></pre>
+<a name="19"><font color="#888888 "><i>   19   </i></font></a>  <font color="#112266"><b>int</b></font> k;
+<a name="20"><font color="#888888 "><i>   20   </i></font></a>  <font color="#112266"><b>int</b></font> iC;
+<a name="21"><font color="#888888 "><i>   21   </i></font></a>  <font color="#112266"><b>int</b></font> iA;
+<a name="22"><font color="#888888 "><i>   22   </i></font></a>  <font color="#112266"><b>int</b></font> iB;
+<a name="23"><font color="#888888 "><i>   23   </i></font></a>  <font color="#112266"><b>int</b></font> i;
+<a name="24"><font color="#888888 "><i>   24   </i></font></a>  <font color="#112266"><b>int</b></font> firstRowA;
+<a name="25"><font color="#888888 "><i>   25   </i></font></a>  <font color="#112266"><b>int</b></font> b_i;
+<a name="26"><font color="#888888 "><i>   26   </i></font></a>  <font color="#112266"><b>int</b></font> a_length;
+<a name="27"><font color="#888888 "><i>   27   </i></font></a>  <font color="#112266"><b>int</b></font> cidx;
+<a name="28"><font color="#888888 "><i>   28   </i></font></a>  <font color="#112266"><b>int</b></font> r;
+<a name="29"><font color="#888888 "><i>   29   </i></font></a>  memset(&amp;C[0], 0, 4800U * <font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="30"><font color="#888888 "><i>   30   </i></font></a>  <font color="#112266"><b>for</b></font> (k = 0; k &lt; 2; k++) <b>{</b>
+<a name="31"><font color="#888888 "><i>   31   </i></font></a>    iC = (k &gt; 0) * 2400;
+<a name="32"><font color="#888888 "><i>   32   </i></font></a>    iA = k * 2400;
+<a name="33"><font color="#888888 "><i>   33   </i></font></a>    iB = 0;
+<a name="34"><font color="#888888 "><i>   34   </i></font></a>    <font color="#112266"><b>for</b></font> (i = 0; i &lt; 1200; i++) <b>{</b>
+<a name="35"><font color="#888888 "><i>   35   </i></font></a>      <font color="#112266"><b>if</b></font> (i &lt; 600) <b>{</b>
+<a name="36"><font color="#888888 "><i>   36   </i></font></a>        firstRowA = 600 - i;
+<a name="37"><font color="#888888 "><i>   37   </i></font></a>      <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="38"><font color="#888888 "><i>   38   </i></font></a>        firstRowA = 0;
+<a name="39"><font color="#888888 "><i>   39   </i></font></a>      <b>}</b>
+<a name="40"><font color="#888888 "><i>   40   </i></font></a>
+<a name="41"><font color="#888888 "><i>   41   </i></font></a>      <font color="#112266"><b>if</b></font> (i + 2400 &lt;= 2999) <b>{</b>
+<a name="42"><font color="#888888 "><i>   42   </i></font></a>        b_i = 2400;
+<a name="43"><font color="#888888 "><i>   43   </i></font></a>      <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="44"><font color="#888888 "><i>   44   </i></font></a>        b_i = 3000 - i;
+<a name="45"><font color="#888888 "><i>   45   </i></font></a>      <b>}</b>
+<a name="46"><font color="#888888 "><i>   46   </i></font></a>
+<a name="47"><font color="#888888 "><i>   47   </i></font></a>      a_length = b_i - firstRowA;
+<a name="48"><font color="#888888 "><i>   48   </i></font></a>      firstRowA += iA;
+<a name="49"><font color="#888888 "><i>   49   </i></font></a>      cidx = iC;
+<a name="50"><font color="#888888 "><i>   50   </i></font></a>      <font color="#112266"><b>for</b></font> (r = 1; r &lt;= a_length; r++) <b>{</b>
+<a name="51"><font color="#888888 "><i>   51   </i></font></a>        C[cidx] += B[iB] * A[firstRowA];
+<a name="52"><font color="#888888 "><i>   52   </i></font></a>        firstRowA++;
+<a name="53"><font color="#888888 "><i>   53   </i></font></a>        cidx++;
+<a name="54"><font color="#888888 "><i>   54   </i></font></a>      <b>}</b>
+<a name="55"><font color="#888888 "><i>   55   </i></font></a>
+<a name="56"><font color="#888888 "><i>   56   </i></font></a>      iB++;
+<a name="57"><font color="#888888 "><i>   57   </i></font></a>      <font color="#112266"><b>if</b></font> (i &gt;= 600) <b>{</b>
+<a name="58"><font color="#888888 "><i>   58   </i></font></a>        iC++;
+<a name="59"><font color="#888888 "><i>   59   </i></font></a>      <b>}</b>
+<a name="60"><font color="#888888 "><i>   60   </i></font></a>    <b>}</b>
+<a name="61"><font color="#888888 "><i>   61   </i></font></a>  <b>}</b>
+<a name="62"><font color="#888888 "><i>   62   </i></font></a><b>}</b>
+<a name="63"><font color="#888888 "><i>   63   </i></font></a>
+<a name="64"><font color="#888888 "><i>   64   </i></font></a><font color="#117755"><i>/* End of code generation (convn.cpp) */</i></font>
+<a name="65"><font color="#888888 "><i>   65   </i></font></a></pre>
 </td></tr></table>
 </p>
 </body>

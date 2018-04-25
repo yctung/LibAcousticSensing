@@ -13,7 +13,7 @@
 #define FORCEPHONECALLBACK_DATA_H
 
 /* Include files */
-#include <cmath>
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>

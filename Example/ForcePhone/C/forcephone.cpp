@@ -7,6 +7,7 @@
 //=========================================================================================================
 //         !!! NOTE !!! It is a shared preference -> modify it will affect both iOS and Android code
 //=========================================================================================================
+#include <codegen/ForcePhoneCallback_types.h>
 #include "forcephone.h"
 
 //-------------------------------------------------------------------------
@@ -29,6 +30,18 @@ ParseSetting gParseSetting;
 
 char *gLogFolderPath;
 
+struct0_T gContext;
+struct1_T gUser;
+struct2_T gCallbackRet;
+
+void initContextAndUser() {
+    // NOTE: variable here should be consistent to the matlab design
+    gContext.mode = 2; // MODE_STANDALONE
+    gContext.CALLBACK_TYPE_ERROR = -1;
+    gContext.CALLBACK_TYPE_INIT = 0;
+    gContext.CALLBACK_TYPE_DATA = 1;
+    gContext.CALLBACK_TYPE_USER = 2;
+}
 
 //-------------------------------------------------------------------------
 // 4. Public functions (JNI interfaced)
@@ -99,7 +112,9 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(initSenseSetting)(JNI_FUNC_PARAM char* logFolde
     debug("gLogFolderPath = %s", gLogFolderPath);
 
     // init Matlab code setting
-    //ForcePhoneCallback_initialize();
+    ForcePhoneCallback_initialize();
+    initContextAndUser();
+    ForcePhoneCallback(&gContext, gContext.CALLBACK_TYPE_INIT, NULL, &gUser, &gCallbackRet);
 
 #ifdef DEV_NDK // release resources
     env->ReleaseStringUTFChars(logFolderPathIn, logFolderPath);
@@ -143,12 +158,21 @@ struct AddAudioRet {
 #define PULSE_DETECTION_MAX_RANGE_SAMPLES (2400)
 float gConBufs[AUDIO_CH_CNT_MAX][AUDIO_REPEAT_CNT][PULSE_DETECTION_MAX_RANGE_SAMPLES];
 
+
+
+
 JNI_FUNC_HEAD void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     AddAudioRet *r = (AddAudioRet *)retAddr;
     debug("retAddr (jlong) = %ld", retAddr);
     debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d", r->chCnt, r->traceCnt, r->sampleCnt);
 
     // TODO: fetch the audio for processing by the audio setting
-    float *audioToProcess = &r->data[0][0][0];
 
+    //float *audioToProcess = &r->data[0][0][0];
+
+    double data[2400*2];
+    // TODO: has a function to build context
+    ForcePhoneCallback(&gContext, gContext.CALLBACK_TYPE_DATA, data, &gUser, &gCallbackRet);
+
+    //debug("ret.initialized = %d", gCallbackRet.initialized);
 }

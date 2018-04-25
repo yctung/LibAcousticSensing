@@ -17,14 +17,15 @@
 #include "ForcePhoneCallback_data.h"
 
 /* Function Definitions */
-void ForcePhoneCallback(const struct0_T *context, short type, const double data
-  [2400], const struct1_T *user, struct2_T *ret)
+void ForcePhoneCallback(const struct0_T *context, int type, const double data
+  [4800], const struct1_T *user, struct2_T *ret)
 {
   int i0;
   int i1;
-  double tmp_data[2400];
+  double dv0[4800];
   int tmp_size[1];
   int loop_ub;
+  double tmp_data[2400];
   double b_tmp_data[2400];
   int b_tmp_size[1];
   double vib;
@@ -50,19 +51,19 @@ void ForcePhoneCallback(const struct0_T *context, short type, const double data
       i1 = (int)PS.detectRangeEnd;
     }
 
-    convn(data, PS.signalToCorrelate, tmp_data);
+    convn(data, PS.signalToCorrelate, dv0);
     tmp_size[0] = i1 - i0;
     loop_ub = i1 - i0;
     for (i1 = 0; i1 < loop_ub; i1++) {
-      b_tmp_data[i1] = tmp_data[i0 + i1];
+      tmp_data[i1] = dv0[(i0 + i1) + 2400 * ((int)PS.detectChIdx - 1)];
     }
 
-    b_abs(b_tmp_data, tmp_size, tmp_data, b_tmp_size);
-    vib = mean(tmp_data, b_tmp_size);
+    b_abs(tmp_data, tmp_size, b_tmp_data, b_tmp_size);
+    vib = mean(b_tmp_data, b_tmp_size);
     PS.vibLatest = vib;
     if (PS.touched == 1.0) {
       ret->initialized = 1;
-      ret->valDouble1 = std::abs(vib - PS.vibRef) / PS.vibRef;
+      ret->valDouble1 = fabs(vib - PS.vibRef) / PS.vibRef;
 
       /* ret = 0.5; */
     }

@@ -9,7 +9,7 @@
 [context, user] = CreateStandaloneContextAndUser();
 
 % TODO: get data as constant
-data = zeros(2400, 1);
+data = zeros(2400, 2);
 
 ret = ForcePhoneCallback(context, context.CALLBACK_TYPE_INIT, data, user);
 

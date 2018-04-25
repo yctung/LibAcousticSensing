@@ -17,16 +17,16 @@
 
 /* Type Definitions */
 typedef struct {
-  short mode;
-  short CALLBACK_TYPE_ERROR;
-  short CALLBACK_TYPE_INIT;
-  short CALLBACK_TYPE_DATA;
-  short CALLBACK_TYPE_USER;
+  int mode;
+  int CALLBACK_TYPE_ERROR;
+  int CALLBACK_TYPE_INIT;
+  int CALLBACK_TYPE_DATA;
+  int CALLBACK_TYPE_USER;
 } struct0_T;
 
 typedef struct {
-  short code;
-  short valInt;
+  int code;
+  int valInt;
 } struct1_T;
 
 typedef struct {
