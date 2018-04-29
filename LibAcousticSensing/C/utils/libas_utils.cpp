@@ -106,11 +106,32 @@ void estimateMeanAndStd(float *s, int len, float *mean, float *std){
 	debug("estimateMeanAndStd: sumAvg=%f, squareSumAvg=%f", sumAvg, squareSumAvg);
 }
 
+void estimateMeanAndStd(double *s, int len, double *mean, double *std){
+	float sumAvg = 0;
+	float squareSumAvg = 0;
+
+	for(int i=0;i<len;i++){
+		sumAvg += s[i]/(float)len;
+		squareSumAvg += s[i]*s[i]/(float)len;
+	}
+
+	*mean = sumAvg;
+	*std = sqrt(squareSumAvg - sumAvg*sumAvg);
+	debug("estimateMeanAndStd: sumAvg=%f, squareSumAvg=%f", sumAvg, squareSumAvg);
+}
+
 void convertShortArrayToFloatArray(float *f, short *s, int size, bool needToReverse) {
 		for (int i = 0; i < size; i ++) {
 				int target = needToReverse ? size - i - 1 : i;
 				f[target] = ((float)s[i])/32767.0;
 		}
+}
+
+void convertShortArrayToDoubleArray(double *f, short *s, int size, bool needToReverse) {
+	for (int i = 0; i < size; i ++) {
+		int target = needToReverse ? size - i - 1 : i;
+		f[target] = ((double)s[i])/32767.0;
+	}
 }
 
 /*
@@ -265,6 +286,47 @@ void makeConvolveInDestSize(float *source, int sourceSize, float *filter, int fi
 	}
 }
 
+void makeConvolveInDestSize(double *source, int sourceSize, double *filter, int filterSize, double *dest, int destSize, bool returnAbs){
+	int validSize = destSize;
+
+	int startPaddingSize = filterSize/2 -((filterSize+1)%2); // if filterSize is odd -> reduce one more startPadding for fitting matlab design
+	int endPaddingSize = filterSize/2;
+	int startPadding = 0;
+	int endPadding = 0;
+	int referIdx = 0; // the refer of original vector
+	for(int i=0;i<validSize;i++){
+		float sum = 0;
+		int sourceIdx = referIdx;
+
+		if(i<startPaddingSize){ // need start padding
+			startPadding = startPaddingSize - i;
+		} else {
+			startPadding = 0;
+		}
+
+		if(i>=sourceSize-endPaddingSize){
+			endPadding = i-sourceSize+endPaddingSize+1;
+		} else {
+			endPadding = 0;
+		}
+
+		//debug("i=%d, souceIdx=%d, sp=%d, ep=%d", i, sourceIdx, startPadding, endPadding);
+
+		for(int filterIdx=filterSize-1-startPadding;filterIdx>=0+endPadding;filterIdx--){
+			sum += source[sourceIdx]*filter[filterIdx];
+			sourceIdx ++;
+		}
+
+		// flip sum if abs is required
+		if(returnAbs && sum < 0) sum = -1*sum;
+		dest[i] = sum;
+
+		// only move the refer idx when no start padding is need
+		if(startPadding == 0){
+			referIdx++;
+		}
+	}
+}
 
 
 // this is equal to conv(...'valid') in matlab
@@ -346,6 +408,33 @@ float makeAbsConvInRange(float *source, int sourceSize, float *pulse, int pulseS
 
 // debug function to dump fire to matlab
 void debugToMatlabFile2D(float** data, int col, int row, char* name, const char* path){
+	if(SAVE_DEBUG_FILE){
+		//debug("debugToMatlabFile2D: begin to write : %s", name);
+		char filePathBuff[1000];
+		sprintf(filePathBuff,"%sjni_%s.csv",path, name);
+		FILE* f = fopen(filePathBuff,"w");
+		//debug("debugToMatlabFile2D: f = %d", f);
+		//fprintf(f, "jni_%s = [", name);
+		for (int r=0;r<row;r++){
+			for (int c=0;c<col;c++){
+				fprintf(f, "%.2f",*(*(data+r)+c));
+				if(c<col-1){
+					fprintf(f,",");
+				}
+			}
+			fprintf(f,"\n");
+		}
+		//fprintf(f,"];");
+		fclose(f);
+		//debug("debugToMatlabFile2D: end to write : %s", name);
+	}
+}
+
+void debugToMatlabFile1D(double *data, int col, char* name, const char* path) {
+	debugToMatlabFile2D(&data, col, 1, name, path);
+}
+
+void debugToMatlabFile2D(double** data, int col, int row, char* name, const char* path){
 	if(SAVE_DEBUG_FILE){
 		//debug("debugToMatlabFile2D: begin to write : %s", name);
 		char filePathBuff[1000];

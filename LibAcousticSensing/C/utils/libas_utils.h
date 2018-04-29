@@ -64,23 +64,40 @@
 #define DEBUG_MACRO_ASSERT(x) __android_log_print(ANDROID_LOG_ERROR, DEBUG_TAG, "[ASSERT FAIL]: %s", x);
 #define DEBUG_STRING_BUFFER_SIZE 1024
 
+// a reference class used to pass memory between jni efficiently
+struct AddAudioRet{
+    //double *data;
+    int chCnt;
+    int traceCnt;
+    int sampleCnt;
+    // deprecated -> we use the flat matrix now for matching the Matlab format
+    //float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
+    jlong dataAddr;
+    // format: data[traceIdx * (chCnt * sampleCnt) + chIdx * sampleCnt + sampleIdx]
+};
+
 void debug(const char *s,...);
 void warn(const char *s,...);
 void error(const char *s,...);
 void check(const int result, const char *s,...);
 int getMaxIdx(float*, int);
 void estimateMeanAndStd(float *s, int len, float *mean, float *std);
+void estimateMeanAndStd(double *s, int len, double *mean, double *std);
 /*
 int estimateBinFreqs(float *&freqs, int &binStartFreqIdx, int &binEndFreqIdx, int sCol, int FS, float BIN_START, float BIN_END);
 void makeFFTBins(float **s2D, float **&fftBins, int sCol, int sRow, int binStartFreqIdx, int binEndFreqIdx, int binCnt, const char *logFolderPath);
 */
 void convertShortArrayToFloatArray(float *f, short *s, int size, bool needToReverse);
+void convertShortArrayToDoubleArray(double *f, short *s, int size, bool needToReverse);
 
 void makeConvolveInDestSize(float*, int, float *, int , float *, int , bool);
+void makeConvolveInDestSize(double*, int, double *, int , double *, int , bool);
 void makeFilter(float *, int , float *, int , float *, int , float *);
 float makeAbsConvInRange(float *source, int sourceSize, float *pulse, int pulseSize, float *dest, int destSize, int rangeStart, int rangeEnd);
 void debugToMatlabFile2D(float** data, int col, int row, char* name, const char* path);
 void debugToMatlabFile1D(float *data, int col, char* name, const char* path);
+void debugToMatlabFile2D(double** data, int col, int row, char* name, const char* path);
+void debugToMatlabFile1D(double *data, int col, char* name, const char* path);
 //void debugToMatlabFile2D(short** data, int col, int row, char* name, const char* path);
 //void debugToMatlabFile1D(short *data, int col, char* name, const char* path);
 void normalize(float* dest, int destSize);

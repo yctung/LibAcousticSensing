@@ -54,7 +54,7 @@ struct AudioSource {
     //short[] signal;
     //short[] preamble;
     int signalSize;
-    float *syncReversed;
+    double *syncReversed;
     int syncSize;
 };
 AudioSource gAudioSource;
@@ -66,7 +66,7 @@ struct ParseSetting {
 ParseSetting gParseSetting;
 
 char *gLogFolderPath;
-float gAudioBufs[AUDIO_CH_MAX_CNT][AUDIO_BUFF_MAX_SIZE]; // TODO: reduce this size for saving energy
+double gAudioBufs[AUDIO_CH_MAX_CNT][AUDIO_BUFF_MAX_SIZE]; // TODO: reduce this size for saving energy
 int gAudioBufEnd;
 
 int gPilotLenToRemove;
@@ -99,10 +99,10 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(initAudioSource)(JNI_FUNC_PARAM int sampleRate,
     as->preambleSyncRepeatCnt = preambleSyncRepeatCnt;
     as->signalSize = env->GetArrayLength(signalIn);
     as->syncSize = env->GetArrayLength(syncIn);
-    as->syncReversed = (float*)malloc(as->syncSize * sizeof(float));
+    as->syncReversed = (double*)malloc(as->syncSize * sizeof(double));
 
     short* syncShort = env->GetShortArrayElements(syncIn, 0);
-    convertShortArrayToFloatArray(as->syncReversed, syncShort, as->syncSize, true /* needToReverse*/);
+    convertShortArrayToDoubleArray(as->syncReversed, syncShort, as->syncSize, true /* needToReverse*/);
 
 #ifdef DEV_NDK
     env->ReleaseShortArrayElements(syncIn, syncShort,0);
@@ -186,13 +186,8 @@ static bool sAudioIsAdding = false;
 #define ADD_AUDIO_RET_ERROR -1
 #define ADD_AUDIO_RET_NO_PREAMBLE_FOUND -2
 #define ADD_AUDIO_RET_NOTHING_TO_PROCESS 0
-// a reference class used to pass memory between jni efficiently
-struct AddAudioRet{
-    int chCnt;
-    int traceCnt;
-    int sampleCnt;
-    float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
-};
+
+double gData[2400*10]; // TODO: allocate this memory dynamically
 
 // fucntion to add audio to buffers
 // TODO: clean this code? now it is a direct copy from my Matlab code
@@ -224,10 +219,11 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
         // a. byte parsing
     		short shortValue = (short)((audioToAddBytes[i] & 0xFF) | ((audioToAddBytes[i+1] & 0xFF) << 8));
         //if (i < 10) debug("i = %d, chIdx = %d, shortValue = %d", i, chIdx, shortValue);
-    		float floatValue = (float)shortValue;
+    		//float floatValue = (float)shortValue;
+			double doubleValue = (double)shortValue;
 
     		// b. assign value to right position
-    		gAudioBufs[chIdx][gAudioBufEnd] = floatValue;
+    		gAudioBufs[chIdx][gAudioBufEnd] = doubleValue;
 
         // c. update indexs
         chIdx = (chIdx + 1) % ps->recordChCnt;
@@ -266,7 +262,7 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
 
     		debugToMatlabFile1D(&gAudioBufs[0][0], gAudioBufEnd, (char*)"audio_before_remove", gLogFolderPath);
     		for(int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
-    			   memmove(&gAudioBufs[chIdx][0], &gAudioBufs[chIdx][gPilotLenToRemove], newAudioBufEnd * sizeof(float));
+    			   memmove(&gAudioBufs[chIdx][0], &gAudioBufs[chIdx][gPilotLenToRemove], newAudioBufEnd * sizeof(double));
     		}
     		gAudioBufEnd = newAudioBufEnd;
     		debugToMatlabFile1D(&gAudioBufs[0][0], gAudioBufEnd, (char*)"audio_after_remove", gLogFolderPath);
@@ -291,6 +287,10 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
             ret->chCnt = ps->recordChCnt;
             ret->traceCnt = repeatToProcess;
             ret->sampleCnt = as->signalSize;
+
+			//ret->data = (double *)malloc(ps->recordChCnt * repeatToProcess * as->signalSize * sizeof(double));
+			ret->dataAddr = (jlong)(&(* gData));
+
             /*
             ret->data = (float ***)malloc(ps->recordChCnt * sizeof(float **));
             for (int chIdx = 0; chIdx < ps->recordChCnt; chIdx++) {
@@ -303,38 +303,44 @@ JNI_FUNC_HEAD int JNI_FUNC_NAME(addAudioSamples)(char* audioToAddBytes, int audi
         }
 
         // process data
-        for (int repeatIdx = 0; repeatIdx < repeatToProcess; repeatIdx++){
-            for (int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
+        for (int repeatIdx = 0; repeatIdx < repeatToProcess; repeatIdx++) {
+            for (int chIdx = 0; chIdx < ps->recordChCnt; chIdx++) {
                 // TODO: new a data structure to save these audio data
-      					float *audioToProcess = &gAudioBufs[chIdx][repeatIdx * as->signalSize];
+				double *audioToProcess = &gAudioBufs[chIdx][repeatIdx * as->signalSize];
 
-      					char debugFileName[100];
-      					sprintf(debugFileName,"audio_%d_%d",gAudioProcessIdx,chIdx);
-      					debugToMatlabFile1D(audioToProcess, as->signalSize, debugFileName, gLogFolderPath);
+				// *** just for debug ***
+				audioToProcess[0] = 5.5;
+				audioToProcess[1] = 6.6;
 
+				char debugFileName[100];
+				sprintf(debugFileName,"audio_%d_%d",gAudioProcessIdx,chIdx);
+				debugToMatlabFile1D(audioToProcess, as->signalSize, debugFileName, gLogFolderPath);
                 //memcpy(*(*(ret->data + chIdx) + repeatIdx), audioToProcess, as->signalSize);
+				debug("going to copy audioToProcess (%.2f,...), offset = %d, size = %d", repeatIdx * (ret->chCnt * ret->sampleCnt) + ret->chCnt * ret->sampleCnt + 0, audioToProcess[0], as->signalSize);
+				memcpy(gData + repeatIdx * (ret->chCnt * ret->sampleCnt) + chIdx * ret->sampleCnt + 0, audioToProcess, as->signalSize);
 
-      				  // udpate data buffer indexs
+				// udpate data buffer indexes
                 if(chIdx == ps->recordChCnt - 1){ // end of this repeatation
                     gAudioProcessIdx++;
-      					}
+				}
             }
         }
 
-    		// update global audio buf (i.e., remove the processed audio from buf)
-    		for(int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
-    			   memmove(&gAudioBufs[chIdx][0], &gAudioBufs[chIdx][lenToProcess], newAudioBufEnd * sizeof(float));
-    		}
-    		gAudioBufEnd = newAudioBufEnd;
+		// update global audio buf (i.e., remove the processed audio from buf)
+		for(int chIdx = 0; chIdx < ps->recordChCnt; chIdx++){
+			memmove(&gAudioBufs[chIdx][0], &gAudioBufs[chIdx][lenToProcess], newAudioBufEnd * sizeof(double));
+		}
+		gAudioBufEnd = newAudioBufEnd;
 
-  		  sAudioIsAdding = false;
-  		  //return gAudioProcessIdx; // indicate audio is processed in this time
+		sAudioIsAdding = false;
+		//return gAudioProcessIdx; // indicate audio is processed in this time
         debug("sizeof(ret) = %d, sizeof(jlong) = %d", sizeof(ret), sizeof(jlong));
 
         jlong retLong = (jlong)(& (* ret));
         debug("retLong (output) = %ld", retLong);
         AddAudioRet *temp = (AddAudioRet *)retLong;
-        debug("temp's chCnt %d, traceCnt %d, sampleCnt = %d", temp->chCnt, temp->traceCnt, temp->sampleCnt);
+		double *tempData = (double *)temp->dataAddr;
+        debug("temp's chCnt %d, traceCnt %d, sampleCnt = %d, data = %ld, data[0] = %.2f", temp->chCnt, temp->traceCnt, temp->sampleCnt, temp->dataAddr, tempData[0]);
         return retLong; // return the memory address of the ret structure
   	}
 
@@ -366,14 +372,14 @@ int LibFindPreamble(){
   	}
 
   	// 1. make convolvution of audio and show results
-  	float *signal = &gAudioBufs[ps->preambleSearchChIdx][0];
+  	double *signal = &gAudioBufs[ps->preambleSearchChIdx][0];
   	int signalLen = AUDIO_SAMPLE_TO_FIND_PILOT;
 
   	debug("preambleSearchChIdx = %d, signal = (%f,%f,%f,%f)", ps->preambleSearchChIdx, signal[0], signal[1], signal[2], signal[3]);
 
 
   	int conValidSize = gAudioBufEnd;
-  	float *con = (float *)malloc(sizeof(float) * conValidSize);
+  	double *con = (double *)malloc(sizeof(double) * conValidSize);
 
   	debugToMatlabFile1D(signal, signalLen, (char*)"preamble_signal", gLogFolderPath);
 
@@ -382,11 +388,11 @@ int LibFindPreamble(){
 
   	debugToMatlabFile1D(con, conValidSize, (char*)"preamble_con", gLogFolderPath);
 
-  	float conMean, conStd;
+  	double conMean, conStd;
   	estimateMeanAndStd(con, conValidSize, &conMean, &conStd);
   	debug("conMean = %f, conStd = %f", conMean, conStd);
 
-  	float thres = conMean + AUDIO_PILOT_SEARCH_THRES_FACTOR * conStd;
+  	double thres = conMean + AUDIO_PILOT_SEARCH_THRES_FACTOR * conStd;
 
   	int window = AUDIO_PILOT_SEARCH_PEAK_WINDOW;
 
@@ -402,7 +408,7 @@ int LibFindPreamble(){
       			debug("find con > thres at %d", i);
       			// serach the max value in the next window
       			int maxIdx = -1;
-      			float maxValue = -1;
+      			double maxValue = -1;
       			for(int j=i;j<i+window;j++){
         				if(con[j]>maxValue){
           					maxIdx = j;

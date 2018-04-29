@@ -7,13 +7,25 @@ extern "C" void JNI_FUNC_NAME(debugTest)(JNI_FUNC_NO_PARAM) {
     debug("DevApp JNI is correctly imported");
 }
 
+/*
 // NOTE: this strctu should be consistent to the strcture in the libas_core.cpp
 struct AddAudioRet {
     int chCnt;
     int traceCnt;
     int sampleCnt;
-    float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
+    double ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
+};*/
+struct AddAudioRet{
+	//double *data;
+	int chCnt;
+	int traceCnt;
+	int sampleCnt;
+	// deprecated -> we use the flat matrix now for matching the Matlab format
+	//float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
+	jlong dataAddr;
+	// format: data[traceIdx * (chCnt * sampleCnt) + chIdx * sampleCnt + sampleIdx]
 };
+
 
 #define AUDIO_CH_CNT_MAX 2
 #define AUDIO_REPEAT_CNT 500
@@ -23,8 +35,12 @@ float gConBufs[AUDIO_CH_CNT_MAX][AUDIO_REPEAT_CNT][PULSE_DETECTION_MAX_RANGE_SAM
 extern "C" void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     AddAudioRet *r = (AddAudioRet *)retAddr;
     debug("retAddr (jlong) = %ld", retAddr);
-    debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d", r->chCnt, r->traceCnt, r->sampleCnt);
+    debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d, dataAddr = %ld", r->chCnt, r->traceCnt, r->sampleCnt, r->dataAddr);
+	double *data = (double *)r->dataAddr;
 
+    debug("ret's data = [%.2f, %.2f]", data[0], data[1]);
+
+    /*
     int REPEAT_CNT = 5;
 
     float ret = 0;
@@ -51,7 +67,7 @@ extern "C" void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
             }
         }
     }
-
+    */
 
 }
 

@@ -145,32 +145,23 @@ JNI_FUNC_HEAD void JNI_FUNC_NAME(finalize)(JNI_FUNC_NO_PARAM){
 }
 
 
-// NOTE: this strctu should be consistent to the strcture in the libas_core.cpp
-struct AddAudioRet {
-    int chCnt;
-    int traceCnt;
-    int sampleCnt;
-    float ***data; // data[chIdx][traceIdx][sampleIdx]; -> reverse order of the Matlab data structure
-};
-
 #define AUDIO_CH_CNT_MAX 2
 #define AUDIO_REPEAT_CNT 500
 #define PULSE_DETECTION_MAX_RANGE_SAMPLES (2400)
 float gConBufs[AUDIO_CH_CNT_MAX][AUDIO_REPEAT_CNT][PULSE_DETECTION_MAX_RANGE_SAMPLES];
 
 
-
-
 JNI_FUNC_HEAD void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     AddAudioRet *r = (AddAudioRet *)retAddr;
     debug("retAddr (jlong) = %ld", retAddr);
+    double *data = (double *)r->dataAddr;
     debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d", r->chCnt, r->traceCnt, r->sampleCnt);
-
+    debug("ret's data = [%.2f, %.2f, ...]", data[0], data[1]);
     // TODO: fetch the audio for processing by the audio setting
 
     //float *audioToProcess = &r->data[0][0][0];
 
-    double data[2400*2];
+    //double data[2400*2];
     // TODO: has a function to build context
     ForcePhoneCallback(&gContext, gContext.CALLBACK_TYPE_DATA, data, &gUser, &gCallbackRet);
 

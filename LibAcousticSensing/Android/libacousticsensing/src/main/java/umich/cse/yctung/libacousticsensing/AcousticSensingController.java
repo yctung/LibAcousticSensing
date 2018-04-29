@@ -83,7 +83,7 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
         jc = new JNIController(Constant.ndkTraceFolderName);
 
         // TODO: let remote server decide if we need to enable this (might have additonal overhead)
-        needToAnalyzeLatency = true;
+        needToAnalyzeLatency = false;
         la = new LatencyAnalyzer();
     }
 
