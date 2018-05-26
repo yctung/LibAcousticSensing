@@ -76,6 +76,8 @@ struct AddAudioRet{
     // format: data[traceIdx * (chCnt * sampleCnt) + chIdx * sampleCnt + sampleIdx]
 };
 
+jobject createAcousticSensingResult(JNIEnv *env, int initialized, int valInt1, int valInt2, double valDouble1, double valDouble2);
+
 void debug(const char *s,...);
 void warn(const char *s,...);
 void error(const char *s,...);

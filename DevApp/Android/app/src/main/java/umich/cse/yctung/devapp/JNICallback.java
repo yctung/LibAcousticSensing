@@ -1,5 +1,7 @@
 package umich.cse.yctung.devapp;
 
+import umich.cse.yctung.libacousticsensing.AcousticSensingResult;
+
 /**
  * Created by yctung on 9/24/17.
  */
@@ -9,5 +11,5 @@ public class JNICallback {
     }
 
     native void debugTest();
-    native void dataCallback(long retAddr);
+    native AcousticSensingResult dataCallback(long retAddr);
 }

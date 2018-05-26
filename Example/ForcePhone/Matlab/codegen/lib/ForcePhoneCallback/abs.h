@@ -13,7 +13,7 @@
 #define ABS_H
 
 /* Include files */
-#include <math.h>
+#include <cmath>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>

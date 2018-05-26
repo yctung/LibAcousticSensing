@@ -83,6 +83,16 @@ void check(int condition, const char *s, ...){
 
 }
 
+// TODO: support a array
+jobject createAcousticSensingResult(JNIEnv *env, int initialized, int valInt1, int valInt2, double valDouble1, double valDouble2) {
+	jclass resultClass = env->FindClass("umich/cse/yctung/libacousticsensing/AcousticSensingResult");
+	if (resultClass == NULL) error("Unable to find AcousticSensingResult class");
+	jmethodID resultInitMethodID = env->GetMethodID(resultClass, "<init>", "(IIIDD)V");
+
+	jobject resultObj = env->NewObject(resultClass, resultInitMethodID, initialized, valInt1, valInt2, valDouble1, valDouble2);
+	return resultObj;
+}
+
 float myAbs(float a){
 	if(a>=0){
 		return a;

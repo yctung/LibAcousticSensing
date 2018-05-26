@@ -63,7 +63,7 @@ void ForcePhoneCallback(const struct0_T *context, int type, const double data
     PS.vibLatest = vib;
     if (PS.touched == 1.0) {
       ret->initialized = 1;
-      ret->valDouble1 = fabs(vib - PS.vibRef) / PS.vibRef;
+      ret->valDouble1 = std::abs(vib - PS.vibRef) / PS.vibRef;
 
       /* ret = 0.5; */
     }

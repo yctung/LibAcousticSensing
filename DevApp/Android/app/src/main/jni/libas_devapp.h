@@ -30,7 +30,7 @@ void warn(const char *s,...);
 void error(const char *s,...);
 
 extern "C" void JNI_FUNC_NAME(debugTest)(JNI_FUNC_NO_PARAM);
-extern "C" void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr);
+extern "C" jobject JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr);
 
 
 // TODO: remove it, just for analyzing latency

@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
 import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
+import umich.cse.yctung.libacousticsensing.AcousticSensingResult;
 import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 import umich.cse.yctung.libacousticsensing.Utils;
 
@@ -409,6 +410,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
 
     @Override
     public void dataJNICallback(long retAddr) {
-        jc.dataCallback(retAddr);
+        AcousticSensingResult result = jc.dataCallback(retAddr);
+        result.dump();
     }
 }

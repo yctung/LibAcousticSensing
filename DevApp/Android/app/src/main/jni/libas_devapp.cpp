@@ -32,7 +32,7 @@ struct AddAudioRet{
 #define PULSE_DETECTION_MAX_RANGE_SAMPLES (2400)
 float gConBufs[AUDIO_CH_CNT_MAX][AUDIO_REPEAT_CNT][PULSE_DETECTION_MAX_RANGE_SAMPLES];
 
-extern "C" void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
+extern "C" jobject JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     AddAudioRet *r = (AddAudioRet *)retAddr;
     debug("retAddr (jlong) = %ld", retAddr);
     debug("ret's chCnt %d, traceCnt %d, sampleCnt = %d, dataAddr = %ld", r->chCnt, r->traceCnt, r->sampleCnt, r->dataAddr);
@@ -69,6 +69,8 @@ extern "C" void JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     }
     */
 
+	jobject resultObj = createAcousticSensingResult(55, 66, 77, 8.8, 9.9);
+	return resultObj;
 }
 
 

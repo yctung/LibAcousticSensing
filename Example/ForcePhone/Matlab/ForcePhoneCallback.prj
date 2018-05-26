@@ -1,7 +1,7 @@
 <deployment-project plugin="plugin.coder" plugin-version="R2016a">
-  <configuration build-checksum="2045062049" file="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab/ForcePhoneCallback.prj" location="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab" name="ForcePhoneCallback" target="target.unifiedcoder" target-name="MATLAB Coder">
+  <configuration build-checksum="3709473496" file="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab/ForcePhoneCallback.prj" location="/Users/yctung/Dropbox/WorkspacePartial/ProjectRunning/LibAcousticSensing/Git/Example/ForcePhone/Matlab" name="ForcePhoneCallback" target="target.unifiedcoder" target-name="MATLAB Coder">
     <profile key="profile.mex">
-      <param.BuiltInstrumentedMex>false</param.BuiltInstrumentedMex>
+      <param.BuiltInstrumentedMex />
       <param.RanInstrumentedMex>false</param.RanInstrumentedMex>
       <param.WorkingFolder>option.WorkingFolder.Project</param.WorkingFolder>
       <param.SpecifiedWorkingFolder />
@@ -56,7 +56,7 @@
       <param.ConstantInputs>option.ConstantInputs.CheckValues</param.ConstantInputs>
       <param.EnableCRICodeCoverage>true</param.EnableCRICodeCoverage>
       <param.EnableJIT>false</param.EnableJIT>
-      <param.EnableJITSilentBailOut>false</param.EnableJITSilentBailOut>
+      <param.EnableJITSilentBailOut />
       <param.CheckForIssuesJIT>true</param.CheckForIssuesJIT>
       <unset>
         <param.BuiltInstrumentedMex />
@@ -736,7 +736,7 @@
       </unset>
     </profile>
     <param.objective>option.objective.c</param.objective>
-    <param.WorkflowStep>workflowSummary</param.WorkflowStep>
+    <param.WorkflowStep>generateCode</param.WorkflowStep>
     <param.TestSnippets>
       <item>ForcePhoneStandaloneMain</item>
     </param.TestSnippets>
@@ -820,7 +820,7 @@
     <param.unifiedParamStorage />
     <var.gc.lastOutputRoot>codegen/lib/ForcePhoneCallback</var.gc.lastOutputRoot>
     <var.gc.lastOutputType>C_CODE</var.gc.lastOutputType>
-    <var.gc.preBuildChecksum>2045062049</var.gc.preBuildChecksum>
+    <var.gc.preBuildChecksum>3739935057</var.gc.preBuildChecksum>
     <var.cfi.lastOutputRoot>codegen/mex/ForcePhoneCallback</var.cfi.lastOutputRoot>
     <var.cfi.preBuildChecksum>1549702192</var.cfi.preBuildChecksum>
     <var.lastCfiTestSnippet>ForcePhoneStandaloneMain</var.lastCfiTestSnippet>
