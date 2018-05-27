@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package edu.umich.cse.yctung;
 
@@ -22,24 +22,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * the concept of this code comes from the matSock library and undocumented Matlab
  */
 public class JavaSensingServer extends Thread {
-	private static final String VERSION_DESC = "1.0.2: temporaly disable latency analyzer"; 
+	private static final String VERSION_DESC = "1.0.2: temporaly disable latency analyzer";
 	private static final int MAX_SERVER_CNT = 5; // number of threads being supported
 	private static final String CLASS_NAME 	= JavaSensingServer.class.getSimpleName();
 	public static boolean SHOW_DEBUG_MESSAGE = true;
-	
+
 	// set this flag to volatile because it will be read/write on different thread (ref: http://stackoverflow.com/questions/106591/do-you-ever-use-the-volatile-keyword-in-java)
 	private volatile boolean shutdown; // flag to shutdown the socket reading loop
 	private int port;
 	private static ConcurrentHashMap<Integer, JavaSensingServer> servers = new ConcurrentHashMap<Integer, JavaSensingServer>(MAX_SERVER_CNT, 0.75f, MAX_SERVER_CNT);
-	
+
 	// Socket related variables
 	private ServerSocket serverSocket = null;
 	private Socket clientSocket = null;
 	private DataOutputStream dataOut = null;
 	private DataInputStream dataIn = null;
-	
+
 	private final static int DATA_SENDING_THREAD_LOOP_DELAY = 1; //ms, NOTE: should set this value as small as possible
-	
+
 	// Types of actions (for identifying packets sent to the server)
 	private final static int ACTION_CONNECT = 1; 	// ACTION_CONNECT format: | ACTION_CONNECT | xxx parater setting
 	private final static int ACTION_DATA 	= 2; 	// ACTION_SEND format: | ACTION_DATA | # of bytes to send | byte[] | -1
@@ -48,15 +48,15 @@ public class JavaSensingServer extends Thread {
 	private final static int ACTION_INIT 	= 4;
 	private final static int ACTION_SENSING_END = 5;
 	private final static int ACTION_USER 	= 6;
-	
+
 	// Analysis related variable
 	int dataByteCnt;
 	public boolean needToAnalyzeLatency;
 	public LatencyAnalyzer la; // NOTE: la is not initialized since a not import correclty issue
 	// TODO: fix this bug, maybe try to move the LatencyAnalyzer to another public class?
-	
+
 //===============================================================
-//	Constructors	
+//	Constructors
 //===============================================================
 	// Public constructor (called by Matlab)
 	public static JavaSensingServer create(int port){
@@ -66,19 +66,19 @@ public class JavaSensingServer extends Thread {
 		servers.put(port, jss);
 		return jss;
 	}
-	
+
 	public static String version() {
 		threadErrMessage("JavaSensingVersion = " +VERSION_DESC);
 		return VERSION_DESC;
 	}
-	
+
 	// Private constructor
 	private JavaSensingServer(int port) {
 		this.port = port;
 		shutdown = false;
 		serverSocket = null;
 		clientSocket = null;
-		
+
 		dataByteCnt = 0;
 		needToAnalyzeLatency = false;
 		// TODO: init la after solving the import issue
@@ -86,30 +86,40 @@ public class JavaSensingServer extends Thread {
 	}
 
 //===============================================================
-//  Public interface (called by Matlab) 	
+//  Public interface (called by Matlab)
 //===============================================================
+  public String getVersionString() {
+    String VERSION_STRING = "......hahahha...";
+    System.out.println("JavaSensingServer: VERSION = " + VERSION_STRING);
+    return "haha";
+  }
+
 	public void writeByte(byte dataByte) throws IOException {
 		dataOut.writeByte(dataByte);
 	}
-	
+
 	public void writeInt(int dataInt) throws IOException {
 		dataOut.writeInt(dataInt);
 	}
-	
+
+  public void writeDouble(int dataDouble) throws IOException {
+    dataOut.writeDouble(dataDouble);
+  }
+
 	public int write(byte[] dataBytes) throws IOException {
 		dataOut.write(dataBytes);
 		return dataBytes.length; // just for debug
 	}
-	
+
 	public static void closeAll(){
 		for (JavaSensingServer server : servers.values()) {
 			threadMessage("closeAll: going to close server at port = "+server.port);
 			server.close();
 		}
 	}
-	
+
 	public void close() {
-		shutdown = true; // TODO: set time out for socket read, so the shutdown will work 
+		shutdown = true; // TODO: set time out for socket read, so the shutdown will work
 		try {
 			threadMessage("close: going to close socket at port = "+port);
 			if (serverSocket != null) serverSocket.close();
@@ -119,7 +129,7 @@ public class JavaSensingServer extends Thread {
 		}
 		servers.remove(port);
 	}
-	
+
 
 //===============================================================
 // Matlab callback setting
@@ -132,7 +142,7 @@ public class JavaSensingServer extends Thread {
 	public synchronized void removeListener(SocketListener lis) {
 		eventListeners.removeElement(lis);
 	}
-	
+
 	// Matlab automatically converts the methods of classes that extend java.util.EventListener
 	// into a Matlab callback.  In this case "opRead" will automatically be
 	// converted into "OpReadCallback".  The first character will always be capitalized
@@ -146,7 +156,7 @@ public class JavaSensingServer extends Thread {
 		void opAccept(SocketEvent event);
 		//void opConnect(SocketEvent event);
 	}
-	
+
 	// TODO: modify this even based on my need
 	public class SocketEvent extends java.util.EventObject {
 		private static final long serialVersionUID = 1L;
@@ -158,15 +168,15 @@ public class JavaSensingServer extends Thread {
 		public int stamp = -1;
 		public float arg0 = 0, arg1 = 0;
 		public int code = -1;
-		
-		
+
+
 		public SocketEvent(Object source, int action, byte[] dataBytes) {
 			super(source);
 			this.action		= action;
 			this.dataBytes 	= dataBytes;
 			this.time 		= ((double)System.currentTimeMillis())/1000;
 		}
-		
+
 		// for set action
 		public SocketEvent(Object source, int action, byte[] dataBytes, int setType, byte[] nameBytes) {
 			super(source);
@@ -176,7 +186,7 @@ public class JavaSensingServer extends Thread {
 			this.nameBytes  = nameBytes;
 			this.time 		= ((double)System.currentTimeMillis())/1000;
 		}
-		
+
 		// for user action
 		public SocketEvent(Object source, int action, int stamp, byte[] nameBytes, int code, float arg0, float arg1) {
 			super(source);
@@ -189,7 +199,7 @@ public class JavaSensingServer extends Thread {
 			this.time 		= ((double)System.currentTimeMillis())/1000;
 		}
 	}
-	
+
 	private void fireDataEvent(SocketEvent event) {
 		for( SocketListener listener : eventListeners ) {
 			if( listener != null ) {
@@ -197,7 +207,7 @@ public class JavaSensingServer extends Thread {
 			}
 		}
 	}
-	
+
 	private void fireAcceptEvent() {
 		SocketEvent dummyEvent 	= new SocketEvent(this, -1, null);
 		for( SocketListener listener : eventListeners ) {
@@ -206,9 +216,9 @@ public class JavaSensingServer extends Thread {
 			}
 		}
 	}
-	
+
 //===============================================================
-//	Read thread (read forever until the server is closed)	
+//	Read thread (read forever until the server is closed)
 //===============================================================
 	@Override
 	public void run() {
@@ -222,17 +232,17 @@ public class JavaSensingServer extends Thread {
 		    dataOut = new DataOutputStream(clientSocket.getOutputStream());
 			dataIn = new DataInputStream(clientSocket.getInputStream());
 			fireAcceptEvent();
-			
+
 			// 2. infinite loop to read any available message
 			while(true) {
 				if (shutdown) {
 					threadMessage("shutdown");
 					break;
 				}
-				
+
 				byte action = dataIn.readByte();
 				threadMessage("receive a action = "+action+" in port = "+port);
-				
+
 				//**********************************************************
                 // ACTION_CONNECT: just connect the socket -> doing nothing
                 //**********************************************************
@@ -250,21 +260,21 @@ public class JavaSensingServer extends Thread {
                 	//writeAudioData();
                 	// just for debug -> start sensing
                 	//dataOut.write(REACTION_ASK_SENSING);
-                	
+
                 	fireDataEvent(new SocketEvent(this, action, null));
                 }
                 //**********************************************************
-                // ACTION_DATA: received audio data 
+                // ACTION_DATA: received audio data
                 //**********************************************************
                 else if (action == ACTION_DATA) { // acoustic sensing data received
                 	threadMessage("--- ACTION_DATA ---");
                     byte[] dataBytes = readFullData();
-                    
+
                     // TODO: revise the name to make this function easy to read, we should use the data byte cnt as the marker
                     if (needToAnalyzeLatency) {
                     	la.addAudioStamp(dataByteCnt);
                     }
-                    
+
                     dataByteCnt += dataBytes.length;
                     fireDataEvent(new SocketEvent(this, action, dataBytes));
                 }
@@ -279,7 +289,7 @@ public class JavaSensingServer extends Thread {
             	    byte[] valueBytes = readFullData();
             	    fireDataEvent(new SocketEvent(this, action, valueBytes, setType, nameBytes));
                 }
-                
+
                 //**********************************************************
                 // ACTION_USER: application's user-defined data
                 //**********************************************************
@@ -292,13 +302,13 @@ public class JavaSensingServer extends Thread {
                 	float arg1 = dataIn.readFloat();
                 	fireDataEvent(new SocketEvent(this, action, stamp, tagBytes, code, arg0, arg1));
                 }
-                
+
                 //**********************************************************
                 // ACTION_SENSING_END: just break the loop
                 //**********************************************************
                 else if (action == ACTION_SENSING_END) {
                     threadMessage("--- ACTION_SENSING_END: this round of sensing ends ---");
-                    //set(0,'UserData','ACTION_SENSING_END');   
+                    //set(0,'UserData','ACTION_SENSING_END');
                     fireDataEvent(new SocketEvent(this, action, null));
                 }
                 //**********************************************************
@@ -309,11 +319,11 @@ public class JavaSensingServer extends Thread {
                     fireDataEvent(new SocketEvent(this, action, null));
                     break;
                 }
-                else { // error action 
+                else { // error action
                     threadMessage("[ERROR]: undefined action ="+action);
                     break;
                 }
-				
+
                 // sleep a short period to avoid overwhelming the CPU by a single thread
 				try {
 					Thread.sleep(DATA_SENDING_THREAD_LOOP_DELAY);
@@ -321,7 +331,7 @@ public class JavaSensingServer extends Thread {
 					e.printStackTrace();
 				}
 			}
-			
+
 		} catch (IOException e) {
 			// NOTE: we assume the socket is closed whenever there is a read socket exception happens
 			// TODO: let Matlab know if it is an internal error or just a socket close event
@@ -332,20 +342,20 @@ public class JavaSensingServer extends Thread {
 				threadErrMessage("[WARN]: on port = "+port+", e="+e.toString());
 			}
 		}
-		
-		
+
+
 		threadMessage("end of thread");
 	}
-	
+
 //===============================================================
-// Internal sensing control functions	
+// Internal sensing control functions
 //===============================================================
-	
+
 	private byte[] readFullData() throws IOException {
 	    int byteToRead = dataIn.readInt();
 	    threadMessage("readFullData: byteToRead = "+byteToRead);
 	    byte[] data = new byte[byteToRead];
-	    
+
 	    int totalByteRead = 0;
 	    while(totalByteRead<byteToRead) {
 	    	int byteIsRead = dataIn.read(data, totalByteRead, byteToRead - totalByteRead);
@@ -360,7 +370,7 @@ public class JavaSensingServer extends Thread {
 	    }
 	    return data;
 	}
-	
+
 	// this method should be implemented in Matlab, but this one is just for debug purpose
 	/*
 	private void writeAudioData() throws IOException {
@@ -370,34 +380,34 @@ public class JavaSensingServer extends Thread {
 		dataOut.writeInt(48000); // FS
 		dataOut.writeInt(2); // chCnt
 		dataOut.writeInt(5); // repeatCnt
-		
+
 		// c. write preamble
 		int preambleSize = 4800; // NOTE the size is for short
 		dataOut.writeInt(preambleSize);
-		byte[] preamble = new byte[preambleSize*2]; 
+		byte[] preamble = new byte[preambleSize*2];
 		new Random().nextBytes(preamble);
 	    dataOut.write(preamble);
-		
+
 		// d. write signal
 		int signalSize = 48000; // NOTE the size is for short
 		dataOut.writeInt(signalSize);
-		byte[] signal = new byte[signalSize*2]; 
+		byte[] signal = new byte[signalSize*2];
 		new Random().nextBytes(signal);
 		dataOut.write(signal);
-		
+
 		// e. write check
 	    byte check = -1;
 	    dataOut.writeByte(check);
 	}
 	*/
-	
+
 
 //===============================================================
-//	Main function (used for debug only)	
+//	Main function (used for debug only)
 //===============================================================
 	public static void main(String[] args) {
 		JavaSensingServer.closeAll();
-		
+
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -408,14 +418,14 @@ public class JavaSensingServer extends Thread {
 	}
 
 
-	
+
 //===============================================================
 // Some Internal help functions
 //===============================================================
 	public static void threadMessage(String id) {
-		threadMessage(id,null);
+		threadMessage(id, null);
 	}
-	
+
 	public static void threadMessage(String id, String msg) {
 		// thread message is only shown when the DEBUG_SHOW_MESSAGE = true
 		if (SHOW_DEBUG_MESSAGE) {
@@ -427,11 +437,11 @@ public class JavaSensingServer extends Thread {
 			}
 		}
 	}
-	
+
 	public static void threadErrMessage(String id) {
 		threadErrMessage(id,null);
 	}
-	
+
 	public static void threadErrMessage(String id, String msg) {
 		String threadName 	= Thread.currentThread().getName();
 		if( msg == null ) {
@@ -440,7 +450,7 @@ public class JavaSensingServer extends Thread {
 			System.err.println("thread(" + threadName + "): '" + CLASS_NAME + ":" + id + "' -> " + msg);
 		}
 	}
-	
+
 	 //=================================================================================================
 	 // Latency analysis
 	 //=================================================================================================
@@ -493,10 +503,10 @@ public class JavaSensingServer extends Thread {
 
 	                 if (audioStamp.sampleCnt == resultStamp.sampleCnt) { // find a match
 	                     long latency = resultStamp.time - audioStamp.time;
-	                     threadMessage("Find a matched latency record (" + 
-	                    		 audioStamp.sampleCnt + "," + 
+	                     threadMessage("Find a matched latency record (" +
+	                    		 audioStamp.sampleCnt + "," +
 	                    		 audioStamp.time + "," +
-	                    		 resultStamp.time + "): " + 
+	                    		 resultStamp.time + "): " +
 	                    		 latency + "(ms)");
 
 	                     cnt ++;
@@ -522,5 +532,5 @@ public class JavaSensingServer extends Thread {
 	             target.add(new LatencyStamp(sampleCnt, now));
 	         }
 	     }
-	
+
 }

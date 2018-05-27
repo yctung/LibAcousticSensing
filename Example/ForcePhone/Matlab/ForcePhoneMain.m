@@ -61,10 +61,10 @@ signal = signal(:);
 PS.signalToCorrelate = signal(CHIRP_LEN:-1:1); % reverse the chirp is the optimal matched filter to detect chirp singals
 
 as.signal = signal;
-as.repeatCnt = 20*60*4;
+as.repeatCnt = 20*60*4; % second
 as.signalGain = 0.8;
 
-% modify preamble
+% modify preamble to inaudible
 %{
 fprintf(2, '[WARN]: using inaudible preamble\n');
 ps = PreambleBuilder('CHIRP', [22000, 18000], [500, 1000], 48000, 10, 4800, 4800, 0.1);
@@ -77,15 +77,3 @@ global ss; % TODO: find a better way instead of using a global variable
 ss = SensingServer(SERVER_PORT, @ForcePhoneCallback, SensingServer.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
 ss.startSensingAfterConnectionInit = 0; % avoid auto sensing
 
-%ss2 = SensingServer(SERVER_PORT+1, @ServerAppFeatureTrainCallback, ss.DEVICE_AUDIO_MODE_PLAY_AND_RECORD, as);
-%ss2.startSensingAfterConnectionInit = 0; % avoid auto sensing
-
-%{
-pause(1.0);
-for i=1:1000
-    fprintf('busy...\n');
-    temp = rand(1000,1000)*rand(1000,1000);
-    pause(1.0);
-end
-%}
-%ss.startServer(as,);

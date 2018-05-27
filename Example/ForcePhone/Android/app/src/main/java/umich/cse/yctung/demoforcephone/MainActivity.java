@@ -3,6 +3,7 @@ package umich.cse.yctung.demoforcephone;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,23 +25,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import umich.cse.yctung.libacousticsensing.AcousticSensingController;
-import umich.cse.yctung.libacousticsensing.AcousticSensingControllerListener;
 import umich.cse.yctung.libacousticsensing.Setting.AcousticSensingSetting;
 import umich.cse.yctung.libacousticsensing.Utils;
 
-public class MainActivity extends AppCompatActivity implements AcousticSensingControllerListener {
+public class MainActivity extends AppCompatActivity {
     final static String AUTO_CONNECT_KEY = "DEVAPP_AUTO_CONNECT_KEY";
     final static int RETRY_WAIT = 1000; // ms
-    AcousticSensingController asc;
     AcousticSensingSetting ass;
     JNICallback jc;
     SharedPreferences sharedPref;
     final String TAG = "MainActivity";
 
     // UI elements
-    Spinner spinnerMode;
+    Spinner spinnerMode, spinnerDemos;
     EditText editTextServerAddr, editTextServerPort;
-    Button buttonSense, buttonUserData, buttonConnect;
+    Button buttonStart;
     ImageButton buttonSetting, buttonRefresh;
     CheckBox checkAuto;
     TextView textViewDebugInfo;
@@ -56,11 +55,11 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         ass = new AcousticSensingSetting(this);
 
         // Link UI elements
-        spinnerMode = (Spinner)findViewById(R.id.spinnerMode);
+        spinnerMode = (Spinner) findViewById(R.id.spinnerMode);
         //String[] modes = new String[]{"Remote Mode","Standalone Mode"};
         String[] modes = ass.getModeTexts();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, modes);
-        spinnerMode.setAdapter(adapter);
+        ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, modes);
+        spinnerMode.setAdapter(modeAdapter);
         spinnerMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -81,8 +80,13 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
-        editTextServerAddr = (EditText)findViewById(R.id.editTextServerAddr);
-        editTextServerPort = (EditText)findViewById(R.id.editTextServerPort);
+        spinnerDemos = (Spinner) findViewById(R.id.spinnerActivity);
+        String[] demos = new String[]{"Test 1", "Test 2"};
+        ArrayAdapter<String> demoAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, demos);
+        spinnerDemos.setAdapter(demoAdapter);
+
+        editTextServerAddr = (EditText) findViewById(R.id.editTextServerAddr);
+        editTextServerPort = (EditText) findViewById(R.id.editTextServerPort);
 
         // Commit the changes back into the shared preferences
         editTextServerAddr.addTextChangedListener(new TextWatcher() {
@@ -140,33 +144,15 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
-        buttonUserData = (Button)findViewById(R.id.btnUserData);
-        buttonUserData.setOnClickListener(new View.OnClickListener() {
+        buttonStart = (Button) findViewById(R.id.btnStart);
+        buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onUserDataClicked();
-            }
-        });
-        buttonUserData.setVisibility(View.INVISIBLE); // TODO: add this function back
-
-        buttonSense = (Button)findViewById(R.id.btnStart);
-        buttonSense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onStartOrStopClicked();
+                onStartClicked();
             }
         });
 
-        buttonConnect = (Button) findViewById(R.id.buttonConnect);
-        buttonConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onInitOrFinalizeClicked();
-            }
-        });
-
-
-        buttonSetting = (ImageButton)findViewById(R.id.buttonSetting);
+        buttonSetting = (ImageButton) findViewById(R.id.buttonSetting);
         buttonSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
 
-        buttonRefresh = (ImageButton)findViewById(R.id.buttonRefresh);
+        buttonRefresh = (ImageButton) findViewById(R.id.buttonRefresh);
         buttonRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -191,28 +177,22 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                         AUTO_CONNECT_KEY,
                         b
                 ).commit();
-                if (b) { // start auto connecting when people clicked this option
-                    onInitOrFinalizeClicked();
-                }
             }
         });
 
-        textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
+        textViewDebugInfo = (TextView) findViewById(R.id.textDebugInfo);
 
         progressConnecting = new ProgressDialog(MainActivity.this);
         progressConnecting.setMessage("Connecting");
 
 
-        jc = new JNICallback();
-        jc.debugTest();
-        asc = new AcousticSensingController(this, this);
+        //asc = new AcousticSensingController(this, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         updateUI();
-        retryInitIfNeed();
     }
 
     void updateUI() {
@@ -221,110 +201,28 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             editTextServerAddr.setText(ass.getServerAddr());
             editTextServerPort.setText(ass.getServerPort());
         }
-        if (asc == null || !asc.isReadyToSense()) {
-            // not ready to sense yet
-            buttonConnect.setEnabled(true);
-            checkAuto.setEnabled(true);
 
-            if (spinnerMode.getSelectedItemPosition() == ass.PARSE_MODE_REMOTE) { // remote mode
-                spinnerMode.setEnabled(true);
-                editTextServerAddr.setEnabled(true);
-                editTextServerPort.setEnabled(true);
-            } else { // stand alone mode
-                spinnerMode.setEnabled(false);
-                editTextServerAddr.setEnabled(false);
-                editTextServerPort.setEnabled(false);
-            }
+        checkAuto.setEnabled(true);
 
-            buttonConnect.setText("Connect/init");
-            buttonSense.setEnabled(false);
-        } else {
-            // ok to sense
-            buttonConnect.setEnabled(false);
-            checkAuto.setEnabled(false);
-            spinnerMode.setEnabled(false);
+        if (spinnerMode.getSelectedItemPosition() == ass.PARSE_MODE_REMOTE) { // remote mode
+            spinnerMode.setEnabled(true);
+            editTextServerAddr.setEnabled(true);
+            editTextServerPort.setEnabled(true);
+        } else { // stand alone mode
+            spinnerMode.setEnabled(true);
             editTextServerAddr.setEnabled(false);
             editTextServerPort.setEnabled(false);
-
-            buttonConnect.setText("Disconnect/reset");
-            buttonSense.setEnabled(true);
-
-            if (!asc.isSensing()) {
-                buttonSense.setText("Sense");
-            } else {
-                buttonSense.setText("Stop");
-            }
         }
+
+        buttonStart.setEnabled(true);
+        buttonStart.setText("Sense");
     }
 
     int userDataCodeToSend = 1;
-    void onUserDataClicked() {
-        if (asc != null && asc.isReadyToSense()) {
-            asc.sendUserData("ukn",userDataCodeToSend, 0.0f, 0.0f);
-            // update next user data to send
-            userDataCodeToSend = userDataCodeToSend == 1 ? 0 : 1;
-        }
-    }
 
-    void onStartOrStopClicked() {
-        if (asc == null || !asc.isReadyToSense()) { // not ready to sense yet
-            Log.e(TAG, "Not ready to sense yet");
-            return;
-        }
-
-        if (!asc.isSensing()) {
-            asc.startSensingWhenPossible();
-        } else { // need to stop sensing
-            asc.stopSensingNow();
-        }
-        updateUI();
-    }
-
-    void onInitOrFinalizeClicked() {
-        if (asc == null || !asc.isReadyToSense()) {
-            initIfPossible();
-        } else {
-            finalzeIfPossible();
-        }
-        updateUI();
-    }
-
-    void initIfPossible() {
-        if (asc == null || asc.isReadyToSense()) {
-            Log.e(TAG, "Unable to init when the sensing controller has be initialized");
-            return;
-        }
-
-        // TODO: init by setting
-        boolean initResult = asc.init(ass);
-
-        if (!initResult) {
-            textViewDebugInfo.setText("Init fails");
-            return;
-        }
-
-        if (ass.getParseMode() == AcousticSensingSetting.PARSE_MODE_REMOTE) {
-            progressConnecting.show();
-        }
-    }
-
-    void retryInitIfNeed() {
-        // If auto start, then call the click function again after some time
-        Boolean autostart = sharedPref.getBoolean(AUTO_CONNECT_KEY, false);
-        if (autostart) {
-            Log.v(TAG, "Attempting to auto start.");
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    initIfPossible();
-                }
-            }, RETRY_WAIT);
-        }
-    }
-
-    void finalzeIfPossible() {
-        // TODO: finialize the sensing controller
+    void onStartClicked() {
+        Intent intent = new Intent(getApplicationContext(), DemoForceMonitorActivity.class);
+        startActivity(intent);
     }
 
     void onRefreshClicked() {
@@ -337,79 +235,5 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
             }
         });
         updateUI();
-    }
-
-//=================================================================================================
-//  Acoustic sensing callbacks
-//=================================================================================================
-    @Override
-    public void updateDebugStatus(boolean status, final String stringToShow) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textViewDebugInfo.setText(stringToShow);
-            }
-        });
-    }
-
-    @Override
-    public void showToast(String stringToShow) {
-
-    }
-
-    @Override
-    public void isConnected(boolean success, String resp) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressConnecting.dismiss();
-                if (sharedPref.getBoolean(AUTO_CONNECT_KEY, false)) {
-                    // auto connect mode -> do nothing
-                    retryInitIfNeed();
-                }
-                updateUI();
-            }
-        });
-    }
-
-    @Override
-    public void sensingEnd() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateUI();
-            }
-        });
-    }
-
-    @Override
-    public void sensingStarted() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateUI();
-            }
-        });
-    }
-
-    @Override
-    public void updateSensingProgress(int percent) {
-
-    }
-
-    @Override
-    public void serverClosed() {
-        // TODO: remote server is closed by some reason -> need to stop and clean everything
-
-    }
-
-    @Override
-    public void updateResult(int argInt, float argFloat) {
-
-    }
-
-    @Override
-    public void dataJNICallback(long retAddr) {
-        jc.dataCallback(retAddr);
     }
 }

@@ -721,3 +721,81 @@ public class DemoForceButtonActivity extends AppCompatActivity {
 //    }
 //    */
 //}
+
+
+/*
+//=================================================================================================
+//  Acoustic sensing callbacks
+//=================================================================================================
+    @Override
+    public void updateDebugStatus(boolean status, final String stringToShow) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textViewDebugInfo.setText(stringToShow);
+            }
+        });
+    }
+
+    @Override
+    public void showToast(String stringToShow) {
+
+    }
+
+    @Override
+    public void isConnected(boolean success, String resp) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressConnecting.dismiss();
+                if (sharedPref.getBoolean(AUTO_CONNECT_KEY, false)) {
+                    // auto connect mode -> do nothing
+                    retryInitIfNeed();
+                }
+                updateUI();
+            }
+        });
+    }
+
+    @Override
+    public void sensingEnd() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
+    }
+
+    @Override
+    public void sensingStarted() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        });
+    }
+
+    @Override
+    public void updateSensingProgress(int percent) {
+
+    }
+
+    @Override
+    public void serverClosed() {
+        // TODO: remote server is closed by some reason -> need to stop and clean everything
+
+    }
+
+    @Override
+    public void updateResult(int argInt, float argFloat) {
+
+    }
+
+    @Override
+    public void dataJNICallback(long retAddr) {
+        jc.dataCallback(retAddr);
+    }
+
+ */

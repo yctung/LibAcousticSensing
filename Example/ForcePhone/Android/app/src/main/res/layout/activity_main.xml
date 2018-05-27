@@ -136,12 +136,7 @@
             android:orientation="horizontal"
             android:gravity="right"
             android:layout_weight="0.5">
-            <Button
-                android:id="@+id/buttonConnect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Connect"
-                />
+
             <CheckBox
                 android:id="@+id/checkAuto"
                 android:layout_width="wrap_content"
@@ -152,11 +147,11 @@
     </LinearLayout>>
 
 
-    <Button
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send User Data"
-        android:id="@+id/btnUserData"
+        android:id="@+id/spinnerActivity"
         android:layout_above="@+id/btnStart"
         android:layout_marginBottom="40dp"
         android:layout_centerHorizontal="true"/>

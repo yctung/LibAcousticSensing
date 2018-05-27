@@ -6,7 +6,6 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 /**
- * Created by eddyxd on 4/25/16.
  * Note this D class means device-specific setting -> needs to be consistent to the matlab setting
  */
 public class D {

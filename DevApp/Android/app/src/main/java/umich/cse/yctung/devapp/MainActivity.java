@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                 editTextServerAddr.setEnabled(true);
                 editTextServerPort.setEnabled(true);
             } else { // stand alone mode
-                spinnerMode.setEnabled(false);
+                spinnerMode.setEnabled(true);
                 editTextServerAddr.setEnabled(false);
                 editTextServerPort.setEnabled(false);
             }

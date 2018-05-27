@@ -32,6 +32,17 @@ struct AddAudioRet{
 #define PULSE_DETECTION_MAX_RANGE_SAMPLES (2400)
 float gConBufs[AUDIO_CH_CNT_MAX][AUDIO_REPEAT_CNT][PULSE_DETECTION_MAX_RANGE_SAMPLES];
 
+// *** duplicated code, now moved to uitls, but not sure what is the reason that devapp can't reference it
+jobject createAcousticSensingResult(JNIEnv *env, int initialized, int valInt1, int valInt2, double valDouble1, double valDouble2) {
+    jclass resultClass = env->FindClass("umich/cse/yctung/libacousticsensing/AcousticSensingResult");
+    if (resultClass == NULL) error("Unable to find AcousticSensingResult class");
+    jmethodID resultInitMethodID = env->GetMethodID(resultClass, "<init>", "(IIIDD)V");
+
+    jobject resultObj = env->NewObject(resultClass, resultInitMethodID, initialized, valInt1, valInt2, valDouble1, valDouble2);
+    return resultObj;
+}
+// *** end of duplicated code
+
 extern "C" jobject JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     AddAudioRet *r = (AddAudioRet *)retAddr;
     debug("retAddr (jlong) = %ld", retAddr);
@@ -69,7 +80,7 @@ extern "C" jobject JNI_FUNC_NAME(dataCallback)(JNI_FUNC_PARAM jlong retAddr) {
     }
     */
 
-	jobject resultObj = createAcousticSensingResult(55, 66, 77, 8.8, 9.9);
+	jobject resultObj = createAcousticSensingResult(env, 55, 66, 77, 8.8, 9.9);
 	return resultObj;
 }
 

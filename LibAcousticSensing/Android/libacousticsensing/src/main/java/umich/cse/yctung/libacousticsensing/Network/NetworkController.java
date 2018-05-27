@@ -269,10 +269,10 @@ public class NetworkController {
 					// TODO: update result to user-app callbacks
 					int audioSampleCnt = dataIn.readInt();
 					int argInt = dataIn.readInt();
-					// TODO: add write float
+					double argDouble = dataIn.readDouble();
 					byte check = dataIn.readByte();
 
-					Log.d(LOG_TAG, "received result = "+argInt+", check = "+check);
+					Log.d(LOG_TAG, "received result = ("+argInt+","+argDouble+") check = "+check);
 					if(check != -1){
 						Log.e(LOG_TAG, "Check is not -1 -> some packet might be dropped or there is a bug in matlab server");
 						listener.updateDebugStatus(false, "result loaded fails (check != -1)");

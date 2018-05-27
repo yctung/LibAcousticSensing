@@ -460,7 +460,7 @@ classdef SensingServer < handle
             preambleShort(1:3) = [5566, 1234, -1234];
             
             preabmleBytes = typecast(preambleShort, 'int8');
-            temp = obj.jss.write(preabmleBytes)
+            obj.jss.write(preabmleBytes)
     
     
             % d. write signal
@@ -468,7 +468,7 @@ classdef SensingServer < handle
             obj.jss.writeInt(int32(length(signalShortRange)));
             signalShort = int16(signalShortRange);
             signalBytes = typecast(signalShort, 'int8');
-            temp = obj.jss.write(signalBytes)
+            obj.jss.write(signalBytes)
     
     
             % e. write check
@@ -476,10 +476,11 @@ classdef SensingServer < handle
             obj.jss.writeByte(int8(CHECK));
         end
         
-        function sendResult(obj, argInt, argFloat)
+        function sendResult(obj, argInt, argDouble)
             obj.jss.writeByte(int8(obj.REACTION_SET_RESULT));
             obj.jss.writeInt(int32(obj.audioAllEnd)); % time stamp for the result
             obj.jss.writeInt(int32(argInt));
+            obj.jss.writeDouble(argDouble);
             CHECK = -1;
             obj.jss.writeByte(int8(CHECK));
         end

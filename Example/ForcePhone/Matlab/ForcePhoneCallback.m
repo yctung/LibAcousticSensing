@@ -21,9 +21,11 @@ function [ret] = ForcePhoneCallback(context, type, data, user)
         end
     elseif type == context.CALLBACK_TYPE_USER
         if user.code == PS.USER_CODE_TOUCH_START
+            fprintf(1, "touch start");
             PS.touched = 1;
             PS.vibRef = PS.vibLatest;
         elseif user.code == PS.USER_CODE_TOUCH_END
+            fprintf(1, "touch end");
             PS.touched = 0;
         end
     end
