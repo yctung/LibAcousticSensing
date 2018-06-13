@@ -1,6 +1,9 @@
 # LibAS
 LibAcousticSensing (LibAS) is a cross-platform framework to facilitate the development of acoustic sensing applications. Some interesting demo video of LibAS can be found at [here](https://youtu.be/cnep7fFyJhc) and [here](https://youtu.be/At8imJVRDq4).
 
+## Notice
+I will make a major update soon. This update is currently in the separate branch called mobisys. For people wanna know how to convert their project from the Remote mode to Standalone mode, please check the mobisys branch. Since there are some API updates that might be inconsistent to the current branch and we have some active developers are using the master branch, I will keep the master branch intact until the mobisys branch ready to be released.
+
 ## Feature
 LibAS is designed to let its users focus on the design of **acoustic sensing algorithms** without learning much the tedious platform-dependent programming details.
 
