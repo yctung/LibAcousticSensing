@@ -150,7 +150,15 @@
                 />
         </LinearLayout>
     </LinearLayout>>
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Result: "
+        android:layout_above="@+id/btnUserData"
+        android:layout_marginBottom="40dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textResult"
+        />
 
     <Button
         android:layout_width="wrap_content"

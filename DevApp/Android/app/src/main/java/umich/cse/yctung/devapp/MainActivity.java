@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     Button buttonSense, buttonUserData, buttonConnect;
     ImageButton buttonSetting, buttonRefresh;
     CheckBox checkAuto;
-    TextView textViewDebugInfo;
+    TextView textViewDebugInfo, textResult;
     ProgressDialog progressConnecting;
 
     @Override
@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
                 onUserDataClicked();
             }
         });
-        buttonUserData.setVisibility(View.INVISIBLE); // TODO: add this function back
 
         buttonSense = (Button)findViewById(R.id.btnStart);
         buttonSense.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
         });
 
         textViewDebugInfo = (TextView)findViewById(R.id.textDebugInfo);
+        textResult = (TextView)findViewById(R.id.textResult);
 
         progressConnecting = new ProgressDialog(MainActivity.this);
         progressConnecting.setMessage("Connecting");
@@ -404,8 +404,13 @@ public class MainActivity extends AppCompatActivity implements AcousticSensingCo
     }
 
     @Override
-    public void updateResult(int argInt, float argFloat) {
-
+    public void updateResult(final int valInt, final double valDouble) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textResult.setText("Result: ("+valInt+", "+valDouble+")");
+            }
+        });
     }
 
     @Override

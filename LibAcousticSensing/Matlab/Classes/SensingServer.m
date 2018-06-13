@@ -152,9 +152,9 @@ classdef SensingServer < handle
         
         % add slave server to acitavet when this server start sense
         function addSlaveServer(obj, serverToAdd)
-            if ~isempty(serverToAdd.masterServer),
+            if ~isempty(serverToAdd.masterServer)
                 fprintf(2, '[ERROR]: unable to add a slave server whcih has master server allocated (add slave server twice?)\n');
-            elseif ~isempty(obj.masterServer), 
+            elseif ~isempty(obj.masterServer)
                 fprintf(2, '[ERROR]: unable to add a slave server to a server that is also slave (add the wrong server as master?)\n');
             else
                 obj.slaveServers = [obj.slaveServers serverToAdd];
@@ -188,11 +188,14 @@ classdef SensingServer < handle
             end
                 
             obj.startSensingSelf();
+            
             % start all slave server if existed
-            fprintf('Wait before playing the slave server\n');
-            pause(0.100);
-            for i = 1:length(obj.slaveServers)
-                obj.slaveServers(i).startSensingSelf(); % TODO: add some delay before triggering the slave server
+            if ~isempty(obj.slaveServers)
+                fprintf('Wait before playing the slave server\n');
+                pause(0.100);
+                for i = 1:length(obj.slaveServers)
+                    obj.slaveServers(i).startSensingSelf(); % TODO: add some delay before triggering the slave server
+                end
             end
         end
         
@@ -236,7 +239,7 @@ classdef SensingServer < handle
         % update preambleDetectResult by parser
         function preambleDetectResult(obj, result)
             obj.isPreambleDetectedCorrectly = result;
-            if result == 1, % preamble is detected correctly
+            if result == 1 % preamble is detected correctly
                 % do nothing now
             else % preamble is not detected
                 fprintf(2, '[ERROR]: going to stop sensing because preamble is not detected\n');
@@ -284,7 +287,7 @@ classdef SensingServer < handle
             %**********************************************************
             % ACTION_CONNECT: just connect the socket -> doing nothing
             %**********************************************************
-            if action == obj.ACTION_CONNECT,
+            if action == obj.ACTION_CONNECT
                 fprintf(obj.dfid, '--- ACTION_CONNECT ---\n');
                 obj.setWaitFlag('ACTION_CONNECT');
             %**********************************************************
@@ -292,12 +295,12 @@ classdef SensingServer < handle
             %  ***NOTE***: This action is triggered only when necessary
             %            : variables are setted by ACTION_SET
             %**********************************************************
-            elseif action == obj.ACTION_INIT, % one time initialization
+            elseif action == obj.ACTION_INIT % one time initialization
                 fprintf(obj.dfid, '--- ACTION_INIT: %s ---\n', obj.userDevice);
                 % send audio to device
                 obj.sendMediaData();
                 
-                if obj.startSensingAfterConnectionInit == 1,
+                if obj.startSensingAfterConnectionInit == 1
                     obj.startSensing();
                 end
                 obj.setWaitFlag('ACTION_INIT');
@@ -348,24 +351,31 @@ classdef SensingServer < handle
                     else
                         ret = feval(obj.callback, obj, obj.CALLBACK_TYPE_DATA, audioToProcess);
                         if ~isempty(ret)
-                            fprintf(2, 'send result back to phone\n');
                             % we now use the audio stamp as a refernece
-                            obj.sendResult(-1, -1);
+                            if (isfield(ret, 'initialized'))
+                                if ret.initialized == 1
+                                    obj.sendResult(ret.valInt1, ret.valDouble1);
+                                end
+                            else
+                                % old format, ret might be just a value
+                                % in this case, we just return
+                                obj.sendResult(ret, ret);
+                            end
                         end
                     end
                 end
             %**********************************************************
             % ACTION_SET: set matlab variable based on code
             %**********************************************************
-            elseif action == obj.ACTION_SET,
+            elseif action == obj.ACTION_SET
                 [name, value, evalString] = parseSetActionData(obj, event);
                 fprintf(obj.dfid, '--- ACTION_SET: %s ---\n', name);
 
-                if ~isprop(obj,name),
+                if ~isprop(obj,name)
                     fprintf(2,'[ERROR]: obj has no property named %s, (typo or forget to set this property in the class?)\n', name);
                 end
 
-                if strcmp(evalString,''),
+                if strcmp(evalString,'')
                     fprintf(obj.dfid, '   :get a byte array (%s) not able to be eval -> use assignin instead\n', name);
                     assignin('base', strcat('obj.',name), value);
                 else
@@ -374,8 +384,15 @@ classdef SensingServer < handle
             %**********************************************************
             % ACTION_USER: application's user-defined data
             %**********************************************************
-            elseif action == obj.ACTION_USER,
+            elseif action == obj.ACTION_USER
                 fprintf(obj.dfid, '--- ACTION_USER ---\n');
+                user = struct();
+                user.code = event.code;
+                user.valInt = event.arg0;
+                
+                % old format, we now use the user filed to handle user data
+                % TODO: remove this when I adjust all examples to the new
+                % code
                 data = struct();
                 data.stamp = event.stamp;
                 data.name = native2unicode(event.nameBytes);
@@ -385,12 +402,17 @@ classdef SensingServer < handle
                 data.arg1 = event.arg1;
             
                 fprintf('callback is called for parsing user data\n');
-                feval(obj.callback, obj, obj.CALLBACK_TYPE_USER, data);
+                if nargin(obj.callback) == 3
+                    feval(obj.callback, obj, obj.CALLBACK_TYPE_USER, data);
+                    fprintf(2, '[WARN]: you are using the old (pre-mobisys) format, please use the new format with user arg\n');
+                else
+                    feval(obj.callback, obj, obj.CALLBACK_TYPE_USER, data, user);
+                end
             
             %**********************************************************
             % ACTION_SENSING_END: just break the loop
             %**********************************************************
-            elseif action == obj.ACTION_SENSING_END,
+            elseif action == obj.ACTION_SENSING_END
                 fprintf(obj.dfid, '--- ACTION_SENSING_END: this round of sensing ends ---\n');
                 obj.isSensing = 0;
                 obj.updateUI();
@@ -399,7 +421,7 @@ classdef SensingServer < handle
             %**********************************************************
             % ACTION_CLOSE: read the end of sockets -> close loop
             %**********************************************************
-            elseif action == obj.ACTION_CLOSE,
+            elseif action == obj.ACTION_CLOSE
                 fprintf(obj.dfid, '--- ACTION_CLOSE: socket is closed remotely ---\n');
                 obj.close();
             else
@@ -418,18 +440,18 @@ classdef SensingServer < handle
             name = native2unicode(event.nameBytes);
             name = name(:)'; % ensure name is the row-based string
     
-            switch event.setType,
-                case obj.SET_TYPE_STRING,
+            switch event.setType
+                case obj.SET_TYPE_STRING
                     value = native2unicode(valueBytes);
                     evalString = sprintf('%s = ''%s'';', name, value);
-                case obj.SET_TYPE_INT, %int 32
+                case obj.SET_TYPE_INT %int 32
                     value = valueBytes(end:-1:1);
                     value = typecast(value, 'INT32');
                     evalString = sprintf('%s = %d;', name, value);
-                case obj.SET_TYPE_VALUE_STRING,
+                case obj.SET_TYPE_VALUE_STRING
                     value = str2double(native2unicode(valueBytes));
                     evalString = sprintf('%s = %s;', name, native2unicode(valueBytes));
-                case obj.SET_TYPE_BYTE_ARRAY,
+                case obj.SET_TYPE_BYTE_ARRAY
                     value = valueBytes;
                     evalString = '';
                 otherwise
@@ -477,10 +499,13 @@ classdef SensingServer < handle
         end
         
         function sendResult(obj, argInt, argDouble)
+            fprintf(2, 'send result back to phone: (argInt, argDouble) = (%.2f, %.2f)\n', argInt, argDouble);
+            
             obj.jss.writeByte(int8(obj.REACTION_SET_RESULT));
             obj.jss.writeInt(int32(obj.audioAllEnd)); % time stamp for the result
             obj.jss.writeInt(int32(argInt));
-            obj.jss.writeDouble(argDouble);
+            obj.jss.writeDouble(double(argDouble));
+            
             CHECK = -1;
             obj.jss.writeByte(int8(CHECK));
         end
@@ -594,13 +619,13 @@ classdef SensingServer < handle
         % update UI based on server status
         function updateUI(obj)
             % determine the sensing status string
-            if obj.isConnected == 0,
+            if obj.isConnected == 0
                 obj.buttonStartOrStopSensing.Enable = 'off';
                 textConnectionStatus = 'wait connection';
             else
                 obj.buttonStartOrStopSensing.Enable = 'on';
                 textConnectionStatus = 'ready to sense';
-                if obj.isSensing,
+                if obj.isSensing
                     textConnectionStatus = 'sensing...';
                 end
             end
@@ -639,7 +664,7 @@ classdef SensingServer < handle
         
         % callback for the start or stop sensing button
         function buttonStartOrStopSensingCallback(obj)
-            if obj.isSensing == 0, % need to start sensing 
+            if obj.isSensing == 0 % need to start sensing 
                 obj.startSensing();
             else % need to stop sensing
                 obj.stopSensing(); % TODO: implement this part

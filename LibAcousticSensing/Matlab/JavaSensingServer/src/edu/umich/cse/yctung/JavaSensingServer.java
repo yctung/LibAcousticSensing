@@ -88,10 +88,10 @@ public class JavaSensingServer extends Thread {
 //===============================================================
 //  Public interface (called by Matlab)
 //===============================================================
-  public String getVersionString() {
-    String VERSION_STRING = "......hahahha...";
-    System.out.println("JavaSensingServer: VERSION = " + VERSION_STRING);
-    return "haha";
+  final static String VERSION_STRING = "show debug of write double";
+  public static String getVersionString() {
+    System.out.println("VERSION = " + VERSION_STRING);
+    return VERSION_STRING;
   }
 
 	public void writeByte(byte dataByte) throws IOException {
@@ -102,7 +102,7 @@ public class JavaSensingServer extends Thread {
 		dataOut.writeInt(dataInt);
 	}
 
-  public void writeDouble(int dataDouble) throws IOException {
+  public void writeDouble(double dataDouble) throws IOException {
     dataOut.writeDouble(dataDouble);
   }
 

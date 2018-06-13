@@ -10,7 +10,7 @@ public interface AcousticSensingControllerListener {
     void sensingStarted();
     void updateSensingProgress(int percent);
     void serverClosed();
-    void updateResult(int argInt, float argFloat);
+    void updateResult(int valInt, double valDouble);
     void dataJNICallback(long retAddr);
     void isConnected(boolean success, String resp);
 }

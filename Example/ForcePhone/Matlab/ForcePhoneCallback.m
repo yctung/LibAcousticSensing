@@ -3,21 +3,25 @@ function [ret] = ForcePhoneCallback(context, type, data, user)
 % To convert this to the offline mode, use the
     global PS;
     ret = CreateCallbackReturn();
-    %ret = 0;
     
     if type == context.CALLBACK_TYPE_INIT
         PS.touched = 0;
         
+        if isempty(coder.target) % no code generateion
+            
+        end
     elseif type == context.CALLBACK_TYPE_DATA
         cons = convn(data, PS.signalToCorrelate,'same');
         % estimate vibration by sound correlation
         vib = mean(abs(cons(PS.detectRangeStart:PS.detectRangeEnd, PS.detectChIdx)), 1);
         PS.vibLatest = vib;
         
+        if isempty(coder.target) % no code generateion
+            
+        end
         if PS.touched == 1
             force = abs(vib - PS.vibRef) / PS.vibRef;
             ret = SetCallbackReturnDouble(ret, force);
-            %ret = 0.5;
         end
     elseif type == context.CALLBACK_TYPE_USER
         if user.code == PS.USER_CODE_TOUCH_START

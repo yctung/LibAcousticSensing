@@ -317,12 +317,12 @@ public class AcousticSensingController implements NetworkControllerListener, Aud
     }
 
     @Override
-    public void resultReceviedFromServer(int audioSampleCnt, int result) {
+    public void resultReceviedFromServer(int audioSampleCnt, int valInt, double valDouble) {
         if (needToAnalyzeLatency) {
             la.addResultStamp(audioSampleCnt);
         }
 
-        listener.updateResult(result, 0.0f);
+        listener.updateResult(valInt, valDouble);
     }
 
     @Override
